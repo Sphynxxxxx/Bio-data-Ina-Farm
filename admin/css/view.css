@@ -1,0 +1,277 @@
+/* Base Styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 20px;
+}
+
+/* Container Styles */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 2px solid black;
+    position: relative;
+    margin-top: 10px;
+}
+.header::after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    border-bottom: 5px solid black;
+}
+
+.header img {
+    height: 50px;
+}
+
+.header-text {
+    text-align: left;
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.header-text h2,
+.header-text p {
+    font-family: "Times New Roman", serif;
+}
+
+.header-text h2 {
+    font-size: 16px;
+    margin: 0;
+}
+
+.header-text p {
+    font-size: 12px;
+    margin: 0;
+    font-style: normal;
+}
+
+/* Manpower-profile Styles */
+.manpower-profile {
+    text-align: center;
+    color: red;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 20px;
+    position: relative;
+    border-bottom: 1px solid black;
+}
+
+.manpower-profile::after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 100%;
+    border-bottom: 1px solid rgb(0, 0, 0);
+}
+
+/* Signature Styles */
+
+.signature-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    position: relative;
+}
+
+.signature-title {
+    text-align: center;
+    color: rgb(0, 0, 0);
+    font-size: 15px;
+    font-weight: lighter;
+    margin-top: 150px;
+    flex-grow: 1;
+}
+
+.signature-title::before {
+    content: "";
+    display: block;
+    width: 40%;
+    margin: 5px auto 0;
+    border-bottom: 1px solid rgb(0, 0, 0);
+}
+
+
+.signature-box {
+    width: 150px;
+    height: 150px;
+    border: 1px solid black;
+    margin-left: -150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: lighter;
+    font-size: 10px;
+}
+
+/* Form Styles */
+.form-title {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.photo-box {
+    border: 1px solid #000;
+    width: 150px;
+    height: 180px;
+    margin-left: 20px;
+}
+
+/* Section Styles */
+.section {
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.section-title {
+    color: red;
+    font-weight: bold;
+    background-color: #b1b0b0;
+    padding: 0px;
+    margin-bottom: 10px;
+}
+
+/* Form Group Styles */
+.form-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.form-group {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.form-group:last-child {
+    margin-right: 0;
+}
+
+.label {
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.value {
+    border: 1px solid #ddd;
+    padding: 5px;
+    min-height: 20px;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+}
+/* Form Styles */
+.form-title {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.photo-box {
+    border: 1px solid #000;
+    width: 150px;
+    height: 180px;
+    margin-left: 20px;
+}
+
+/* Section Styles */
+.section {
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.section-title {
+    color: red;
+    font-weight: bold;
+    background-color: #b1b0b0;
+    padding: 0px;
+    margin-bottom: 10px;
+}
+
+/* Form Group Styles */
+.form-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.form-group {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.form-group:last-child {
+    margin-right: 0;
+}
+
+.label {
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.value {
+    border: 1px solid #ddd;
+    padding: 5px;
+    min-height: 20px;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+}

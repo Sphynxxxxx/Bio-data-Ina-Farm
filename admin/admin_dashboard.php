@@ -1,9 +1,7 @@
-<!-- admin/index.php -->
 <?php
 session_start();
 require_once __DIR__ . '/../connections/config.php';
 
-// Check admin authentication
 if (!isset($_SESSION['admin'])) {
     header('Location: admin.php');
     exit();
