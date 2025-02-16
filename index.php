@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'middlename' => $_POST['middlename'] ?? '',
             'address_street' => $_POST['address_street'] ?? '',
             'address_barangay' => $_POST['address_barangay'] ?? '',
+            'aaddress_district' => $_POST['address_district'] ?? '',
             'address_city' => $_POST['address_city'] ?? '',
             'address_province' => $_POST['address_province'] ?? '',
             'address_region' => $_POST['address_region'] ?? '',
@@ -50,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         // Insert into users table
         $sql = "INSERT INTO users (nmis_code, lastname, firstname, middlename, address_street, 
-                address_barangay, address_city, address_province, address_region, address_zip, 
+                address_barangay, address_district, address_city, address_province, address_region, address_zip, 
                 sex, civil_status, contact_number, email, employment_type, employment_status, 
                 birthdate, birth_place, citizenship, religion, height, weight, blood_type, 
                 sss_no, gsis_no, tin_no) 
@@ -158,6 +159,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label>Barangay</label>
                     <input type="text" name="address_barangay" class="form-control">
                 </div>
+                <div class="col-md-6 mb-3">
+                    <label>District</label>
+                    <input type="text" name="address_district" class="form-control">
+                </div>
                 <div class="col-md-4 mb-3">
                     <label>City/Municipality</label>
                     <input type="text" name="address_city" class="form-control">
@@ -223,10 +228,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="col-md-6 mb-3">
                     <label>Employment Status</label>
                     <select name="employment_status" class="form-control">
-                        <option value="Regular">Regular</option>
-                        <option value="Probationary">Probationary</option>
+                        <option value="Casual">Casual</option>
                         <option value="Contractual">Contractual</option>
+                        <option value="Job-Order">Job Order</option>
                         <option value="Temporary">Temporary</option>
+                        <option value="Probationary">Probationary</option>
+                        <option value="Regular">Regular</option>
+                        <option value="Permanent">Permanent</option>
+                        <option value="Trainee">Trainee/Ojt</option>
                     </select>
                 </div>
             </div>

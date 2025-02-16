@@ -141,6 +141,7 @@ body {
     margin-left: 20px;
 }
 
+
 /* Section Styles */
 .section {
     margin-bottom: 20px;
@@ -165,6 +166,7 @@ body {
 .form-group {
     flex: 1;
     margin-right: 10px;
+    
 }
 
 .form-group:last-child {
@@ -173,14 +175,87 @@ body {
 
 .label {
     font-weight: bold;
-    font-size: 0.9em;
+    font-size: 0.6em;
     color: #666;
+    text-align: center;
 }
 
-.value {
-    border: 1px solid #ddd;
-    padding: 5px;
-    min-height: 20px;
+
+.name-title {
+    font-size: 15px;
+    margin-right: 10px
+}
+
+/* Styling for Civil Status Checkboxes in Row Format */
+.form-checkbox {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 5px; 
+}
+
+/* Checkbox Styling */
+.checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: black; 
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Label Styling */
+.label-check {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #666;
+    cursor: pointer;
+}
+
+
+/* Form Contact Container */
+.form-contact {
+    display: flex; 
+    align-items: center;
+    margin-bottom: 8px; 
+}
+
+/* Label Styling */
+.label-contact {
+    font-weight: bold; 
+    color: #333; 
+    min-width: 80px;
+}
+
+.value-value{
+    margin: 0 10px;
+    font-size: 0.7em;
+}
+.value-value::after {
+    content: "";
+    display: block;
+    width: 100px;
+    margin: 5px auto 0;
+    border-bottom: 1px solid rgb(0, 0, 0);
+    font-size: 0.5em;
+}
+
+.form-personal {
+    display: flex; 
+    align-items: center;
+    margin-bottom: 8px; 
+}
+
+
+.label-personal {
+    font-size: 0.9em;
+    font-weight: bold; 
+    color: #333; 
+    min-width: 80px;
 }
 
 /* Table Styles */
@@ -248,17 +323,15 @@ th {
     margin-right: 0;
 }
 
-.label {
-    font-weight: bold;
-    font-size: 0.9em;
-    color: #666;
-}
 
 .value {
     border: 1px solid #ddd;
     padding: 5px;
     min-height: 20px;
+    font-size: 0.9em;
 }
+
+
 
 /* Table Styles */
 table {
