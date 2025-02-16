@@ -1,2 +1,15 @@
 ALTER TABLE users
 ADD COLUMN address_district VARCHAR(255) AFTER address_barangay;
+
+composer require tecnickcom/tcpdf
+
+
+extension=gd
+(Find the line ;extension=gd
+Remove the semicolon to uncomment it
+Restart Apache)
+
+extension=zip
+(Find the line ;extension=zip
+Remove the semicolon to uncomment it
+Restart Apache)
