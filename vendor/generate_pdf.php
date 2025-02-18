@@ -15,23 +15,23 @@ class MYPDF extends TCPDF {
         $this->Rect(0, 0, $this->getPageWidth(), 35, 'F');
         
         // Logo
-        $this->Image('../admin/assets/tesda_logo.png', 15, 10, 20);
+        $this->Image('../admin/assets/tesda_logo.png', 15, 5, 17);
         
         // Header Text
-        $this->SetFont('times', 'B', 16);
-        $this->SetXY(40, 10);
+        $this->SetFont('times', 'B', 12);
+        $this->SetXY(35, 10);
         $this->Cell(0, 6, 'Technical Education and Skills Development Authority', 0, 1, 'L');
         
-        $this->SetFont('times', '', 12);
-        $this->SetXY(40, 16);
+        $this->SetFont('times', '', 10);
+        $this->SetXY(35, 16);
         $this->Cell(0, 6, 'Pangasiwaan sa Edukasyong Teknikal at Pagpapaunlad ng Kasanayan', 0, 1, 'L');
         
         // Form Title (right aligned)
-        $this->SetFont('helvetica', 'B', 14);
-        $this->SetXY(150, 10);
+        $this->SetFont('helvetica', 'B', 9);
+        $this->SetXY(145, 20);
         $this->Cell(50, 6, 'NMIS FORM -01A', 0, 1, 'R');
-        $this->SetFont('helvetica', '', 10);
-        $this->SetXY(150, 16);
+        $this->SetFont('helvetica', '', 8);
+        $this->SetXY(145, 25);
         $this->Cell(50, 6, '(For TPIS)', 0, 1, 'R');
         
         // Double line border
@@ -90,21 +90,33 @@ try {
     die("Connection failed: " . $e->getMessage());
 }
 
+
 // Title with red color
+$pdf->SetXY(15, 30);
 $pdf->SetFont('helvetica', 'B', 20);
 $pdf->SetTextColor(255, 0, 0);
 $pdf->Cell(0, 10, 'MANPOWER PROFILE', 0, 1, 'C');
 $pdf->SetTextColor(0, 0, 0);
 
+//line below
+$pdf->Line(15, 40, 195, 40); 
+$pdf->Line(15, 40.5, 195, 40.5);
+
+
 // Add signature box
+$pdf->SetXY(30, 68);
 $pdf->SetFont('helvetica', '', 12);
 $pdf->Cell(140, 10, 'Signature', 0, 0, 'C');
-$pdf->Rect(155, 45, 40, 50); // Photo box
+$pdf->Line(65, 70, 138, 70); 
+
+
+$pdf->Rect(157, 42, 38, 40); // Photo box
 $pdf->SetFont('helvetica', '', 8);
-$pdf->Text(160, 65, 'ID PICTURE');
-$pdf->Text(158, 70, '(Passport Size)');
+$pdf->Text(167.5, 60, 'ID PICTURE');
+$pdf->Text(167, 65, '(Passport Size)');
 
 // Section 1 - TESDA Information
+$pdf->SetXY(15, 84);
 $pdf->SetFont('helvetica', 'B', 12);
 $pdf->SetFillColor(177, 176, 176); // Matching #b1b0b0
 $pdf->SetTextColor(255, 0, 0);
@@ -112,11 +124,14 @@ $pdf->Cell(0, 8, '1. To be accomplished by TESDA', 0, 1, 'L', true);
 $pdf->SetTextColor(0, 0, 0);
 
 // NMIS Code and Entry Date
-$pdf->SetFont('helvetica', '', 10);
+$pdf->SetXY(15, 93);
+$pdf->SetFont('helvetica', 'B', 10);
 $y = $pdf->GetY();
-$pdf->Cell(40, 6, 'NMIS Manpower Code:', 0, 0);
-$pdf->Cell(60, 6, $user['nmis_code'], 'B', 0);
+$pdf->Cell(40, 6, 'NMIS Manpower Code:',  0, 0);
+$pdf->SetFont('helvetica', '', 10);
+$pdf->Cell(40, 6, $user['nmis_code'], 1, 0);
 $pdf->Cell(30, 6, 'NMIS Entry Date:', 0, 0);
+//$pdf->Cell(60, 6, $user['nmis_entry'], 1, 0);
 $pdf->Cell(60, 6, '', 'B', 1);
 
 // Personal Information Section
@@ -128,41 +143,54 @@ $pdf->Cell(0, 8, '2. Personal Information', 0, 1, 'L', true);
 $pdf->SetTextColor(0, 0, 0);
 
 // Name Fields
-$pdf->SetFont('helvetica', '', 10);
+$pdf->SetFont('helvetica', 'B', 10);
 $pdf->Cell(20, 10, 'Name:', 0, 0);
-$pdf->Cell(55, 10, $user['lastname'], 'B', 0, 'C');
-$pdf->Cell(55, 10, $user['firstname'], 'B', 0, 'C');
-$pdf->Cell(55, 10, $user['middlename'], 'B', 1, 'C');
 
-$pdf->SetX(35);
+$pdf->SetFont('helvetica', '', 10);
+$pdf->SetXY(50, 113);
+$pdf->Cell(49, 6, $user['lastname'], 1, 0, 'C');
+$pdf->Cell(48, 6, $user['firstname'], 1, 0, 'C'); 
+$pdf->Cell(48, 6, $user['middlename'], 1, 1, 'C'); 
+
+// Move down before adding labels
+$pdf->Ln(2);
+
+// Set new X position for labels to align with the boxes
+$pdf->SetXY(50, 119); 
 $pdf->SetFont('helvetica', '', 8);
-$pdf->Cell(55, 5, 'Last', 0, 0, 'C');
-$pdf->Cell(55, 5, 'First', 0, 0, 'C');
-$pdf->Cell(55, 5, 'Middle', 0, 1, 'C');
+$pdf->Cell(49, 5, 'Last', 0, 0, 'C'); 
+$pdf->Cell(48, 5, 'First', 0, 0, 'C'); 
+$pdf->Cell(48, 5, 'Middle', 0, 1, 'C'); 
+
 
 // Address
-$pdf->SetFont('helvetica', '', 10);
+$pdf->SetFont('helvetica', 'B', 10);
 $pdf->Cell(30, 10, 'Mailing Address:', 0, 0);
-$pdf->Cell(75, 10, $user['address_street'], 'B', 0, 'C');
-$pdf->Cell(75, 10, $user['address_barangay'], 'B', 1, 'C');
 
-$pdf->SetX(45);
+$pdf->SetFont('helvetica', '', 10);
+$pdf->SetXY(50, 127);
+$pdf->Cell(49, 5, $user['address_street'], 1, 0, 'C');
+$pdf->Cell(48, 5, $user['address_barangay'], 1, 0, 'C');
+$pdf->Cell(48, 5, $user['address_district'], 1, 1, 'C'); 
+
+$pdf->SetXY(50, 132);
 $pdf->SetFont('helvetica', '', 8);
-$pdf->Cell(75, 5, 'Number, Street', 0, 0, 'C');
-$pdf->Cell(75, 5, 'Barangay', 0, 1, 'C');
+$pdf->Cell(49, 5, 'Number, Street', 0, 0, 'C'); 
+$pdf->Cell(48, 5, 'Barangay', 0, 0, 'C'); 
+$pdf->Cell(48, 5, 'Congressional District', 0, 1, 'C');
 
 // City, Province, Region
 $pdf->SetFont('helvetica', '', 10);
-$pdf->SetX(45);
-$pdf->Cell(45, 10, $user['address_city'], 'B', 0, 'C');
-$pdf->Cell(45, 10, $user['address_province'], 'B', 0, 'C');
-$pdf->Cell(45, 10, $user['address_region'], 'B', 1, 'C');
+$pdf->SetXY(50, 140);
+$pdf->Cell(49, 5, $user['address_city'], 1, 0, 'C');
+$pdf->Cell(48, 5, $user['address_province'], 1, 0, 'C');
+$pdf->Cell(48, 5, $user['address_region'], 1, 1, 'C');
 
-$pdf->SetX(45);
+$pdf->SetXY(50, 145);
 $pdf->SetFont('helvetica', '', 8);
-$pdf->Cell(45, 5, 'City/Municipality', 0, 0, 'C');
-$pdf->Cell(45, 5, 'Province', 0, 0, 'C');
-$pdf->Cell(45, 5, 'Region', 0, 1, 'C');
+$pdf->Cell(49, 5, 'City/Municipality', 0, 0, 'C');
+$pdf->Cell(48, 5, 'Province', 0, 0, 'C');
+$pdf->Cell(48, 5, 'Region', 0, 1, 'C');
 
 // Personal Details Section
 $pdf->Ln(5);
