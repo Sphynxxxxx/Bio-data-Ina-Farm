@@ -130,9 +130,13 @@ $y = $pdf->GetY();
 $pdf->Cell(40, 6, 'NMIS Manpower Code:',  0, 0);
 $pdf->SetFont('helvetica', '', 10);
 $pdf->Cell(40, 6, $user['nmis_code'], 1, 0);
+
+$pdf->SetX(105);
+$pdf->SetFont('helvetica', 'B', 10);
 $pdf->Cell(30, 6, 'NMIS Entry Date:', 0, 0);
-//$pdf->Cell(60, 6, $user['nmis_entry'], 1, 0);
-$pdf->Cell(60, 6, '', 'B', 1);
+$pdf->Cell(60, 6, $user['nmis_entry'], 1, 0);
+$pdf->Ln(5);
+
 
 // Personal Information Section
 $pdf->Ln(5);
@@ -201,34 +205,108 @@ $pdf->SetX(15);
 $leftColumn = 95;
 $rightColumn = 95;
 
-// Left Column
-$pdf->Cell($leftColumn, 8, 'Sex:', 0, 0);
-$pdf->Cell(5, 8, $user['sex'] == 'Male' ? 'X' : '', 1, 0, 'C');
-$pdf->Cell(15, 8, 'Male', 0, 0);
-$pdf->Cell(5, 8, $user['sex'] == 'Female' ? 'X' : '', 1, 0, 'C');
-$pdf->Cell(15, 8, 'Female', 0, 1);
 
-// Civil Status
-$pdf->Cell($leftColumn, 8, 'Civil Status:', 0, 0);
-$statuses = ['Single', 'Married', 'Widow/er', 'Separated'];
-foreach($statuses as $status) {
-    $pdf->Cell(5, 8, $user['civil_status'] == $status ? 'X' : '', 1, 0, 'C');
-    $pdf->Cell(20, 8, $status, 0, 0);
-}
-$pdf->Ln();
+// Set starting position
+$startX = 15;
+$startY = $pdf->GetY();
+$boxHeight = 50; // Adjust height based on content
+$boxWidth = 30;  // Half of the page width (approx)
 
-// Contact Information
-/*
+// Draw rectangle for "Sex"
+$pdf->Rect($startX, $startY, $boxWidth, $boxHeight);
+$pdf->SetFont('helvetica', 'B', 10);
+$pdf->Cell(25, 8, '2.3 Sex', 0, 1);
+$pdf->SetTextColor(0, 0, 0);
+
+// Draw Sex checkboxes
 $pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(30, 8, 'Tel. No.:', 0, 0);
-$pdf->Cell(65, 8, $user['tel_number'], 'B', 1);
-*/
+$sexes = ['Male', 'Female'];
+$yPosition = $startY + 8;
+foreach ($sexes as $sex) {
+    $pdf->SetXY($startX + 3, $yPosition);
+    $pdf->Cell(5, 5, $user['sex'] == $sex ? 'X' : '', 1, 0, 'C'); // Checkbox
+    $pdf->Cell(20, 5, $sex, 0, 1);
+    $yPosition += 8;
+}
 
-$pdf->Cell(30, 8, 'Cellular:', 0, 0);
-$pdf->Cell(65, 8, $user['contact_number'], 'B', 1);
+// Draw rectangle for "Civil Status"
+$pdf->Rect($startX + $boxWidth + 0, $startY, $boxWidth, $boxHeight);
+$pdf->SetXY($startX + $boxWidth + 0, $startY);
+$pdf->SetFont('helvetica', 'B', 10);
+$pdf->Cell(35, 8, '2.4 Civil Status', 0, 1);
+$pdf->SetTextColor(0, 0, 0);
 
-$pdf->Cell(30, 8, 'Email:', 0, 0);
-$pdf->Cell(65, 8, $user['email'], 'B', 1);
+// Draw Civil Status checkboxes
+$pdf->SetFont('helvetica', '', 10);
+$statuses = ['Single', 'Married', 'Widow/er', 'Separated'];
+$yPosition = $startY + 8;
+foreach ($statuses as $status) {
+    $pdf->SetXY($startX + $boxWidth + 3, $yPosition);
+    $pdf->Cell(5, 5, $user['civil_status'] == $status ? 'X' : '', 1, 0, 'C'); // Checkbox
+    $pdf->Cell(25, 5, $status, 0, 1);
+    $yPosition += 8;
+}
+
+// Draw rectangle for "Contact Number(s)"
+$pdf->Rect($startX + ($boxWidth * 2) + 0, $startY, $boxWidth + 30, $boxHeight);
+$pdf->SetXY($startX + ($boxWidth * 2) + 0, $startY);
+$pdf->SetFont('helvetica', 'B', 10);
+$pdf->Cell(40, 8, '2.5 Contact Number(s)', 0, 1);
+$pdf->SetTextColor(0, 0, 0);
+
+// Move cursor below the title
+$pdf->SetFont('helvetica', '', 10);
+$yPosition = $startY + 8;
+
+// Telephone Number
+$pdf->SetXY($startX + ($boxWidth * 2) + 1, $yPosition);
+$pdf->Cell(15, 5, 'Tel. No.:', 0, 0);
+$pdf->Cell(38, 5, $user['tel_number'], 'B', 1);
+
+// Move down for Cellular Number
+$yPosition += 8;
+$pdf->SetXY($startX + ($boxWidth * 2) + 1, $yPosition);
+$pdf->Cell(15, 5, 'Cellular:', 0, 0);
+$pdf->Cell(38, 5, $user['contact_number'], 'B', 1);
+
+// Move down for Email
+$yPosition += 8;
+$pdf->SetXY($startX + ($boxWidth * 2) + 1, $yPosition);
+$pdf->Cell(15, 5, 'Email:', 0, 0);
+$pdf->Cell(38, 5, $user['email'], 'B', 1);
+
+// Move down fo Fax
+$yPosition += 8;
+$pdf->SetXY($startX + ($boxWidth * 2) + 1, $yPosition);
+$pdf->Cell(15, 5, 'Fax:', 0, 0);
+$pdf->Cell(38, 5, $user['fax'], 'B', 1);
+
+
+// Set dimensions
+$boxWidth = 40;  
+$boxHeight = 50; 
+
+// Draw rectangle for "Employment Type"
+$pdf->Rect($startX + ($boxWidth * 3) + 0, $startY, $boxWidth + 20, $boxHeight);
+$pdf->SetXY($startX + ($boxWidth * 3) + 0, $startY);
+$pdf->SetFont('helvetica', 'B', 10);
+$pdf->Cell(40, 8, '2.6 Employment Type', 0, 1);
+$pdf->SetTextColor(0, 0, 0);
+
+// Draw Employment Type checkboxes
+$pdf->SetFont('helvetica', '', 10);
+$employment_types = ['Employed', 'Self-Employed', 'Unemployed'];
+$yPosition = $startY + 8;
+foreach ($employment_types as $type) {
+    $pdf->SetXY($startX + ($boxWidth * 3) + 3, $yPosition);
+    $pdf->Cell(5, 5, $user['employment_type'] == $type ? 'X' : '', 1, 0, 'C'); // Checkbox
+    $pdf->Cell(30, 5, $type, 0, 1);
+    $yPosition += 8;
+}
+
+
+$pdf->Ln(25); 
+
 
 // Educational Background
 $pdf->AddPage();
