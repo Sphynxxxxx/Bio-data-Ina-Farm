@@ -400,7 +400,7 @@ try {
 
         <!-- 7. License/Examination-->
         <div class="section">
-            <div class="section-title">6. Training Seminar Attended</div>
+            <div class="section-title">7. License/Examinations Passed</div>
             <table>
                 <thead>
                     <tr>
@@ -410,6 +410,35 @@ try {
                         <th>Ratings</th>
                         <th>Remarks</th>
                         <th>Expiry Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($education as $edu): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                     </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 8. Competency Assessment Passed-->
+        <div class="section">
+            <div class="section-title">8. Competency Assessment Passed</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Industry Sector</th>
+                        <th>Trade Area</th>
+                        <th>Occupation</th>
+                        <th>Classification Level</th>
+                        <th>Competency</th>
+                        <th>Specialization Description</th>
                     </tr>
                 </thead>
                 <tbody>
