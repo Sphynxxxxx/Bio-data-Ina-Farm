@@ -332,7 +332,7 @@ try {
             </table>
         </div>
         
-        <a href="../vendor/generate_pdf.php" class="btn btn-primary">Download PDF</a>
+        <a href="generate_pdf.php" class="btn btn-primary">Download PDF</a>
     </div>
 </body>
 </html>

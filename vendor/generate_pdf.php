@@ -446,38 +446,38 @@ $pdf->SetFont('Times', '', 9);
 // First Row Headers
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(31, 14, "5.1\nName of Company", 1, 'C'); 
+$pdf->MultiCell(31, 24, "5.1\nName of Company", 1, 'C'); 
 $pdf->SetXY($x + 31, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(31, 14, "5.2\nPosition", 1, 'C'); 
-$pdf->SetXY($x + 31, $y + 0); 
+$pdf->MultiCell(25, 24, "5.2\nPosition", 1, 'C'); 
+$pdf->SetXY($x + 25, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(31, 14, "5.3\nIclusive Dates", 1, 'C'); 
-$pdf->SetXY($x + 31, $y + 0); 
+$pdf->MultiCell(25, 24, "5.3\nIclusive Dates", 1, 'C'); 
+$pdf->SetXY($x + 25, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(31, 14, "5.4\nMonthly\nSalary", 1, 'C'); 
-$pdf->SetXY($x + 31, $y + 0); 
+$pdf->MultiCell(25, 24, "5.4\nMonthly\nSalary", 1, 'C'); 
+$pdf->SetXY($x + 25, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(31, 14, "5.5\nOccupation Type\n(Teaching; Non-Teaching;\nIndustrial Experience)", 1, 'C'); 
-$pdf->SetXY($x + 31, $y + 0); 
+$pdf->MultiCell(25, 18, "5.5\nOccupation Type\n(Teaching; Non-Teaching;\nIndustrial Experience)", 1, 'C'); 
+$pdf->SetXY($x + 25, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(31, 14, "5.6\nStatus of\nAppointment", 1, 'C'); 
-$pdf->SetXY($x + 31, $y + 0); 
+$pdf->MultiCell(25, 24, "5.6\nStatus of\nAppointment", 1, 'C'); 
+$pdf->SetXY($x + 25, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(31, 14, "No. of Yrs.\nWorking\nExp", 1, 'C'); 
-$pdf->SetXY($x + 31, $y + 0); 
+$pdf->MultiCell(24, 24, "No. of Yrs.\nWorking\nExp", 1, 'C'); 
+$pdf->SetXY($x + 24, $y + 0); 
 
 
 
