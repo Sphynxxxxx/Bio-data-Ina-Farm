@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
 <div class="container mt-5 mb-5">
-    <h2 class="text-center mb-4">Manpower Profile Form</h2>
+    <h2 class="text-center mb-4">Manpower Profile Forms</h2>
     
     <?php if (isset($success_message)): ?>
         <div class="alert alert-success"><?php echo $success_message; ?></div>
