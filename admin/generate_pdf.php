@@ -110,7 +110,7 @@ $pdf->Cell(140, 10, 'Signature', 0, 0, 'C');
 $pdf->Line(65, 70, 138, 70); 
 
 
-$pdf->Rect(157, 42, 38, 40); // Photo box
+$pdf->Rect(157, 42, 38, 40); 
 $pdf->SetFont('Times', '', 8);
 $pdf->Text(167.5, 60, 'ID PICTURE');
 $pdf->Text(167, 65, '(Passport Size)');
@@ -118,7 +118,7 @@ $pdf->Text(167, 65, '(Passport Size)');
 // Section 1 - TESDA Information
 $pdf->SetXY(15, 84);
 $pdf->SetFont('Times', 'B', 12);
-$pdf->SetFillColor(177, 176, 176); // Matching #b1b0b0
+$pdf->SetFillColor(177, 176, 176); 
 $pdf->SetTextColor(255, 0, 0);
 $pdf->Cell(0, 8, '1. To be accomplished by TESDA', 0, 1, 'L', true);
 $pdf->SetTextColor(0, 0, 0);
@@ -456,7 +456,7 @@ $pdf->SetXY($x + 25, $y + 0);
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(25, 24, "5.3\nIclusive Dates", 1, 'C'); 
+$pdf->MultiCell(25, 24, "5.3\nInclusive Dates", 1, 'C'); 
 $pdf->SetXY($x + 25, $y + 0); 
 
 $x = $pdf->GetX();

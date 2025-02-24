@@ -298,7 +298,7 @@ try {
             </div>  </div>
         </div>
 
-
+        <!-- 4. Educational Background-->
         <div class="section">
             <div class="section-title">4. Educational Background</div>
             <table>
@@ -331,6 +331,103 @@ try {
                 </tbody>
             </table>
         </div>
+
+        <!-- 5. Working Experience-->
+        <div class="section">
+            <div class="section-title">5. Working Experience (For Trainers, mandatory field 5.5)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name of the Company</th>
+                        <th>Position</th>
+                        <th colspan="2">Inclusive Dates</th> <!-- Spanning two columns -->
+                        <th>Monthly Salary</th>
+                        <th>Occupation Type(Teaching; Non-Teaching; Industrial Experience)</th>
+                        <th>Status of Appointment</th>
+                        <th>No. of Yrs Working Exp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($education as $edu): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 6. Training Seminar Attendee-->
+        <div class="section">
+            <div class="section-title">6. Training Seminar Attended</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tittle</th>
+                        <th>Venue</th>
+                        <th>Inclusive Dates</th>
+                        <th>Certificate Received</th>
+                        <th># of Hours</th>
+                        <th>Training Base</th>
+                        <th>Category</th>
+                        <th>Conducted by</th>
+                        <th>Proficiency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($education as $edu): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                     </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 7. License/Examination-->
+        <div class="section">
+            <div class="section-title">6. Training Seminar Attended</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tittle</th>
+                        <th>Year Taken</th>
+                        <th>Examination Venue</th>
+                        <th>Ratings</th>
+                        <th>Remarks</th>
+                        <th>Expiry Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($education as $edu): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                     </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!---------------------------------------------------------------------------->
         
         <a href="generate_pdf.php" class="btn btn-primary">Download PDF</a>
     </div>
