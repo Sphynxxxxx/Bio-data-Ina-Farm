@@ -456,6 +456,11 @@ try {
             </table>
         </div>
 
+        <!-- 9. Family Background-->
+        <div class="section">
+            <div class="section-title">9. Family Background</div>
+        </div>
+
         <!---------------------------------------------------------------------------->
         
         <a href="generate_pdf.php" class="btn btn-primary">Download PDF</a>
