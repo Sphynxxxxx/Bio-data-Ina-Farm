@@ -16,10 +16,30 @@ try {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
     // Fetch education records
-    $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ? ORDER BY year_from");
+    $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
     $eduStmt->execute([$user['id']]);
     $education = $eduStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch working experience
+    $workStmt = $pdo->prepare("SELECT * FROM work_experience WHERE user_id = ?");
+    $workStmt->execute([$user['id']]);
+    $work_experience = $workStmt->fetchAll(PDO::FETCH_ASSOC);
     
+    // Fetch training/Seminar Attended
+    $trainingStmt = $pdo->prepare("SELECT * FROM training_seminar WHERE user_id = ?");
+    $trainingStmt->execute([$user['id']]);
+    $training_seminar = $trainingStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Fetch Licenses/Examinations Passed
+    $licenseStmt = $pdo->prepare("SELECT * FROM license_examination WHERE user_id = ?");
+    $licenseStmt->execute([$user['id']]);
+    $license_examination = $licenseStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch Competency Assessment Passed
+    $competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
+    $competencyStmt->execute([$user['id']]);
+    $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
+
 } catch(PDOException $e) {
     die("Connection failed: " . $e->getMessage());
 }
@@ -348,16 +368,16 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($education as $edu): ?>
+                    <?php foreach ($work_experience as $work): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td> 
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>  
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['company_name'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['position'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['inclusive_dates_past'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($edu['inclusive_dates_present'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($edu['monthly_salary'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($edu['occupation'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['status'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['working_experience'] ?? ''); ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -372,7 +392,7 @@ try {
                     <tr>
                         <th>Tittle</th>
                         <th>Venue</th>
-                        <th>Inclusive Dates</th>
+                        <th colspan="2">Inclusive Dates</th>
                         <th>Certificate Received</th>
                         <th># of Hours</th>
                         <th>Training Base</th>
@@ -382,16 +402,18 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($education as $edu): ?>
+                    <?php foreach ($training_seminar as $training): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td> 
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>  
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['tittle'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['venue'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['inclusive_dates_past'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($edu['inclusive_dates_present'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($edu['certificate'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['no_of_hours'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['training_base'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['category'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['conducted_by'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['proficiency '] ?? ''); ?></td>
                      </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -413,14 +435,14 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($education as $edu): ?>
+                    <?php foreach ($license_examination as $license): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td> 
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>  
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['tittle'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['year_taken'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['examination_venue'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($edu['ratings'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($edu['remarks'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['expiry_date'] ?? ''); ?></td>
                      </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -442,14 +464,14 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($education as $edu): ?>
+                    <?php foreach ($competency_assessment as $compentency): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td> 
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>  
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['#'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['industry_sector'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['trade_area'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['occupation'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($edu['classification_level'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($edu['competency'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($edu['specialization'] ?? ''); ?></td>
                      </tr>
                     <?php endforeach; ?>
                 </tbody>
