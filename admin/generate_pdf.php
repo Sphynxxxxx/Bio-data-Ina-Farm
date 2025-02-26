@@ -82,10 +82,31 @@ try {
     $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
+    // fetch from education
     $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ? ORDER BY year_from");
     $eduStmt->execute([$user['id']]);
     $education = $eduStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // fetch from work_experience
+    $workStmt = $pdo->prepare("SELECT * FROM work_experience WHERE user_id = ?");
+    $workStmt->execute([$user['id']]);
+    $work_experience = $workStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // fetch from training_seminar
+    $trainingStmt = $pdo->prepare("SELECT * FROM training_seminar WHERE user_id = ?");
+    $trainingStmt->execute([$user['id']]);
+    $training_seminar = $trainingStmt->fetchAll(PDO::FETCH_ASSOC);
     
+    // fetch from license_examination
+    $licenseStmt = $pdo->prepare("SELECT * FROM license_examination WHERE user_id = ?");
+    $licenseStmt->execute([$user['id']]);
+    $license_examination = $licenseStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // fetch from competency_assessment
+    $competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
+    $competencyStmt->execute([$user['id']]);
+    $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
+
 } catch(PDOException $e) {
     die("Connection failed: " . $e->getMessage());
 }
@@ -443,7 +464,6 @@ $pdf->Ln(1);
 
 $pdf->SetFont('Times', '', 9);
 
-// First Row Headers
 $x = $pdf->GetX();
 $y = $pdf->GetY();
 $pdf->MultiCell(31, 24, "5.1\nName of Company", 1, 'C'); 
@@ -479,10 +499,109 @@ $y = $pdf->GetY();
 $pdf->MultiCell(24, 24, "No. of Yrs.\nWorking\nExp", 1, 'C'); 
 $pdf->SetXY($x + 24, $y + 0); 
 
+$pdf->Ln(); 
 
+// Table Data
+foreach ($work_experience as $work) {
+    $pdf->Cell(31, 7, $work['company_name'], 1);
+    $pdf->Cell(22, 7, $work['position'], 1);
 
+    $pdf->Cell(10, 7, $work['inclusive_dates_past'], 1, 0, 'C');
+    $pdf->Cell(10, 7, $work['inclusive_dates_present'], 1, 0, 'C');
 
+    $pdf->Cell(22, 7, $work['monthly_salary'], 1);
+    $pdf->Cell(21, 7, $work['occupation'], 1);
+    $pdf->Cell(21, 7, $work['status'], 1);
+    
+    $pdf->Ln();
+}
 
+//6. Training/Seminars Attended
+$pdf->AddPage();
+$pdf->SetFont('Times', 'B', 12);
+$pdf->SetFillColor(177, 176, 176);
+$pdf->SetTextColor(255, 0, 0);
+$pdf->Cell(0, 8, '6. Training/Seminars Attended', 0, 1, 'L', true);
+$pdf->SetTextColor(0, 0, 0);
+
+$pdf->Ln(1); 
+
+$pdf->SetFont('Times', '', 9);
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "6.1\nTittle", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "6.2\nVenue", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "6.3\nInclusive Dates", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "6.4\nCertificate Received", 1, 'C'); 
+$pdf->SetXY($x +20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "6.5\n# of\nHours", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "6.6\nTraining\nBase", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "6.7\nCategory", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "6.8\nConducted By", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "6.9\nProficiency", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0);
+
+$pdf->Ln(); 
+
+foreach ($training_seminar as $training) {
+    $pdf->Cell(31, 7, $training['tittles'], 1);
+    $pdf->Cell(22, 7, $training['venue'], 1);
+
+    $pdf->Cell(10, 7, $training['inclusive_dates_past'], 1, 0, 'C');
+    $pdf->Cell(10, 7, $training['inclusive_dates_present'], 1, 0, 'C');
+
+    $pdf->Cell(22, 7, $training['certificate'], 1);
+    $pdf->Cell(21, 7, $training['no_of_hours'], 1);
+    $pdf->Cell(21, 7, $training['training_base'], 1);
+    $pdf->Cell(21, 7, $training['category'], 1);
+    $pdf->Cell(21, 7, $training['conducted_by'], 1);
+    $pdf->Cell(21, 7, $training['proficiency'], 1);
+    
+    $pdf->Ln();
+}
+// 7. Licenses/Examination Passed
+$pdf->AddPage();
+$pdf->SetFont('Times', 'B', 12);
+$pdf->SetFillColor(177, 176, 176);
+$pdf->SetTextColor(255, 0, 0);
+$pdf->Cell(0, 8, '7. Licenses/Examination Passed', 0, 1, 'L', true);
+$pdf->SetTextColor(0, 0, 0);
+
+$pdf->Ln(1); 
+
+$pdf->SetFont('Times', '', 9);
 // Output the PDF
 $pdf->Output('NMIS_Profile.pdf', 'D');
 ?> 
