@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="container">
     <!-- Header Section -->
     <div class="header">
-        <img src="https://via.placeholder.com/50" alt="Logo">
+        <img src="admin\assets\tesda_logo.png" alt="Logo">
         <div class="header-text">
             <h2>REPUBLIC OF THE PHILIPPINES</h2>
             <p>NATIONAL MEAT INSPECTION SERVICE</p>
