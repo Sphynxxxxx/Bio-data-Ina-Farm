@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'middlename' => $_POST['middlename'] ?? '',
             'address_street' => $_POST['address_street'] ?? '',
             'address_barangay' => $_POST['address_barangay'] ?? '',
-            'aaddress_district' => $_POST['address_district'] ?? '',
+            'address_district' => $_POST['address_district'] ?? '',
             'address_city' => $_POST['address_city'] ?? '',
             'address_province' => $_POST['address_province'] ?? '',
             'address_region' => $_POST['address_region'] ?? '',
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 sex, civil_status, contact_number, email, employment_type, employment_status, 
                 birthdate, birth_place, citizenship, religion, height, weight, blood_type, 
                 sss_no, gsis_no, tin_no) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array_values($userData));
@@ -87,6 +87,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
         
+        // Handle work experience records
+        if (isset($_POST['company']) && is_array($_POST['company'])) {
+            $workSql = "INSERT INTO work_experience (user_id, company_name, position, 
+                       date_from, date_to) 
+                       VALUES (?, ?, ?, ?, ?)";
+            
+            $workStmt = $pdo->prepare($workSql);
+            
+            foreach ($_POST['company'] as $key => $company) {
+                $workData = [
+                    $userId,
+                    $company,
+                    $_POST['position'][$key] ?? '',
+                    $_POST['work_date_from'][$key] ?? '',
+                    $_POST['work_date_to'][$key] ?? ''
+                ];
+                $workStmt->execute($workData);
+            }
+        }
+        
         // Commit transaction
         $pdo->commit();
         $success_message = "Biodata submitted successfully!";
@@ -105,15 +125,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manpower Profile Form</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .form-section { margin-bottom: 2rem; }
-        .education-entry, .work-entry { border-bottom: 1px solid #eee; padding: 1rem 0; }
-    </style>
+    <link rel="stylesheet" href="admin/css/index.css">
 </head>
 <body>
-<div class="container mt-5 mb-5">
-    <h2 class="text-center mb-4">Manpower Profile Forms</h2>
+<div class="container">
+    <!-- Header Section -->
+    <div class="header">
+        <img src="https://via.placeholder.com/50" alt="Logo">
+        <div class="header-text">
+            <h2>REPUBLIC OF THE PHILIPPINES</h2>
+            <p>NATIONAL MEAT INSPECTION SERVICE</p>
+            <p>DEPARTMENT OF AGRICULTURE</p>
+        </div>
+    </div>
+    
+    <!-- Manpower Profile Title -->
+    <div class="manpower-profile">MANPOWER PROFILE</div>
     
     <?php if (isset($success_message)): ?>
         <div class="alert alert-success"><?php echo $success_message; ?></div>
@@ -124,110 +151,132 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php endif; ?>
 
     <form method="POST" action="" enctype="multipart/form-data">
+        <!-- Profile Header with Photo Box -->
+        <div class="profile-header">
+            <div>
+                <div class="form-title">NMIS Form No. 001</div>
+            </div>
+            <div class="photo-box">
+                <span>2x2 ID Photo</span>
+            </div>
+        </div>
+        
         <!-- Personal Information Section -->
-        <div class="form-section">
-            <h4>Personal Information</h4>
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label>NMIS Code</label>
-                    <input type="text" name="nmis_code" class="form-control" required>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>Last Name</label>
-                    <input type="text" name="lastname" class="form-control" required>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>First Name</label>
-                    <input type="text" name="firstname" class="form-control" required>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>Middle Name</label>
-                    <input type="text" name="middlename" class="form-control">
+        <div class="section">
+            <div class="section-title">I. PERSONAL INFORMATION</div>
+            
+            <!-- Name Row -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="label">NMIS CODE</label>
+                    <input type="text" name="nmis_code" class="value" required>
                 </div>
             </div>
-        </div>
-
-        <!-- Address Section -->
-        <div class="form-section">
-            <h4>Address Information</h4>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label>Street Address</label>
-                    <input type="text" name="address_street" class="form-control">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="label">LAST NAME</label>
+                    <input type="text" name="lastname" class="value" required>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label>Barangay</label>
-                    <input type="text" name="address_barangay" class="form-control">
+                <div class="form-group">
+                    <label class="label">FIRST NAME</label>
+                    <input type="text" name="firstname" class="value" required>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label>District</label>
-                    <input type="text" name="address_district" class="form-control">
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>City/Municipality</label>
-                    <input type="text" name="address_city" class="form-control">
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>Province</label>
-                    <input type="text" name="address_province" class="form-control">
-                </div>
-                <div class="col-md-2 mb-3">
-                    <label>Region</label>
-                    <input type="text" name="address_region" class="form-control">
-                </div>
-                <div class="col-md-2 mb-3">
-                    <label>ZIP Code</label>
-                    <input type="text" name="address_zip" class="form-control">
+                <div class="form-group">
+                    <label class="label">MIDDLE NAME</label>
+                    <input type="text" name="middlename" class="value">
                 </div>
             </div>
-        </div>
-
-        <!-- Personal Details Section -->
-        <div class="form-section">
-            <h4>Personal Details</h4>
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <label>Sex</label>
-                    <select name="sex" class="form-control" required>
+            
+            <!-- Address Section -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="label">STREET ADDRESS</label>
+                    <input type="text" name="address_street" class="value">
+                </div>
+                <div class="form-group">
+                    <label class="label">BARANGAY</label>
+                    <input type="text" name="address_barangay" class="value">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="label">DISTRICT</label>
+                    <input type="text" name="address_district" class="value">
+                </div>
+                <div class="form-group">
+                    <label class="label">CITY/MUNICIPALITY</label>
+                    <input type="text" name="address_city" class="value">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="label">PROVINCE</label>
+                    <input type="text" name="address_province" class="value">
+                </div>
+                <div class="form-group">
+                    <label class="label">REGION</label>
+                    <input type="text" name="address_region" class="value">
+                </div>
+                <div class="form-group">
+                    <label class="label">ZIP CODE</label>
+                    <input type="text" name="address_zip" class="value">
+                </div>
+            </div>
+            
+            <!-- Personal Details Section -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="label">SEX</label>
+                    <select name="sex" class="value" required>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <label>Civil Status</label>
-                    <select name="civil_status" class="form-control" required>
+                <div class="form-group">
+                    <label class="label">CIVIL STATUS</label>
+                    <select name="civil_status" class="value" required>
                         <option value="Single">Single</option>
                         <option value="Married">Married</option>
                         <option value="Widowed">Widowed</option>
                         <option value="Separated">Separated</option>
                     </select>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <label>Contact Number</label>
-                    <input type="text" name="contact_number" class="form-control">
+            </div>
+            
+            <div class="form-contact">
+                <label class="label-contact">CONTACT NUMBER:</label>
+                <div class="value-value">
+                    <input type="text" name="contact_number" style="border:none; width:100%; outline:none;">
                 </div>
-                <div class="col-md-3 mb-3">
-                    <label>Email</label>
-                    <input type="email" name="email" class="form-control">
+            </div>
+            
+            <div class="form-contact">
+                <label class="label-contact">EMAIL ADDRESS:</label>
+                <div class="value-value">
+                    <input type="email" name="email" style="border:none; width:100%; outline:none;">
                 </div>
             </div>
         </div>
-
+        
         <!-- Employment Section -->
-        <div class="form-section">
-            <h4>Employment Information</h4>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label>Employment Type</label>
-                    <select name="employment_type" class="form-control">
+        <div class="section">
+            <div class="section-title">II. EMPLOYMENT INFORMATION</div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="label">EMPLOYMENT TYPE</label>
+                    <select name="employment_type" class="value">
                         <option value="Employed">Employed</option>
                         <option value="Self-employed">Self-employed</option>
                         <option value="Unemployed">Unemployed</option>
                     </select>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label>Employment Status</label>
-                    <select name="employment_status" class="form-control">
+                <div class="form-group">
+                    <label class="label">EMPLOYMENT STATUS</label>
+                    <select name="employment_status" class="value">
                         <option value="Casual">Casual</option>
                         <option value="Contractual">Contractual</option>
                         <option value="Job-Order">Job Order</option>
@@ -235,125 +284,147 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <option value="Probationary">Probationary</option>
                         <option value="Regular">Regular</option>
                         <option value="Permanent">Permanent</option>
-                        <option value="Trainee">Trainee/Ojt</option>
+                        <option value="Trainee">Trainee/OJT</option>
                     </select>
                 </div>
             </div>
         </div>
-
+        
         <!-- Education Section -->
-        <div class="form-section">
-            <h4>Educational Background</h4>
-            <div id="education-container">
-                <div class="education-entry">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label>School Name</label>
-                            <input type="text" name="school[]" class="form-control">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Level</label>
-                            <select name="educational_level[]" class="form-control">
+        <div class="section">
+            <div class="section-title">III. EDUCATIONAL BACKGROUND</div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>SCHOOL NAME</th>
+                        <th>LEVEL</th>
+                        <th>YEAR FROM</th>
+                        <th>YEAR TO</th>
+                        <th>DEGREE/UNITS</th>
+                    </tr>
+                </thead>
+                <tbody id="education-container">
+                    <tr class="education-entry">
+                        <td><input type="text" name="school[]" class="value"></td>
+                        <td>
+                            <select name="educational_level[]" class="value">
                                 <option value="Elementary">Elementary</option>
                                 <option value="Secondary">Secondary</option>
                                 <option value="Vocational">Vocational</option>
                                 <option value="College">College</option>
                                 <option value="Graduate">Graduate</option>
                             </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label>Year From</label>
-                            <input type="text" name="year_from[]" class="form-control">
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label>Year To</label>
-                            <input type="text" name="year_to[]" class="form-control">
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        </td>
+                        <td><input type="text" name="year_from[]" class="value"></td>
+                        <td><input type="text" name="year_to[]" class="value"></td>
+                        <td><input type="text" name="degree[]" class="value"></td>
+                    </tr>
+                </tbody>
+            </table>
             <button type="button" class="btn btn-secondary" onclick="addEducation()">Add More Education</button>
         </div>
-
+        
         <!-- Work Experience Section -->
-        <div class="form-section">
-            <h4>Work Experience</h4>
-            <div id="work-container">
-                <div class="work-entry">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label>Company Name</label>
-                            <input type="text" name="company[]" class="form-control">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Position</label>
-                            <input type="text" name="position[]" class="form-control">
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label>Date From</label>
-                            <input type="date" name="work_date_from[]" class="form-control">
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label>Date To</label>
-                            <input type="date" name="work_date_to[]" class="form-control">
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="section">
+            <div class="section-title">IV. WORK EXPERIENCE</div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>COMPANY NAME</th>
+                        <th>POSITION</th>
+                        <th>DATE FROM</th>
+                        <th>DATE TO</th>
+                    </tr>
+                </thead>
+                <tbody id="work-container">
+                    <tr class="work-entry">
+                        <td><input type="text" name="company[]" class="value"></td>
+                        <td><input type="text" name="position[]" class="value"></td>
+                        <td><input type="date" name="work_date_from[]" class="value"></td>
+                        <td><input type="date" name="work_date_to[]" class="value"></td>
+                    </tr>
+                </tbody>
+            </table>
             <button type="button" class="btn btn-secondary" onclick="addWork()">Add More Work Experience</button>
         </div>
-
+        
         <!-- Additional Personal Information Section -->
-        <div class="form-section">
-            <h4>Additional Personal Information</h4>
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <label>Birthdate</label>
-                    <input type="date" name="birthdate" class="form-control">
+        <div class="section">
+            <div class="section-title">V. ADDITIONAL PERSONAL INFORMATION</div>
+            
+            <div class="form-personal">
+                <label class="label-personal">BIRTHDATE:</label>
+                <div class="value-value">
+                    <input type="date" name="birthdate" style="border:none; width:100%; outline:none;">
                 </div>
-                <div class="col-md-3 mb-3">
-                    <label>Birth Place</label>
-                    <input type="text" name="birth_place" class="form-control">
+            </div>
+            
+            <div class="form-personal">
+                <label class="label-personal">BIRTH PLACE:</label>
+                <div class="value-value">
+                    <input type="text" name="birth_place" style="border:none; width:100%; outline:none;">
                 </div>
-                <div class="col-md-3 mb-3">
-                    <label>Citizenship</label>
-                    <input type="text" name="citizenship" class="form-control">
+            </div>
+            
+            <div class="form-personal">
+                <label class="label-personal">CITIZENSHIP:</label>
+                <div class="value-value">
+                    <input type="text" name="citizenship" style="border:none; width:100%; outline:none;">
                 </div>
-                <div class="col-md-3 mb-3">
-                    <label>Religion</label>
-                    <input type="text" name="religion" class="form-control">
+            </div>
+            
+            <div class="form-personal">
+                <label class="label-personal">RELIGION:</label>
+                <div class="value-value">
+                    <input type="text" name="religion" style="border:none; width:100%; outline:none;">
                 </div>
-                <div class="col-md-2 mb-3">
-                    <label>Height</label>
-                    <input type="text" name="height" class="form-control">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="label">HEIGHT (cm)</label>
+                    <input type="text" name="height" class="value">
                 </div>
-                <div class="col-md-2 mb-3">
-                    <label>Weight</label>
-                    <input type="text" name="weight" class="form-control">
+                <div class="form-group">
+                    <label class="label">WEIGHT (kg)</label>
+                    <input type="text" name="weight" class="value">
                 </div>
-                <div class="col-md-2 mb-3">
-                    <label>Blood Type</label>
-                    <input type="text" name="blood_type" class="form-control">
+                <div class="form-group">
+                    <label class="label">BLOOD TYPE</label>
+                    <input type="text" name="blood_type" class="value">
                 </div>
-                <div class="col-md-2 mb-3">
-                    <label>SSS No.</label>
-                    <input type="text" name="sss_no" class="form-control">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="label">SSS NO.</label>
+                    <input type="text" name="sss_no" class="value">
                 </div>
-                <div class="col-md-2 mb-3">
-                    <label>GSIS No.</label>
-                    <input type="text" name="gsis_no" class="form-control">
+                <div class="form-group">
+                    <label class="label">GSIS NO.</label>
+                    <input type="text" name="gsis_no" class="value">
                 </div>
-                <div class="col-md-2 mb-3">
-                    <label>TIN No.</label>
-                    <input type="text" name="tin_no" class="form-control">
+                <div class="form-group">
+                    <label class="label">TIN NO.</label>
+                    <input type="text" name="tin_no" class="value">
                 </div>
             </div>
         </div>
-
         
-
-        <div class="form-section text-center">
-            <button type="submit" class="btn btn-primary btn-lg">Submit Form</button>
+        <!-- Signature Section -->
+        <div class="signature-container">
+            <div class="signature-title">
+                SIGNATURE OF EMPLOYEE
+            </div>
+            <div class="signature-box">
+                Affix your signature inside this box
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
+            <button type="submit" class="btn btn-primary">Submit Manpower Profile</button>
         </div>
     </form>
 </div>
