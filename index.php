@@ -709,6 +709,73 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <!-- 9. Family Background -->
             <div class="section">
                 <div class="section-title">9. Family Background</div>
+
+                <div class="section"> 
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-personal">
+                                <div class="label-personal">Spouse's Name:</div>
+                                <div class="value-value">
+                                    <input type="text" name="spouse_name">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Educational Attainment:</div>
+                                <div class="value-value">
+                                    <input type="text" name="spouse_educatinal_attainment">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-personal">
+                                <div class="label-personal">Father's Name:</div>
+                                <div class="value-value">
+                                    <input type="text" name="religion">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Educational Attainment::</div>
+                                <div class="value-value">
+                                    <input type="text" name="height">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                        <div class="form-group">
+                            <div class="form-personal">
+                                <div class="label-personal">Mother's Name:</div>
+                                <div class="value-value">
+                                    <input type="text" name="weight">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Educational Attainment: </div>
+                                <div class="value-value">
+                                    <input type="text" name="blood_type">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Name of Guardian: </div>
+                                <div class="value-value">
+                                    <input type="text" name="sss_no">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Educational Attainment::</div>
+                                <div class="value-value">
+                                    <input type="text" name="gsis_no">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Add family background fields as needed -->
             </div>
             
