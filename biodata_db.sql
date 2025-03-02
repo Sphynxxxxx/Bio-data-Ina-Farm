@@ -1,9 +1,9 @@
- -- phpMyAdmin SQL Dump
+-- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 02, 2025 at 08:59 AM
+-- Generation Time: Mar 02, 2025 at 06:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -38,16 +38,6 @@ CREATE TABLE `competency_assessment` (
   `specialization` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `competency_assessment`
---
-
-INSERT INTO `competency_assessment` (`id`, `user_id`, `industry_sector`, `trade_area`, `occupation`, `classification_level`, `competency`, `specialization`) VALUES
-(1, 7, 'qwqwqwqwqw', 'wqwq', 'wqwqwq', 'wqwqwqw', 'wqwqalsk', 'sdfewfdwf'),
-(2, 9, 'qwqwqwqwqw', 'wqwq', 'wqwqwq', 'wqwqwqw', 'wqwqalsk', 'sdfewfdwf'),
-(3, 10, 'qwqwqwqwqw', 'wqwq', 'wqwqwq', 'wqwqwqw', 'wqwqalsk', 'sdfewfdwf'),
-(4, 11, 'qwqwqwqwqw', 'wqwq', 'wqwqwq', 'wqwqwqw', 'wqwqalsk', 'sdfewfdwf');
-
 -- --------------------------------------------------------
 
 --
@@ -67,18 +57,6 @@ CREATE TABLE `education` (
   `units_earned` varchar(20) DEFAULT NULL,
   `honors` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `education`
---
-
-INSERT INTO `education` (`id`, `user_id`, `school_name`, `educational_level`, `year_from`, `year_to`, `degree`, `major`, `minor`, `units_earned`, `honors`) VALUES
-(1, 4, 'sasa', 'Elementary', '1212', '2121', '', '', '', '', ''),
-(4, 7, 'talacuan elementary school', '', '2000', '2020', 'n/a', 'n/a', 'n/a', '66', '90'),
-(6, 9, 'talacuan elementary school', '', '2000', '2020', 'n/a', 'n/a', 'n/a', '66', '90'),
-(7, 10, 'talacuan elementary school', '', '2000', '2020', 'n/a', 'n/a', 'n/a', '66', '90'),
-(8, 11, 'talacuan elementary school', '', '2000', '2020', 'n/a', 'n/a', 'n/a', '66', '90'),
-(9, 12, 'talacuan elementary school', 'Secondary', '', '', '', '', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -128,17 +106,6 @@ CREATE TABLE `license_examination` (
   `expiry_date` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `license_examination`
---
-
-INSERT INTO `license_examination` (`id`, `user_id`, `license_tittle`, `year_taken`, `year_take`, `examination_venue`, `ratings`, `remarks`, `expiry_date`) VALUES
-(1, 7, 'kahskhsas', '2025', NULL, 'ajisdjsdmw', '90', '90', '2025-03-26'),
-(2, 9, 'kahskhsas', '2025', NULL, 'ajisdjsdmw', '90', '90', '2025-03-26'),
-(3, 10, 'kahskhsas', '2025', NULL, 'ajisdjsdmw', '90', '90', '2025-03-26'),
-(4, 11, 'kahskhsas', '2025', NULL, 'ajisdjsdmw', '90', '90', '2025-03-26'),
-(5, 11, 'sasassa', '2025', NULL, 'sasasa', '90', '90', '2025-03-11');
-
 -- --------------------------------------------------------
 
 --
@@ -159,16 +126,6 @@ CREATE TABLE `training_seminar` (
   `conducted_by` varchar(50) DEFAULT NULL,
   `proficiency` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `training_seminar`
---
-
-INSERT INTO `training_seminar` (`id`, `user_id`, `tittle`, `venue`, `inclusive_dates_past`, `inclusive_dates_present`, `certificate`, `no_of_hours`, `training_base`, `category`, `conducted_by`, `proficiency`) VALUES
-(2, 7, 'sasas', 'sasa', '2025-03-11', '2025-03-15', 'asasasas', '12121', '890', 'iu212', '989', '98129819'),
-(4, 9, 'sasas', 'sasa', '2025-03-11', '2025-03-15', 'asasasas', '12121', '890', 'iu212', '989', '98129819'),
-(5, 10, 'sasas', 'sasa', '2025-03-11', '2025-03-15', 'asasasas', '12121', '890', 'iu212', '989', '98129819'),
-(6, 11, 'sasas', 'sasa', '2025-03-11', '2025-03-15', 'asasasas', '12121', '890', 'iu212', '989', '98129819');
 
 -- --------------------------------------------------------
 
@@ -220,12 +177,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `nmis_code`, `nmis_entry`, `lastname`, `firstname`, `middlename`, `address_street`, `address_barangay`, `address_district`, `address_city`, `address_province`, `address_region`, `address_zip`, `address_boxNo`, `sex`, `civil_status`, `contact_number`, `tel_number`, `email`, `fax_number`, `other_contact`, `fax`, `employment_type`, `employment_status`, `birthdate`, `birth_place`, `citizenship`, `religion`, `height`, `weight`, `blood_type`, `sss_no`, `gsis_no`, `tin_no`, `distinguish_marks`, `created_at`) VALUES
-(4, '121212', NULL, 'aqwqw', 'qwqw', 'qqwqw', 'asasa', 'sasa', NULL, 'sasa', 'sasas', 'sas', '5000', NULL, 'Male', 'Single', '09123456777', NULL, 'qwerty@gmail.com', NULL, NULL, NULL, 'Employed', 'Regular', '0000-00-00', '', '', '', 162.00, 50.00, 'a', '666', '666', '66', NULL, '2025-02-08 16:30:31'),
-(7, '131313', NULL, 'Uy', 'rynie', 'C', '1st street', 'talacuan', '2nd district', 'iloilo city', 'leon', '6', '5000', '090909', 'Male', '', '09165789087', '1234567890', 'rynie@gmail.com', '900990', '', NULL, 'Self-employed', 'Contractual', '0000-00-00', 'daswqw', 'american', 'catholic', 6.00, 55.00, 'b', '09897979', '78909008', '1235334', '1212121', '2025-03-02 07:29:57'),
-(9, '131313', NULL, 'Uy', 'rynie', 'C', '1st street', 'talacuan', '2nd district', 'iloilo city', 'leon', '6', '5000', '090909', 'Male', '', '09165789087', '1234567890', 'rynie@gmail.com', '900990', '', NULL, 'Self-employed', 'Contractual', '0000-00-00', 'daswqw', 'american', 'catholic', 6.00, 55.00, 'b', '09897979', '78909008', '1235334', '1212121', '2025-03-02 07:33:57'),
-(10, '131313', NULL, 'Uy', 'rynie', 'C', '1st street', 'talacuan', '2nd district', 'iloilo city', 'leon', '6', '5000', '090909', 'Male', '', '09165789087', '1234567890', 'rynie@gmail.com', '900990', '', NULL, 'Self-employed', 'Contractual', '0000-00-00', 'daswqw', 'american', 'catholic', 6.00, 55.00, 'b', '09897979', '78909008', '1235334', '1212121', '2025-03-02 07:34:53'),
-(11, '131313', NULL, 'Uy', 'rynie', 'C', '1st street', 'talacuan', '2nd district', 'iloilo city', 'leon', '6', '5000', '090909', 'Male', '', '09165789087', '1234567890', 'rynie@gmail.com', '900990', '', NULL, 'Self-employed', 'Contractual', '0000-00-00', 'daswqw', 'american', 'catholic', 6.00, 55.00, 'b', '09897979', '78909008', '1235334', '1212121', '2025-03-02 07:43:15'),
-(12, '131313', NULL, 'Uy', 'rynie', 'C', '1st street', 'talacuan', '2nd district', 'iloilo city', 'leon', '6', '5000', '090909', 'Male', 'Married', '', '', '', '', '', NULL, 'Employed', 'Temporary', '0000-00-00', '', '', '', 0.00, 0.00, '', '', '', '', '', '2025-03-02 07:47:16');
+(15, '1212121', NULL, 'Uy', 'rynie', 'C', '', '', '', '', '', '', '', '', 'Male', 'Single', '', '', '', '', '', NULL, 'Employed', 'Temporary', '0000-00-00', '', '', '', 0.00, 0.00, '', '', '', '', '', '2025-03-02 14:04:21');
 
 -- --------------------------------------------------------
 
@@ -245,16 +197,6 @@ CREATE TABLE `work_experience` (
   `working_experience` varchar(255) DEFAULT NULL,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `work_experience`
---
-
-INSERT INTO `work_experience` (`id`, `company_name`, `position`, `inclusive_dates_past`, `inclusive_dates_present`, `monthly_salary`, `occupation`, `status`, `working_experience`, `user_id`) VALUES
-(2, 'rynie condo', 'owner', '2025-03-02', '2025-03-21', 100000.00, 'wqwqwq', 'dskdnwkdnw', '100', 7),
-(4, 'rynie condo', 'owner', '2025-03-02', '2025-03-21', 100000.00, 'wqwqwq', 'dskdnwkdnw', '100', 9),
-(5, 'rynie condo', 'owner', '2025-03-02', '2025-03-21', 100000.00, 'wqwqwq', 'dskdnwkdnw', '100', 10),
-(6, 'rynie condo', 'owner', '2025-03-02', '2025-03-21', 100000.00, 'wqwqwq', 'dskdnwkdnw', '100', 11);
 
 --
 -- Indexes for dumped tables
@@ -346,7 +288,7 @@ ALTER TABLE `training_seminar`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `work_experience`
