@@ -46,7 +46,7 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?php echo date('M d, Y', strtotime($record['created_at'])); ?></td>
                     <td>
                         <a href="view.php?id=<?php echo $record['id']; ?>" class="btn btn-sm btn-primary">View</a>
-                        <a href="edit.php?id=<?php echo $record['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="crud/admin_edit.php?id=<?php echo $record['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
                         <form method="POST" action="crud/delete.php" style="display:inline;">
                             <input type="hidden" name="id" value="<?php echo $record['id']; ?>">
                             <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?')">Delete</button>

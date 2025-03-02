@@ -2,11 +2,6 @@
 session_start();
 require_once __DIR__ . '/../connections/config.php';
 
-if (!isset($_SESSION['admin'])) {
-    header('Location: admin.php');
-    exit();
-}
-
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -45,7 +40,6 @@ try {
     $familyStmt->execute([$user['id']]);
     $family_background = $familyStmt->fetchAll(PDO::FETCH_ASSOC);
 
-
 } catch(PDOException $e) {
     die("Connection failed: " . $e->getMessage());
 }
@@ -57,7 +51,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NMIS Manpower Profile</title>
-    <link rel="stylesheet" href="css/view.css">    
+    <link rel="stylesheet" href="css/user_view.css">    
 </head>
 <body>
     <div class="container">
@@ -585,12 +579,12 @@ try {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($family_background as $family): ?>
+                        <?php if (!empty($family_background)): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($family['dependents'] ?? ''); ?></td>
-                            <td><?php echo htmlspecialchars($family['dependents_age'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($family_background[0]['dependents'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($family_background[0]['dependents_age'] ?? ''); ?></td>
                         </tr>
-                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -599,8 +593,8 @@ try {
         <!---------------------------------------------------------------------------->
         
         <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-            <a href="generate_pdf.php" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
-            <a href="admin_dashboard.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
+            <a href="../admin/generate_pdf.php" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
+            <a href="../index.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
         </div>
 
     </div>

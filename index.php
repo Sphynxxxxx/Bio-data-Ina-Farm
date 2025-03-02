@@ -234,13 +234,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             }
         }
-        
+
+        // Handle family background records
+        if (isset($_POST['spouse_name'])) {
+            $familySql = "INSERT INTO family_background (user_id, spouse_name, spouse_educational_attainment, spouse_occupation, 
+                            spouse_monthly_income, father_name, father_educational_attainment, father_occupation, father_monthly_income,
+                            mother_name, mother_educational_attainment, mother_occupation, mother_monthly_income, guardian_name, 
+                            guardian_educational_attainment, guardian_occupation, guardian_monthly_income, dependents, dependents_age) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            
+            $familyStmt = $pdo->prepare($familySql);
+            
+            // If dependent names were submitted as an array, join them into a comma-separated string
+            $dependents = isset($_POST['dependent_name']) && is_array($_POST['dependent_name']) 
+                        ? implode(', ', array_filter($_POST['dependent_name'])) 
+                        : ($_POST['dependents'] ?? '');
+                        
+            $dependentsAge = isset($_POST['dependent_age']) && is_array($_POST['dependent_age'])
+                        ? implode(', ', array_filter($_POST['dependent_age']))
+                        : ($_POST['dependents_age'] ?? '');
+            
+            $familyData = [
+                $userId,
+                $_POST['spouse_name'] ?? '',
+                $_POST['spouse_educational_attainment'] ?? '',
+                $_POST['spouse_occupation'] ?? '',
+                $_POST['spouse_monthly_income'] ?? '',
+                $_POST['father_name'] ?? '',
+                $_POST['father_educational_attainment'] ?? '',
+                $_POST['father_occupation'] ?? '',
+                $_POST['father_monthly_income'] ?? '',
+                $_POST['mother_name'] ?? '',
+                $_POST['mother_educational_attainment'] ?? '',
+                $_POST['mother_occupation'] ?? '',
+                $_POST['mother_monthly_income'] ?? '',
+                $_POST['guardian_name'] ?? '',
+                $_POST['guardian_educational_attainment'] ?? '',
+                $_POST['guardian_occupation'] ?? '',
+                $_POST['guardian_monthly_income'] ?? '',
+                $dependents,
+                $dependentsAge
+            ];
+            
+            $familyStmt->execute($familyData);
+        }
         // Commit transaction
         $pdo->commit();
         $success_message = "Manpower profile submitted successfully!";
         
         // Redirect to view page
-        header('Location: admin/view.php');
+        header('Location: user/user_view.php');
         exit();
         
     } catch (Exception $e) {
@@ -722,7 +765,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
                                 <div class="value-value">
-                                    <input type="text" name="spouse_educatinal_attainment">
+                                    <input type="text" name="spouse_educational_attainment">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Occupation: </div>
+                                <div class="value-value">
+                                    <input type="text" name="spouse_occupation">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Ave. Monthly Income: </div>
+                                <div class="value-value">
+                                    <input type="text" name="spouse_monthly_income">
                                 </div>
                             </div>
                         </div>
@@ -735,53 +790,114 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="form-personal">
                                 <div class="label-personal">Father's Name:</div>
                                 <div class="value-value">
-                                    <input type="text" name="religion">
+                                    <input type="text" name="father_name">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment::</div>
                                 <div class="value-value">
-                                    <input type="text" name="height">
+                                    <input type="text" name="father_educational_attainment">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Occupation: </div>
+                                <div class="value-value">
+                                    <input type="text" name="father_occupation">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Ave. Monthly Income: </div>
+                                <div class="value-value">
+                                    <input type="text" name="father_monthly_income">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                
+                <div class="section">
+                    <div class="form-row">
                         <div class="form-group">
                             <div class="form-personal">
                                 <div class="label-personal">Mother's Name:</div>
                                 <div class="value-value">
-                                    <input type="text" name="weight">
+                                    <input type="text" name="mother_name">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment: </div>
                                 <div class="value-value">
-                                    <input type="text" name="blood_type">
+                                    <input type="text" name="mother_educational_attainment">
                                 </div>
                             </div>
                             <div class="form-personal">
+                                <div class="label-personal">Occupation: </div>
+                                <div class="value-value">
+                                    <input type="text" name="mother_occupation">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Ave. Monthly Income: </div>
+                                <div class="value-value">
+                                    <input type="text" name="mother_monthly_income">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-personal">
                                 <div class="label-personal">Name of Guardian: </div>
                                 <div class="value-value">
-                                    <input type="text" name="sss_no">
+                                    <input type="text" name="guardian_name">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment::</div>
                                 <div class="value-value">
-                                    <input type="text" name="gsis_no">
+                                    <input type="text" name="guardian_educational_attainment">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Occupation: </div>
+                                <div class="value-value">
+                                    <input type="text" name="guardian_occupation">
+                                </div>
+                            </div>
+                            <div class="form-personal">
+                                <div class="label-personal">Ave. Monthly Income: </div>
+                                <div class="value-value">
+                                    <input type="text" name="guardian_monthly_income">
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dependents</th>
+                                <th>Age</th>
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" name="dependents"></td>
+                                <td><input type="text" name="dependents_age"></td>
+                            </tr>
+                    </table>
+                    <button type="button" class="btn btn-secondary" onclick="addDependant()">Add More Dependant</button>
                 </div>
                 <!-- Add family background fields as needed -->
             </div>
             
             <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
                 <button type="submit" class="btn btn-primary">Submit Manpower Profile</button>
-                <a href="admin/view.php" class="btn btn-secondary">View Submitted Profile</a>
+                <a href="user/user_view.php" class="btn btn-secondary">View Submitted Profile</a>
+                <a href="user/crud/edit.php" class="btn btn-secondary">Edit Submitted Profile</a>
             </div>
         </form>
     </div>
@@ -822,6 +938,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     function addCompetency() {
         const container = document.getElementById('competency-container');
         const newEntry = container.querySelector('.competency-entry').cloneNode(true);
+        // Clear input values
+        newEntry.querySelectorAll('input').forEach(input => input.value = '');
+        container.appendChild(newEntry);
+    }
+
+
+    function addDependant() {
+        const container = document.getElementById('dependant-container');
+        const newEntry = container.querySelector('.dependant-entry').cloneNode(true);
         // Clear input values
         newEntry.querySelectorAll('input').forEach(input => input.value = '');
         container.appendChild(newEntry);
