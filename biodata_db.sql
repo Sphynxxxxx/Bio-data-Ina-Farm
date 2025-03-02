@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 28, 2025 at 07:39 PM
+-- Generation Time: Mar 02, 2025 at 05:13 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `biodata_db`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -63,6 +64,36 @@ CREATE TABLE `education` (
 
 INSERT INTO `education` (`id`, `user_id`, `school_name`, `educational_level`, `year_from`, `year_to`, `degree`, `major`, `minor`, `units_earned`, `honors`) VALUES
 (1, 4, 'sasa', 'Elementary', '1212', '2121', '', '', '', '', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `family_background`
+--
+
+CREATE TABLE `family_background` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `spouse_name` varchar(100) DEFAULT NULL,
+  `spouse_educational_attainment` varchar(100) DEFAULT NULL,
+  `spouse_occupation` varchar(100) DEFAULT NULL,
+  `spouse_monthly_income` decimal(10,2) DEFAULT NULL,
+  `father_name` varchar(100) DEFAULT NULL,
+  `father_educational_attainment` varchar(100) DEFAULT NULL,
+  `father_occupation` varchar(100) DEFAULT NULL,
+  `father_monthly_income` decimal(10,2) DEFAULT NULL,
+  `mother_name` varchar(100) DEFAULT NULL,
+  `mother_educational_attainment` varchar(100) DEFAULT NULL,
+  `mother_occupation` varchar(100) DEFAULT NULL,
+  `mother_monthly_income` decimal(10,2) DEFAULT NULL,
+  `guardian_name` varchar(100) DEFAULT NULL,
+  `guardian_educational_attainment` varchar(100) DEFAULT NULL,
+  `guardian_occupation` varchar(100) DEFAULT NULL,
+  `guardian_monthly_income` decimal(10,2) DEFAULT NULL,
+  `dependents` varchar(255) DEFAULT NULL,
+  `dependents_age` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -187,6 +218,13 @@ ALTER TABLE `education`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Indexes for table `family_background`
+--
+ALTER TABLE `family_background`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `license_examination`
 --
 ALTER TABLE `license_examination`
@@ -230,6 +268,12 @@ ALTER TABLE `education`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `family_background`
+--
+ALTER TABLE `family_background`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `license_examination`
 --
 ALTER TABLE `license_examination`
@@ -268,6 +312,12 @@ ALTER TABLE `competency_assessment`
 --
 ALTER TABLE `education`
   ADD CONSTRAINT `education_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `family_background`
+--
+ALTER TABLE `family_background`
+  ADD CONSTRAINT `family_background_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `license_examination`
