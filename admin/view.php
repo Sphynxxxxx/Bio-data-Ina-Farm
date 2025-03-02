@@ -77,7 +77,7 @@ try {
                 </div>
                 <h3 class="name-title" style="font-size: 0.7em; font-weight: normal;">NMIS Entry Date:</h3>
                 <div class="form-group">
-                    <div class="value"></div>
+                    <div class="value"><?php echo htmlspecialchars($user['nmis_entry'] ?? ''); ?></div>
                 </div>
             </div>
         </div>
@@ -269,7 +269,7 @@ try {
                     <div class="form-group">
                         <div class="form-personal">
                             <div class="label-personal">Birthdate:</div>
-                            <div class="value-value"><?php echo htmlspecialchars($user['birtdate'] ?? ''); ?></div>
+                            <div class="value-value"><?php echo htmlspecialchars($user['birthdate'] ?? ''); ?></div>
                         </div>
                         <div class="form-personal">
                             <div class="label-personal">Birth Place:</div>
@@ -315,7 +315,8 @@ try {
                             <div class="label-personal">Distinguishing Marks:</div>
                             <div class="value-value"><?php echo htmlspecialchars($user['distinguish_marks'] ?? ''); ?></div>
                         </div>
-            </div>  </div>
+                    </div>
+                </div>
         </div>
 
         <!-- 4. Educational Background-->
@@ -362,7 +363,7 @@ try {
                         <th>Position</th>
                         <th colspan="2">Inclusive Dates</th> <!-- Spanning two columns -->
                         <th>Monthly Salary</th>
-                        <th>Occupation Type(Teaching; Non-Teaching; Industrial Experience)</th>
+                        <th>Occupation Type</th>
                         <th>Status of Appointment</th>
                         <th>No. of Yrs Working Exp</th>
                     </tr>
@@ -370,14 +371,14 @@ try {
                 <tbody>
                     <?php foreach ($work_experience as $work): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($edu['company_name'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['position'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['inclusive_dates_past'] ?? ''); ?></td> 
-                        <td><?php echo htmlspecialchars($edu['inclusive_dates_present'] ?? ''); ?></td> 
-                        <td><?php echo htmlspecialchars($edu['monthly_salary'] ?? ''); ?></td>  
-                        <td><?php echo htmlspecialchars($edu['occupation'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['status'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['working_experience'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($work['company_name'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($work['position'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($work['inclusive_dates_past'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($work['inclusive_dates_present'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($work['monthly_salary'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($work['occupation'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($work['status'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($work['working_experience'] ?? ''); ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -390,7 +391,7 @@ try {
             <table>
                 <thead>
                     <tr>
-                        <th>Tittle</th>
+                        <th>Title</th>
                         <th>Venue</th>
                         <th colspan="2">Inclusive Dates</th>
                         <th>Certificate Received</th>
@@ -404,16 +405,16 @@ try {
                 <tbody>
                     <?php foreach ($training_seminar as $training): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($edu['tittle'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['venue'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['inclusive_dates_past'] ?? ''); ?></td> 
-                        <td><?php echo htmlspecialchars($edu['inclusive_dates_present'] ?? ''); ?></td>  
-                        <td><?php echo htmlspecialchars($edu['certificate'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['no_of_hours'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['training_base'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['category'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['conducted_by'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['proficiency '] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($training['tittle'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($training['venue'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($training['inclusive_dates_past'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($training['inclusive_dates_present'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($training['certificate'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($training['no_of_hours'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($training['training_base'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($training['category'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($training['conducted_by'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($training['proficiency'] ?? ''); ?></td>
                      </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -426,7 +427,7 @@ try {
             <table>
                 <thead>
                     <tr>
-                        <th>Tittle</th>
+                        <th>Title</th>
                         <th>Year Taken</th>
                         <th>Examination Venue</th>
                         <th>Ratings</th>
@@ -437,12 +438,12 @@ try {
                 <tbody>
                     <?php foreach ($license_examination as $license): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($edu['tittle'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['year_taken'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['examination_venue'] ?? ''); ?></td> 
-                        <td><?php echo htmlspecialchars($edu['ratings'] ?? ''); ?></td>  
-                        <td><?php echo htmlspecialchars($edu['remarks'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['expiry_date'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($license['license_tittle'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($license['year_taken'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($license['examination_venue'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($license['ratings'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($license['remarks'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($license['expiry_date'] ?? ''); ?></td>
                      </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -464,14 +465,14 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($competency_assessment as $compentency): ?>
+                    <?php foreach ($competency_assessment as $competency): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($edu['industry_sector'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['trade_area'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['occupation'] ?? ''); ?></td> 
-                        <td><?php echo htmlspecialchars($edu['classification_level'] ?? ''); ?></td>  
-                        <td><?php echo htmlspecialchars($edu['competency'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($edu['specialization'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($competency['industry_sector'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($competency['trade_area'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($competency['occupation'] ?? ''); ?></td> 
+                        <td><?php echo htmlspecialchars($competency['classification_level'] ?? ''); ?></td>  
+                        <td><?php echo htmlspecialchars($competency['competency'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($competency['specialization'] ?? ''); ?></td>
                      </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -485,7 +486,11 @@ try {
 
         <!---------------------------------------------------------------------------->
         
-        <a href="generate_pdf.php" class="btn btn-primary">Download PDF</a>
+        <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
+            <a href="generate_pdf.php" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
+            <a href="admin_dashboard.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
+        </div>
+
     </div>
 </body>
 </html>

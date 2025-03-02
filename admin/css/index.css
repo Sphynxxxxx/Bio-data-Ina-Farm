@@ -7,7 +7,7 @@
 
 /* Container Styles */
 .container {
-    max-width: 800px;
+    max-width: auto;
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #ccc;
@@ -226,9 +226,9 @@
 }
 
 .label-contact {
-    font-weight: bold;
+    font-weight: normal;
     color: #333;
-    min-width: 120px;
+    min-width: 50px;
 }
 
 .value-value {
