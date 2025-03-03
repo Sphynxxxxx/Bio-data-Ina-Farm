@@ -297,6 +297,11 @@ th {
     margin-bottom: 15px;
 }
 
+.btn-third {
+    background-color: #ff0c0c;
+    color: white;
+    margin-bottom: 15px;
+}
 /* Alert Styles */
 .alert {
     padding: 10px;

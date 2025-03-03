@@ -897,7 +897,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
                 <button type="submit" class="btn btn-primary">Submit Manpower Profile</button>
                 <a href="user/user_view.php" class="btn btn-secondary">View Submitted Profile</a>
-                <a href="user/crud/edit.php" class="btn btn-secondary">Edit Submitted Profile</a>
+                <a href="user/crud/edit.php" class="btn btn-third">Edit Submitted Profile</a>
             </div>
         </form>
     </div>

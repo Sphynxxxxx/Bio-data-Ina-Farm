@@ -168,7 +168,7 @@ try {
                           inclusive_dates_past, inclusive_dates_present, monthly_salary, occupation, status, working_experience) 
                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 
-                $workStmt = $pdo->prepare($workSql);
+                $workStmt = $pdo->prepare($workSql);  
                 
                 foreach ($_POST['company_name'] as $key => $company) {
                     if (!empty($company)) {

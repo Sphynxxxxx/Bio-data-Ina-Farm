@@ -526,7 +526,7 @@ $pdf->SetTextColor(0, 0, 0);
 
 $pdf->Ln(1); 
 
-$pdf->SetFont('Times', '', 9);
+$pdf->SetFont('Times', '', 6);
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
@@ -540,18 +540,18 @@ $pdf->SetXY($x + 20, $y + 0);
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "6.3\nInclusive Dates", 1, 'C'); 
-$pdf->SetXY($x + 20, $y + 0); 
+$pdf->MultiCell(26, 15, "6.3\nInclusive Dates", 1, 'C'); 
+$pdf->SetXY($x + 26, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "6.4\nCertificate Received", 1, 'C'); 
-$pdf->SetXY($x +20, $y + 0); 
+$pdf->MultiCell(15, 15, "6.4\nCertificate Received", 1, 'C'); 
+$pdf->SetXY($x +15, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "6.5\n# of\nHours", 1, 'C'); 
-$pdf->SetXY($x + 20, $y + 0); 
+$pdf->MultiCell(19, 15, "6.5\n# of\nHours", 1, 'C'); 
+$pdf->SetXY($x + 19, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
@@ -576,18 +576,18 @@ $pdf->SetXY($x + 20, $y + 0);
 $pdf->Ln(); 
 
 foreach ($training_seminar as $training) {
-    $pdf->Cell(31, 7, $training['tittles'], 1);
-    $pdf->Cell(22, 7, $training['venue'], 1);
+    $pdf->Cell(20, 7, $training['tittle'], 1);
+    $pdf->Cell(20, 7, $training['venue'], 1);
 
-    $pdf->Cell(10, 7, $training['inclusive_dates_past'], 1, 0, 'C');
-    $pdf->Cell(10, 7, $training['inclusive_dates_present'], 1, 0, 'C');
+    $pdf->Cell(13, 7, $training['inclusive_dates_past'], 1, 0, 'C');
+    $pdf->Cell(13, 7, $training['inclusive_dates_present'], 1, 0, 'C');
 
-    $pdf->Cell(22, 7, $training['certificate'], 1);
-    $pdf->Cell(21, 7, $training['no_of_hours'], 1);
-    $pdf->Cell(21, 7, $training['training_base'], 1);
-    $pdf->Cell(21, 7, $training['category'], 1);
-    $pdf->Cell(21, 7, $training['conducted_by'], 1);
-    $pdf->Cell(21, 7, $training['proficiency'], 1);
+    $pdf->Cell(15, 7, $training['certificate'], 1);
+    $pdf->Cell(19, 7, $training['no_of_hours'], 1);
+    $pdf->Cell(20, 7, $training['training_base'], 1);
+    $pdf->Cell(20, 7, $training['category'], 1);
+    $pdf->Cell(20, 7, $training['conducted_by'], 1);
+    $pdf->Cell(20, 7, $training['proficiency'], 1);
     
     $pdf->Ln();
 }
@@ -602,6 +602,54 @@ $pdf->SetTextColor(0, 0, 0);
 $pdf->Ln(1); 
 
 $pdf->SetFont('Times', '', 9);
+
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "7.0\nTittle", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "7.1\nYear Taken", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0);
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "7.2\nExamination Venue", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "7.3\nRatings", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "7.4\nRemarks", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(20, 15, "7.5\nExpiry Date", 1, 'C'); 
+$pdf->SetXY($x + 20, $y + 0); 
+
+$pdf->Ln(); 
+
+foreach ($license_examination as $license) {
+    $pdf->Cell(31, 7, $license['license_tittle'], 1);
+    $pdf->Cell(22, 7, $license['year_taken'], 1);
+    $pdf->Cell(22, 7, $license['examination_venue'], 1);
+    $pdf->Cell(21, 7, $license['ratings'], 1);
+    $pdf->Cell(21, 7, $license['remarks'], 1);
+    $pdf->Cell(21, 7, $license['expiry_date'], 1);
+    
+    $pdf->Ln();
+}
+
+
+
+
 // Output the PDF
 $pdf->Output('NMIS_Profile.pdf', 'D');
 ?> 
