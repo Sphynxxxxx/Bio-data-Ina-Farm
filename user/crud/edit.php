@@ -387,8 +387,9 @@ try {
                 </div>
             </div>
             
-            <!-- Personal Information -->
+            <!--2. Manpower Profile -->
             <div class="section">
+                <div class="section-title">2. Manpower Profile</div>
                 <div class="form-row">
                     <h3 class="name-title">Name:</h3>
                     <div class="form-group">
@@ -443,10 +444,6 @@ try {
                         <div class="label">P.O Box No.</div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Additional Information -->
-            <div class="section">
                 <div class="form-row">
                     <div class="form-group">
                         <h3 class="name-title" style="font-size: 0.7em;">Sex:</h3>
@@ -571,6 +568,47 @@ try {
                             <div class="checkbox-group">
                                 <input type="radio" name="employment_status" value="Trainee" class="checkbox" <?php echo ($user['employment_status'] == 'Trainee') ? 'checked' : ''; ?>>
                                 <div class="label-check">Trainee/OJT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            
+            <!-- 3. Personal Background-->
+            <div class="section">
+                <div class="section-title">3. Personal Information</div>
+                <div class="form-row">                
+                    <div class="form-group">
+                        <div class="form-personal">
+                            <div class="label-personal">Birthdate:</div>
+                            <div class="value-value">
+                                <input type="text" name="birthdate" value="<?php echo htmlspecialchars($user['birthdate'] ?? ''); ?>">
+                            </div>
+                        </div>
+                        <div class="form-personal">
+                            <div class="label-personal">Birth Place:</div>
+                            <div class="value-value">
+                                <input type="text" name="birth_place" value="<?php echo htmlspecialchars($user['birth_place'] ?? ''); ?>">
+                            </div>
+                        </div>
+                        <div class="form-personal">
+                            <div class="label-personal">Citizenship:</div>
+                            <div class="value-value">
+                                <input type="text" name="citizenship" value="<?php echo htmlspecialchars($user['citizenship'] ?? ''); ?>">
+                            </div>
+                        </div>
+                        <div class="form-personal">
+                            <div class="label-personal">Religion:</div>
+                            <div class="value-value">
+                                <input type="text" name="religion" value="<?php echo htmlspecialchars($user['religion'] ?? ''); ?>">
+                            </div>
+                        </div>
+                        <div class="form-personal">
+                            <div class="label-personal">Height:</div>
+                            <div class="value-value">
+                                <input type="text" name="height" value="<?php echo htmlspecialchars($user['height'] ?? ''); ?>">
                             </div>
                         </div>
                     </div>
@@ -753,14 +791,43 @@ try {
                                 <tr class="training-entry">
                                     <td><input type="text" name="training_title[]" value="<?php echo htmlspecialchars($training['tittle'] ?? ''); ?>"></td>
                                     <td><input type="text" name="training_venue[]" value="<?php echo htmlspecialchars($training['venue'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="training_date_from[]" value="<?php echo htmlspecialchars($training['inclusive_dates_past'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="training_date_to[]" value="<?php echo htmlspecialchars($training['inclusive_dates_present'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="certificate[]" value="<?php echo htmlspecialchars($training['certificate'] ?? ''); ?>"></td>
+                                    <td><input type="date" name="training_date_from[]" value="<?php echo htmlspecialchars($training['inclusive_dates_past'] ?? ''); ?>"></td>
+                                    <td><input type="date" name="training_date_to[]" value="<?php echo htmlspecialchars($training['inclusive_dates_present'] ?? ''); ?>"></td>
+                                    <td>
+                                        <select name="certificate[]">
+                                            <option value="">Select Certificate</option>
+                                            <option value="A" <?php echo ($training['certificate'] == 'A') ? 'selected' : ''; ?>>A - Certificate of Attendance</option>
+                                            <option value="C" <?php echo ($training['certificate'] == 'C') ? 'selected' : ''; ?>>C - Certificate of Competencies</option>
+                                            <option value="P" <?php echo ($training['certificate'] == 'P') ? 'selected' : ''; ?>>P - Certificate of Proficiency</option>
+                                            <option value="S" <?php echo ($training['certificate'] == 'S') ? 'selected' : ''; ?>>S - Skills Training Certificate</option>
+                                            <option value="T" <?php echo ($training['certificate'] == 'T') ? 'selected' : ''; ?>>T - Training Certificate</option>
+                                        </select>
+                                    </td>                                    
                                     <td><input type="text" name="no_of_hours[]" value="<?php echo htmlspecialchars($training['no_of_hours'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="training_base[]" value="<?php echo htmlspecialchars($training['training_base'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="category[]" value="<?php echo htmlspecialchars($training['category'] ?? ''); ?>"></td>
+                                    <td>
+                                        <select name="training_base[]">
+                                            <option value="">Select Training Base</option>
+                                            <option value="L" <?php echo ($training['training_base'] == 'L') ? 'selected' : ''; ?>>L - Local</option>
+                                            <option value="F" <?php echo ($training['training_base'] == 'F') ? 'selected' : ''; ?>>F - Foreign</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="category[]">
+                                            <option value="">Select Category</option>
+                                            <option value="T" <?php echo ($training['category'] == 'T') ? 'selected' : ''; ?>>T - Trade Skills Upgrading Program</option>
+                                            <option value="N" <?php echo ($training['category'] == 'N') ? 'selected' : ''; ?>>N - Non-Trade Skills Upgrading Program</option>
+                                            <option value="M" <?php echo ($training['category'] == 'M') ? 'selected' : ''; ?>>M - Training Management</option>
+                                        </select>
+                                    </td>
                                     <td><input type="text" name="conducted_by[]" value="<?php echo htmlspecialchars($training['conducted_by'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="proficiency[]" value="<?php echo htmlspecialchars($training['proficiency'] ?? ''); ?>"></td>
+                                    <td>
+                                        <select name="proficiency[]">
+                                            <option value="">Select Proficiency</option>
+                                            <option value="B" <?php echo ($training['proficiency'] == 'B') ? 'selected' : ''; ?>>B - Beginner</option>
+                                            <option value="I" <?php echo ($training['proficiency'] == 'I') ? 'selected' : ''; ?>>I - Intermediate</option>
+                                            <option value="A" <?php echo ($training['proficiency'] == 'A') ? 'selected' : ''; ?>>A - Advanced</option>
+                                        </select>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -769,7 +836,16 @@ try {
                                 <td><input type="text" name="training_venue[]"></td>
                                 <td><input type="text" name="training_date_from[]"></td>
                                 <td><input type="text" name="training_date_to[]"></td>
-                                <td><input type="text" name="certificate[]"></td>
+                                <td>
+                                    <select name="certificate[]">
+                                        <option value="">Select Certificate</option>
+                                        <option value="A">A - Certificate of Attendance</option>
+                                        <option value="C">C - Certificate of Competencies</option>
+                                        <option value="P">P - Certificate of Proficiency</option>
+                                        <option value="S">S - Skills Training Certificate</option>
+                                        <option value="T">T - Training Certificate</option>
+                                    </select>
+                                </td>
                                 <td><input type="text" name="no_of_hours[]"></td>
                                 <td><input type="text" name="training_base[]"></td>
                                 <td><input type="text" name="category[]"></td>

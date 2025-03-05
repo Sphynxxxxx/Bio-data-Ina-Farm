@@ -298,6 +298,12 @@ th {
 }
 
 .btn-third {
+    background-color: #000000;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.btn-close {
     background-color: #ff0c0c;
     color: white;
     margin-bottom: 15px;

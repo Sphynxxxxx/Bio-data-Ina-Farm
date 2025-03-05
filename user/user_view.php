@@ -409,13 +409,50 @@ try {
                         <td><?php echo htmlspecialchars($training['venue'] ?? ''); ?></td>
                         <td><?php echo htmlspecialchars($training['inclusive_dates_past'] ?? ''); ?></td> 
                         <td><?php echo htmlspecialchars($training['inclusive_dates_present'] ?? ''); ?></td>  
-                        <td><?php echo htmlspecialchars($training['certificate'] ?? ''); ?></td>
+                        <td>
+                            <?php 
+                            $cert_codes = [
+                                'A' => 'A - Certificate of Attendance',
+                                'C' => 'C - Certificate of Competencies',
+                                'P' => 'P - Certificate of Proficiency',
+                                'S' => 'S - Skills Training Certificate',
+                                'T' => 'T - Training Certificate'
+                            ];
+                            echo htmlspecialchars($cert_codes[$training['certificate']] ?? $training['certificate'] ?? '');
+                            ?>
+                        </td>
                         <td><?php echo htmlspecialchars($training['no_of_hours'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($training['training_base'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($training['category'] ?? ''); ?></td>
+                        <td>
+                            <?php 
+                            $base_codes = [
+                                'L' => 'L - Local',
+                                'F' => 'F - Foreign'
+                            ];
+                            echo htmlspecialchars($base_codes[$training['training_base']] ?? $training['training_base'] ?? '');
+                            ?>
+                        </td>
+                        <td>
+                            <?php 
+                            $category_codes = [
+                                'T' => 'T - Trade Skills Upgrading Program',
+                                'N' => 'N - Non-Trade Skills Upgrading Program',
+                                'M' => 'M - Training Management'
+                            ];
+                            echo htmlspecialchars($category_codes[$training['category']] ?? $training['category'] ?? '');
+                            ?>
+                        </td>
                         <td><?php echo htmlspecialchars($training['conducted_by'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($training['proficiency'] ?? ''); ?></td>
-                     </tr>
+                        <td>
+                            <?php 
+                            $proficiency_codes = [
+                                'B' => 'B - Beginner',
+                                'I' => 'I - Intermediate',
+                                'A' => 'A - Advanced'
+                            ];
+                            echo htmlspecialchars($proficiency_codes[$training['proficiency']] ?? $training['proficiency'] ?? '');
+                            ?>
+                        </td>
+                    </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
@@ -594,7 +631,7 @@ try {
         
         <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
             <a href="../admin/generate_pdf.php" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
-            <a href="../index.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
+            <a href="tesda_biodata.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
         </div>
 
     </div>

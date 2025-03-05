@@ -547,6 +547,7 @@ foreach ($work_experience as $work) {
     
     $pdf->Ln();
 }
+$pdf->Cell(0, 5, '(For more information, indicate on a sperate sheet)', 0, 1);
 
 //6. Training/Seminars Attended
 $pdf->Ln(5);
@@ -623,6 +624,34 @@ foreach ($training_seminar as $training) {
     
     $pdf->Ln();
 }
+$pdf->Cell(0, 5, '(For more information, indicate on a sperate sheet)', 0, 1);
+// Alternative approach with cells of specific widths
+$pdf->Cell(80, 5, '(*Certificate Received', 0, 0); 
+$pdf->Cell(35, 5, 'Training Base', 0, 0);
+$pdf->Cell(45, 5, 'Category', 0, 0);
+$pdf->Cell(20, 5, 'Proficiency)', 0, 1);  
+
+// Now add your rows below, with appropriate indentation and alignment
+$pdf->SetX($pdf->GetX() + 5);
+$pdf->Cell(30, 5, 'A  - Certificate of Attendance', 0, 0);
+$pdf->Cell(45, 5, 'S  - Skills Training Certificate', 0, 0);
+$pdf->Cell(35, 5, 'L  - Local', 0, 0);
+$pdf->Cell(45, 5, 'T  - Trade Skills Upgrading Program', 0, 0);
+$pdf->Cell(20, 5, 'B  - Beginner', 0, 1);
+
+// And so on for other rows...
+$pdf->SetX($pdf->GetX() + 5);
+$pdf->Cell(30, 5, 'C  - Certificate of Competencies', 0, 0);
+$pdf->Cell(45, 5, 'T  - Training Certificate', 0, 0);
+$pdf->Cell(35, 5, 'F  - Foreign', 0, 0);
+$pdf->Cell(45, 5, 'N  - Non-Trade Skills Upgrading Program', 0, 0);
+$pdf->Cell(20, 5, 'I  - Intermediate', 0, 1);
+
+$pdf->SetX($pdf->GetX() + 5);
+$pdf->Cell(110, 5, 'P  - Certificate of Proficiency', 0, 0);
+$pdf->Cell(45, 5, 'M  - Training Management', 0, 0);
+$pdf->Cell(20, 5, 'A  - Advanced', 0, 1);
+
 // 7. Licenses/Examination Passed
 $pdf->Ln(5);
 $pdf->SetFont('Times', 'B', 12);
@@ -678,6 +707,7 @@ foreach ($license_examination as $license) {
     
     $pdf->Ln();
 }
+$pdf->Cell(0, 5, '(For more information, indicate on a sperate sheet)', 0, 1);
 
 // 8. Competency Assessment Passed
 $pdf->Ln(5);
@@ -721,7 +751,6 @@ $x = $pdf->GetX();
 $y = $pdf->GetY();
 $pdf->MultiCell(27, 15, "8.6\nSpecialization", 1, 'C'); 
 $pdf->SetXY($x + 27, $y + 0); 
-
 $pdf->Ln(); 
 
 foreach ($competency_assessment as $competency) {
@@ -734,6 +763,7 @@ foreach ($competency_assessment as $competency) {
     
     $pdf->Ln();
 }
+$pdf->Cell(0, 5, '(For more information, indicate on a sperate sheet)', 0, 1);
 
 // 9. Family Background
 $pdf->Ln(5);
@@ -851,7 +881,24 @@ $pdf->Cell(55, 5, $family['guardian_educational_attainment'], 'B', 0);
 $pdf->SetX(110); 
 $pdf->Cell(40, 5, '9.16 Ave. Monthly Income:', 0, 0);
 $pdf->Cell(45, 5, $family['guardian_monthly_income'], 'B', 1);
-$pdf->Ln(3);
+$pdf->Ln(4);
+
+// Draw table for dependents
+$dependents_y = $guardian_y + $height + 1; 
+$pdf->SetY($dependents_y);
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+
+// Dependents headers
+$pdf->MultiCell(90, 15, "9.17\nDependents", 1, 'C'); 
+$pdf->SetXY($x + 90, $y); 
+$pdf->MultiCell(90, 15, "9.18\nAge", 1, 'C'); 
+$pdf->SetXY($x, $y + 15); 
+
+$pdf->Cell(90, 7, $family['dependents'], 1);
+$pdf->Cell(90, 7, $family['dependents_age'], 1);
+$pdf->Ln();
+$pdf->Cell(0, 5, '(For more information, indicate on a sperate sheet)', 0, 1);
 
 // Output the PDF
 $pdf->Output('NMIS_Profile.pdf', 'D');

@@ -6,44 +6,56 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Fetch the latest record (alternatively, you may want to use a specific ID from session)
-    $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
+    // Check if an ID is provided in the URL
+    if (!isset($_GET['id']) || empty($_GET['id'])) {
+        $_SESSION['error'] = "No user ID specified.";
+        header('Location: ../../admin/admin_dashboard.php');
+        exit();
+    }
+    
+    $userId = intval($_GET['id']);
+    
+    // Fetch the specific user by ID
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    // If user ID exists, load all their related data
-    if ($user && isset($user['id'])) {
-        $userId = $user['id'];
-        
-        // Fetch education records
-        $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
-        $eduStmt->execute([$userId]);
-        $education = $eduStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Fetch working experience
-        $workStmt = $pdo->prepare("SELECT * FROM work_experience WHERE user_id = ?");
-        $workStmt->execute([$userId]);
-        $work_experience = $workStmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Fetch training/Seminar Attended
-        $trainingStmt = $pdo->prepare("SELECT * FROM training_seminar WHERE user_id = ?");
-        $trainingStmt->execute([$userId]);
-        $training_seminar = $trainingStmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Fetch Licenses/Examinations Passed
-        $licenseStmt = $pdo->prepare("SELECT * FROM license_examination WHERE user_id = ?");
-        $licenseStmt->execute([$userId]);
-        $license_examination = $licenseStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Fetch Competency Assessment Passed
-        $competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
-        $competencyStmt->execute([$userId]);
-        $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Fetch Family Background
-        $familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
-        $familyStmt->execute([$userId]);
-        $family_background = $familyStmt->fetchAll(PDO::FETCH_ASSOC);
+    // If user not found, redirect with error
+    if (!$user) {
+        $_SESSION['error'] = "User not found.";
+        header('Location: ../../admin/admin_dashboard.php');
+        exit();
     }
+    
+    // Fetch education records
+    $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
+    $eduStmt->execute([$userId]);
+    $education = $eduStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch working experience
+    $workStmt = $pdo->prepare("SELECT * FROM work_experience WHERE user_id = ?");
+    $workStmt->execute([$userId]);
+    $work_experience = $workStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Fetch training/Seminar Attended
+    $trainingStmt = $pdo->prepare("SELECT * FROM training_seminar WHERE user_id = ?");
+    $trainingStmt->execute([$userId]);
+    $training_seminar = $trainingStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Fetch Licenses/Examinations Passed
+    $licenseStmt = $pdo->prepare("SELECT * FROM license_examination WHERE user_id = ?");
+    $licenseStmt->execute([$userId]);
+    $license_examination = $licenseStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch Competency Assessment Passed
+    $competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
+    $competencyStmt->execute([$userId]);
+    $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch Family Background
+    $familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
+    $familyStmt->execute([$userId]);
+    $family = $familyStmt->fetch(PDO::FETCH_ASSOC); // Changed to fetch single record
     
     // Handle form submission for updates
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -315,9 +327,9 @@ try {
             // Commit transaction
             $pdo->commit();
             
-            // Set success message and redirect
+            // Set success message and redirect back to the view page with the user ID
             $success_message = "Profile updated successfully!";
-            header("Location: ../../admin/view.php");
+            header("Location: ../../admin/view.php?id={$userId}");
             exit();
             
         } catch (Exception $e) {
@@ -388,7 +400,7 @@ try {
                 </div>
             </div>
             
-            <!-- Personal Information -->
+            <!-- Manpower Profile -->
             <div class="section">
                 <div class="form-row">
                     <h3 class="name-title">Name:</h3>
@@ -575,6 +587,44 @@ try {
                             </div>
                         </div>
                     </div>
+            </div>
+
+            <!-- 3. Personal Background-->
+            <div class="section">
+                <div class="section-title">3. Personal Information</div>
+                <div class="form-row">                
+                    <div class="form-group">
+                        <div class="form-personal">
+                            <div class="label-personal">Birthdate:</div>
+                            <div class="value-value">
+                                <input type="text" name="birthdate" value="<?php echo htmlspecialchars($user['birthdate'] ?? ''); ?>">
+                            </div>
+                        </div>
+                        <div class="form-personal">
+                            <div class="label-personal">Birth Place:</div>
+                            <div class="value-value">
+                                <input type="text" name="birth_place" value="<?php echo htmlspecialchars($user['birth_place'] ?? ''); ?>">
+                            </div>
+                        </div>
+                        <div class="form-personal">
+                            <div class="label-personal">Citizenship:</div>
+                            <div class="value-value">
+                                <input type="text" name="citizenship" value="<?php echo htmlspecialchars($user['citizenship'] ?? ''); ?>">
+                            </div>
+                        </div>
+                        <div class="form-personal">
+                            <div class="label-personal">Religion:</div>
+                            <div class="value-value">
+                                <input type="text" name="religion" value="<?php echo htmlspecialchars($user['religion'] ?? ''); ?>">
+                            </div>
+                        </div>
+                        <div class="form-personal">
+                            <div class="label-personal">Height:</div>
+                            <div class="value-value">
+                                <input type="text" name="height" value="<?php echo htmlspecialchars($user['height'] ?? ''); ?>">
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <div class="form-personal">
                             <div class="label-personal">Weight:</div>
@@ -754,14 +804,43 @@ try {
                                 <tr class="training-entry">
                                     <td><input type="text" name="training_title[]" value="<?php echo htmlspecialchars($training['tittle'] ?? ''); ?>"></td>
                                     <td><input type="text" name="training_venue[]" value="<?php echo htmlspecialchars($training['venue'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="training_date_from[]" value="<?php echo htmlspecialchars($training['inclusive_dates_past'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="training_date_to[]" value="<?php echo htmlspecialchars($training['inclusive_dates_present'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="certificate[]" value="<?php echo htmlspecialchars($training['certificate'] ?? ''); ?>"></td>
+                                    <td><input type="date" name="training_date_from[]" value="<?php echo htmlspecialchars($training['inclusive_dates_past'] ?? ''); ?>"></td>
+                                    <td><input type="date" name="training_date_to[]" value="<?php echo htmlspecialchars($training['inclusive_dates_present'] ?? ''); ?>"></td>
+                                    <td>
+                                        <select name="certificate[]">
+                                            <option value="">Select Certificate</option>
+                                            <option value="A" <?php echo ($training['certificate'] == 'A') ? 'selected' : ''; ?>>A - Certificate of Attendance</option>
+                                            <option value="C" <?php echo ($training['certificate'] == 'C') ? 'selected' : ''; ?>>C - Certificate of Competencies</option>
+                                            <option value="P" <?php echo ($training['certificate'] == 'P') ? 'selected' : ''; ?>>P - Certificate of Proficiency</option>
+                                            <option value="S" <?php echo ($training['certificate'] == 'S') ? 'selected' : ''; ?>>S - Skills Training Certificate</option>
+                                            <option value="T" <?php echo ($training['certificate'] == 'T') ? 'selected' : ''; ?>>T - Training Certificate</option>
+                                        </select>
+                                    </td>                                    
                                     <td><input type="text" name="no_of_hours[]" value="<?php echo htmlspecialchars($training['no_of_hours'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="training_base[]" value="<?php echo htmlspecialchars($training['training_base'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="category[]" value="<?php echo htmlspecialchars($training['category'] ?? ''); ?>"></td>
+                                    <td>
+                                        <select name="training_base[]">
+                                            <option value="">Select Training Base</option>
+                                            <option value="L" <?php echo ($training['training_base'] == 'L') ? 'selected' : ''; ?>>L - Local</option>
+                                            <option value="F" <?php echo ($training['training_base'] == 'F') ? 'selected' : ''; ?>>F - Foreign</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="category[]">
+                                            <option value="">Select Category</option>
+                                            <option value="T" <?php echo ($training['category'] == 'T') ? 'selected' : ''; ?>>T - Trade Skills Upgrading Program</option>
+                                            <option value="N" <?php echo ($training['category'] == 'N') ? 'selected' : ''; ?>>N - Non-Trade Skills Upgrading Program</option>
+                                            <option value="M" <?php echo ($training['category'] == 'M') ? 'selected' : ''; ?>>M - Training Management</option>
+                                        </select>
+                                    </td>
                                     <td><input type="text" name="conducted_by[]" value="<?php echo htmlspecialchars($training['conducted_by'] ?? ''); ?>"></td>
-                                    <td><input type="text" name="proficiency[]" value="<?php echo htmlspecialchars($training['proficiency'] ?? ''); ?>"></td>
+                                    <td>
+                                        <select name="proficiency[]">
+                                            <option value="">Select Proficiency</option>
+                                            <option value="B" <?php echo ($training['proficiency'] == 'B') ? 'selected' : ''; ?>>B - Beginner</option>
+                                            <option value="I" <?php echo ($training['proficiency'] == 'I') ? 'selected' : ''; ?>>I - Intermediate</option>
+                                            <option value="A" <?php echo ($training['proficiency'] == 'A') ? 'selected' : ''; ?>>A - Advanced</option>
+                                        </select>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -770,7 +849,16 @@ try {
                                 <td><input type="text" name="training_venue[]"></td>
                                 <td><input type="text" name="training_date_from[]"></td>
                                 <td><input type="text" name="training_date_to[]"></td>
-                                <td><input type="text" name="certificate[]"></td>
+                                <td>
+                                    <select name="certificate[]">
+                                        <option value="">Select Certificate</option>
+                                        <option value="A">A - Certificate of Attendance</option>
+                                        <option value="C">C - Certificate of Competencies</option>
+                                        <option value="P">P - Certificate of Proficiency</option>
+                                        <option value="S">S - Skills Training Certificate</option>
+                                        <option value="T">T - Training Certificate</option>
+                                    </select>
+                                </td>
                                 <td><input type="text" name="no_of_hours[]"></td>
                                 <td><input type="text" name="training_base[]"></td>
                                 <td><input type="text" name="category[]"></td>

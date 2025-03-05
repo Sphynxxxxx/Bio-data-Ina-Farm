@@ -7,49 +7,58 @@ if (!isset($_SESSION['admin'])) {
     exit();
 }
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    // Fetch the latest record 
-    $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    // Fetch education records
-    $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
-    $eduStmt->execute([$user['id']]);
-    $education = $eduStmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Fetch working experience
-    $workStmt = $pdo->prepare("SELECT * FROM work_experience WHERE user_id = ?");
-    $workStmt->execute([$user['id']]);
-    $work_experience = $workStmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Fetch training/Seminar Attended
-    $trainingStmt = $pdo->prepare("SELECT * FROM training_seminar WHERE user_id = ?");
-    $trainingStmt->execute([$user['id']]);
-    $training_seminar = $trainingStmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Fetch Licenses/Examinations Passed
-    $licenseStmt = $pdo->prepare("SELECT * FROM license_examination WHERE user_id = ?");
-    $licenseStmt->execute([$user['id']]);
-    $license_examination = $licenseStmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Fetch Competency Assessment Passed
-    $competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
-    $competencyStmt->execute([$user['id']]);
-    $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Fetch Family Background
-    $familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
-    $familyStmt->execute([$user['id']]);
-    $family_background = $familyStmt->fetchAll(PDO::FETCH_ASSOC);
-
-
-} catch(PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+// Check if ID is provided
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    $_SESSION['error'] = "No user ID specified.";
+    header('Location: admin_dashboard.php');
+    exit();
 }
+
+$userId = intval($_GET['id']);
+
+// Fetch specific user data based on ID
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$userId]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user) {
+    $_SESSION['error'] = "User not found.";
+    header('Location: admin_dashboard.php');
+    exit();
+}
+
+// Fetch related data for this specific user
+// Education
+$eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
+$eduStmt->execute([$userId]);
+$education = $eduStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Work experience
+$workStmt = $pdo->prepare("SELECT * FROM work_experience WHERE user_id = ?");
+$workStmt->execute([$userId]);
+$work_experience = $workStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Training/seminar
+$trainingStmt = $pdo->prepare("SELECT * FROM training_seminar WHERE user_id = ?");
+$trainingStmt->execute([$userId]);
+$training_seminar = $trainingStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// License/examination
+$licenseStmt = $pdo->prepare("SELECT * FROM license_examination WHERE user_id = ?");
+$licenseStmt->execute([$userId]);
+$license_examination = $licenseStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Competency assessment
+$competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
+$competencyStmt->execute([$userId]);
+$competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Family background
+$familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
+$familyStmt->execute([$userId]);
+$family = $familyStmt->fetch(PDO::FETCH_ASSOC);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -88,7 +97,9 @@ try {
             </div>
         </div>
 
+        <!---2. Manpower Profile --->
         <div class="section">
+            <div class="section-title">2. Manpower Profile</div>
             <div class="form-row">
                 <h3 class="name-title">Name:</h3>
                     <div class="form-group">
@@ -269,8 +280,9 @@ try {
         </div>
 
 
-        <!---#################### --->
+        <!---3. Personal Information --->
         <div class="section">
+            <div class="section-title">3. Personal Information</div>
             <div class="form-row">                
                     <div class="form-group">
                         <div class="form-personal">
@@ -585,12 +597,26 @@ try {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($family_background as $family): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($family['dependents'] ?? ''); ?></td>
-                            <td><?php echo htmlspecialchars($family['dependents_age'] ?? ''); ?></td>
-                        </tr>
-                        <?php endforeach; ?>
+                        <?php if (isset($family) && $family): ?>
+                            <?php 
+                            // If dependents are stored as comma-separated values
+                            $dependents = explode(', ', $family['dependents'] ?? '');
+                            $ages = explode(', ', $family['dependents_age'] ?? '');
+                            
+                            // Display each dependent with their age
+                            for ($i = 0; $i < count($dependents); $i++): 
+                                if (!empty($dependents[$i])): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($dependents[$i]); ?></td>
+                                    <td><?php echo htmlspecialchars($ages[$i] ?? ''); ?></td>
+                                </tr>
+                                <?php endif;
+                            endfor; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="2">No dependents information found</td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
