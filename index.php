@@ -655,9 +655,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </tr>
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-secondary" onclick="addWork()">Add More Work Experience</button>
+                <button type="button" class="btn btn-secondary" onclick="addEducation()">Add More Education Background</button>
             </div>
             
+            <!-- 5. Work Experience-->
+            <div class="section">
+                <div class="section-title">5. Work Experience</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name of Company</th>
+                            <th>Position</th>
+                            <th colspan="2">Inclusive Dates</th>
+                            <th>Monthly<br>Salary</th>
+                            <th>Occupation Type<br>(Teaching: Non-Teaching;<br>Industrial Experience)</th>
+                            <th>Status of<br>Appointment</th>
+                            <th>No. of Yrs<br>Working Exp.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="work-container">
+                        <tr class="work-entry">
+                            <td><input type="text" name="company_name[]"></td>
+                            <td><input type="text" name="position[]"></td>
+                            <td><input type="text" name="inclusive_dates_past[]" placeholder="From"></td>
+                            <td><input type="text" name="inclusive_dates_present[]" placeholder="To"></td>
+                            <td><input type="text" name="monthly_salary[]"></td>
+                            <td><input type="text" name="occupation[]"></td>
+                            <td><input type="text" name="status[]"></td>
+                            <td><input type="text" name="working_experience[]"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-secondary" onclick="addWork()">Add More Working Experience</button>
+            </div>
+
             <!-- 6. Training Seminar Attended -->
             <div class="section">
                 <div class="section-title">6. Training Seminar Attended</div>
@@ -881,23 +912,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <tr>
                                 <th>Dependents</th>
                                 <th>Age</th>
-
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><input type="text" name="dependents"></td>
-                                <td><input type="text" name="dependents_age"></td>
                             </tr>
+                        </thead>
+                        <tbody id="dependant-container">
+                            <tr class="dependant-entry">
+                                <td><input type="text" name="dependent_name[]"></td>
+                                <td><input type="text" name="dependent_age[]"></td>
+                            </tr>
+                        </tbody>
                     </table>
                     <button type="button" class="btn btn-secondary" onclick="addDependant()">Add More Dependant</button>
-                </div>
+
                 <!-- Add family background fields as needed -->
             </div>
             
             <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
                 <button type="submit" class="btn btn-primary">Submit Manpower Profile</button>
                 <a href="user/user_view.php" class="btn btn-secondary">View Submitted Profile</a>
-                <a href="user/crud/edit.php" class="btn btn-third">Edit Submitted Profile</a>
+                <a href="user/crud/edit.php" class="btn btn-secondary">Edit Submitted Profile</a>
             </div>
         </form>
     </div>
