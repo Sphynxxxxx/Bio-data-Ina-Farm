@@ -146,8 +146,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $userId,
                         $company,
                         $_POST['position'][$key] ?? '',
-                        $_POST['work_date_from'][$key] ?? '', // Maps to inclusive_dates_past
-                        $_POST['work_date_to'][$key] ?? '',   // Maps to inclusive_dates_present
+                        $_POST['inclusive_dates_past'][$key] ?? '', 
+                        $_POST['inclusive_dates_present'][$key] ?? '',   
                         $_POST['monthly_salary'][$key] ?? '',
                         $_POST['occupation'][$key] ?? '',
                         $_POST['status'][$key] ?? '',
@@ -677,8 +677,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <tr class="work-entry">
                             <td><input type="text" name="company_name[]"></td>
                             <td><input type="text" name="position[]"></td>
-                            <td><input type="text" name="inclusive_dates_past[]" placeholder="From"></td>
-                            <td><input type="text" name="inclusive_dates_present[]" placeholder="To"></td>
+                            <td><input type="date" name="inclusive_dates_past[]" placeholder="From"></td>
+                            <td><input type="date" name="inclusive_dates_present[]" placeholder="To"></td>
                             <td><input type="text" name="monthly_salary[]"></td>
                             <td><input type="text" name="occupation[]"></td>
                             <td><input type="text" name="status[]"></td>

@@ -10,6 +10,8 @@ if (!isset($_SESSION['admin'])) {
 
 class MYPDF extends TCPDF {
     public function Header() {
+        if ($this->PageNo() == 1) {
+
         // Set background color for header
         $this->SetFillColor(255, 255, 255);
         $this->Rect(0, 0, $this->getPageWidth(), 35, 'F');
@@ -38,6 +40,7 @@ class MYPDF extends TCPDF {
         $this->Line(15, 25, 195, 25);
         $this->Line(15, 26, 195, 26);
     }
+}
     
     public function Footer() {
         // Position at 15 mm from bottom
@@ -106,6 +109,34 @@ try {
     $competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
     $competencyStmt->execute([$user['id']]);
     $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // fetch from family background
+    $familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
+    $familyStmt->execute([$user['id']]);
+    $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$family) {
+        $family = [
+            'spouse_name' => '',
+            'spouse_educational_attainment' => '',
+            'spouse_occupation' => '',
+            'spouse_monthly_income' => '',
+            'father_name' => '',
+            'father_educational_attainment' => '',
+            'father_occupation' => '',
+            'father_monthly_income' => '',
+            'mother_name' => '',
+            'mother_educational_attainment' => '',
+            'mother_occupation' => '',
+            'mother_monthly_income' => '',
+            'guardian_name' => '',
+            'guardian_educational_attainment' => '',
+            'guardian_occupation' => '',
+            'guardian_monthly_income' => '',
+            'dependents' => '',
+            'dependents_age' => ''
+        ];
+    }
 
 } catch(PDOException $e) {
     die("Connection failed: " . $e->getMessage());
@@ -371,7 +402,7 @@ $pdf->Ln(25);
 
 
 // Educational Background
-$pdf->AddPage();
+$pdf->Ln(5);
 $pdf->SetFont('Times', 'B', 12);
 $pdf->SetFillColor(177, 176, 176);
 $pdf->SetTextColor(255, 0, 0);
@@ -453,7 +484,7 @@ foreach ($education as $edu) {
 }
 
 //5. Working Experience
-$pdf->AddPage();
+$pdf->Ln(5);
 $pdf->SetFont('Times', 'B', 12);
 $pdf->SetFillColor(177, 176, 176);
 $pdf->SetTextColor(255, 0, 0);
@@ -504,20 +535,21 @@ $pdf->Ln();
 // Table Data
 foreach ($work_experience as $work) {
     $pdf->Cell(31, 7, $work['company_name'], 1);
-    $pdf->Cell(22, 7, $work['position'], 1);
+    $pdf->Cell(25, 7, $work['position'], 1);
 
-    $pdf->Cell(10, 7, $work['inclusive_dates_past'], 1, 0, 'C');
-    $pdf->Cell(10, 7, $work['inclusive_dates_present'], 1, 0, 'C');
+    $pdf->Cell(13, 7, $work['inclusive_dates_past'], 1, 0, 'C');
+    $pdf->Cell(12, 7, $work['inclusive_dates_present'], 1, 0, 'C');
 
-    $pdf->Cell(22, 7, $work['monthly_salary'], 1);
-    $pdf->Cell(21, 7, $work['occupation'], 1);
-    $pdf->Cell(21, 7, $work['status'], 1);
+    $pdf->Cell(25, 7, $work['monthly_salary'], 1);
+    $pdf->Cell(25, 7, $work['occupation'], 1);
+    $pdf->Cell(25, 7, $work['status'], 1);
+    $pdf->Cell(24, 7, $work['working_experience'], 1);
     
     $pdf->Ln();
 }
 
 //6. Training/Seminars Attended
-$pdf->AddPage();
+$pdf->Ln(5);
 $pdf->SetFont('Times', 'B', 12);
 $pdf->SetFillColor(177, 176, 176);
 $pdf->SetTextColor(255, 0, 0);
@@ -592,7 +624,7 @@ foreach ($training_seminar as $training) {
     $pdf->Ln();
 }
 // 7. Licenses/Examination Passed
-$pdf->AddPage();
+$pdf->Ln(5);
 $pdf->SetFont('Times', 'B', 12);
 $pdf->SetFillColor(177, 176, 176);
 $pdf->SetTextColor(255, 0, 0);
@@ -606,50 +638,220 @@ $pdf->SetFont('Times', '', 9);
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "7.0\nTittle", 1, 'C'); 
-$pdf->SetXY($x + 20, $y + 0); 
+$pdf->MultiCell(36, 15, "7.1\nTittle", 1, 'C'); 
+$pdf->SetXY($x + 36, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "7.1\nYear Taken", 1, 'C'); 
-$pdf->SetXY($x + 20, $y + 0);
+$pdf->MultiCell(28, 15, "7.2\nYear Taken", 1, 'C'); 
+$pdf->SetXY($x + 28, $y + 0);
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "7.2\nExamination Venue", 1, 'C'); 
-$pdf->SetXY($x + 20, $y + 0); 
+$pdf->MultiCell(34, 15, "7.3\nExamination Venue", 1, 'C'); 
+$pdf->SetXY($x + 34, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "7.3\nRatings", 1, 'C'); 
-$pdf->SetXY($x + 20, $y + 0); 
+$pdf->MultiCell(28, 15, "7.4\nRatings", 1, 'C'); 
+$pdf->SetXY($x + 28, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "7.4\nRemarks", 1, 'C'); 
-$pdf->SetXY($x + 20, $y + 0); 
+$pdf->MultiCell(27, 15, "7.5\nRemarks", 1, 'C'); 
+$pdf->SetXY($x + 27, $y + 0); 
 
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "7.5\nExpiry Date", 1, 'C'); 
-$pdf->SetXY($x + 20, $y + 0); 
+$pdf->MultiCell(27, 15, "7.6\nExpiry Date", 1, 'C'); 
+$pdf->SetXY($x + 27, $y + 0); 
 
 $pdf->Ln(); 
 
 foreach ($license_examination as $license) {
-    $pdf->Cell(31, 7, $license['license_tittle'], 1);
-    $pdf->Cell(22, 7, $license['year_taken'], 1);
-    $pdf->Cell(22, 7, $license['examination_venue'], 1);
-    $pdf->Cell(21, 7, $license['ratings'], 1);
-    $pdf->Cell(21, 7, $license['remarks'], 1);
-    $pdf->Cell(21, 7, $license['expiry_date'], 1);
+    $pdf->Cell(36, 7, $license['license_tittle'], 1);
+    $pdf->Cell(28, 7, $license['year_taken'], 1);
+    $pdf->Cell(34, 7, $license['examination_venue'], 1);
+    $pdf->Cell(28, 7, $license['ratings'], 1);
+    $pdf->Cell(27, 7, $license['remarks'], 1);
+    $pdf->Cell(27, 7, $license['expiry_date'], 1);
     
     $pdf->Ln();
 }
 
+// 8. Competency Assessment Passed
+$pdf->Ln(5);
+$pdf->SetFont('Times', 'B', 12);
+$pdf->SetFillColor(177, 176, 176);
+$pdf->SetTextColor(255, 0, 0);
+$pdf->Cell(0, 8, '8. Competency Assessment Passed', 0, 1, 'L', true);
+$pdf->SetTextColor(0, 0, 0);
+
+$pdf->Ln(1); 
+
+$pdf->SetFont('Times', '', 9);
 
 
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(36, 15, "8.1\nIndustry Sector", 1, 'C'); 
+$pdf->SetXY($x + 36, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(28, 15, "8.2\nTrade Area", 1, 'C'); 
+$pdf->SetXY($x + 28, $y + 0);
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(34, 15, "8.3\nOccupation", 1, 'C'); 
+$pdf->SetXY($x + 34, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(28, 15, "8.4\nClassification Level", 1, 'C'); 
+$pdf->SetXY($x + 28, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(27, 15, "8.5\nCompetency", 1, 'C'); 
+$pdf->SetXY($x + 27, $y + 0); 
+
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$pdf->MultiCell(27, 15, "8.6\nSpecialization", 1, 'C'); 
+$pdf->SetXY($x + 27, $y + 0); 
+
+$pdf->Ln(); 
+
+foreach ($competency_assessment as $competency) {
+    $pdf->Cell(36, 7, $competency['industry_sector'], 1);
+    $pdf->Cell(28, 7, $competency['trade_area'], 1);
+    $pdf->Cell(34, 7, $competency['occupation'], 1);
+    $pdf->Cell(28, 7, $competency['classification_level'], 1);
+    $pdf->Cell(27, 7, $competency['competency'], 1);
+    $pdf->Cell(27, 7, $competency['specialization'], 1);
+    
+    $pdf->Ln();
+}
+
+// 9. Family Background
+$pdf->Ln(5);
+$pdf->SetFont('Times', '', 12);
+$pdf->SetFillColor(177, 176, 176);
+$pdf->SetTextColor(255, 0, 0);
+$pdf->Cell(0, 8, '9. Family Background', 0, 1, 'L', true);
+$pdf->SetTextColor(0, 0, 0);
+
+$pdf->Ln(1);
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+$width = 180;  
+$height = 20;
+$section_height = $height * 4 + 10; // Total height needed for all 4 sections + some spacing
+
+// Check if we need a page break before drawing family sections
+if ($y + $section_height > $pdf->getPageHeight() - 25) {
+    $pdf->AddPage();
+    $y = $pdf->GetY();
+}
+
+// Draw the rectangle for spouse
+$pdf->Rect($x, $y, $width, $height);
+$pdf->Ln(0);
+
+$pdf->SetFont('Times', '', 9);
+
+$pdf->Cell(30, 5, '9.1. Spouse\'s Name:', 0, 0);
+$pdf->Cell(65, 5, $family['spouse_name'], 'B', 0);
+$pdf->SetX(110); 
+$pdf->Cell(25, 5, '9.3. Occupation:', 0, 0);
+$pdf->Cell(60, 5, $family['spouse_occupation'], 'B', 1);
+$pdf->Ln(3);
+
+$pdf->SetX($x);
+
+$pdf->Cell(40, 5, '9.2. Educational Attainment:', 0, 0);
+$pdf->Cell(55, 5, $family['spouse_educational_attainment'], 'B', 0);
+$pdf->SetX(110); 
+$pdf->Cell(40, 5, '9.4. Ave. Monthly Income:', 0, 0);
+$pdf->Cell(45, 5, $family['spouse_monthly_income'], 'B', 1);
+$pdf->Ln(3);
+
+// Draw the rectangle for father
+$new_y = $y + $height;
+$pdf->Rect($x, $new_y, $width, $height);
+$pdf->SetY($new_y + 3); 
+$pdf->SetX($x); 
+
+// Father information
+$pdf->SetFont('Times', '', 9);
+
+$pdf->Cell(30, 5, '9.5 Father\'s Name:', 0, 0);
+$pdf->Cell(65, 5, $family['father_name'], 'B', 0);
+$pdf->SetX(110); 
+$pdf->Cell(25, 5, '9.7 Occupation:', 0, 0);
+$pdf->Cell(60, 5, $family['father_occupation'], 'B', 1);
+$pdf->Ln(3);
+
+$pdf->SetX($x);
+
+$pdf->Cell(40, 5, '9.6 Educational Attainment:', 0, 0);
+$pdf->Cell(55, 5, $family['father_educational_attainment'], 'B', 0);
+$pdf->SetX(110); 
+$pdf->Cell(40, 5, '9.8 Ave. Monthly Income:', 0, 0);
+$pdf->Cell(45, 5, $family['father_monthly_income'], 'B', 1);
+$pdf->Ln(3);
+
+// Draw the rectangle for mother
+$mother_y = $new_y + $height;
+$pdf->Rect($x, $mother_y, $width, $height);
+$pdf->SetY($mother_y + 3); 
+$pdf->SetX($x); 
+
+// Mother information
+$pdf->SetFont('Times', '', 9);
+
+$pdf->Cell(30, 5, '9.9 Mother\'s Name:', 0, 0);
+$pdf->Cell(65, 5, $family['mother_name'], 'B', 0);
+$pdf->SetX(110); 
+$pdf->Cell(25, 5, '9.11 Occupation:', 0, 0);
+$pdf->Cell(60, 5, $family['mother_occupation'], 'B', 1);
+$pdf->Ln(3);
+
+$pdf->SetX($x);
+
+$pdf->Cell(40, 5, '9.10 Educational Attainment:', 0, 0);
+$pdf->Cell(55, 5, $family['mother_educational_attainment'], 'B', 0);
+$pdf->SetX(110); 
+$pdf->Cell(40, 5, '9.12 Ave. Monthly Income:', 0, 0);
+$pdf->Cell(45, 5, $family['mother_monthly_income'], 'B', 1);
+$pdf->Ln(3);
+
+// Draw the rectangle for guardian
+$guardian_y = $mother_y + $height;
+$pdf->Rect($x, $guardian_y, $width, $height);
+$pdf->SetY($guardian_y + 3); 
+$pdf->SetX($x); 
+
+// Guardian information
+$pdf->SetFont('Times', '', 9);
+
+$pdf->Cell(45, 5, '9.13 Name of Guardian\'s Name:', 0, 0);
+$pdf->Cell(50, 5, $family['guardian_name'], 'B', 0);
+$pdf->SetX(110); 
+$pdf->Cell(25, 5, '9.15 Occupation:', 0, 0);
+$pdf->Cell(60, 5, $family['guardian_occupation'], 'B', 1);
+$pdf->Ln(3);
+
+$pdf->SetX($x);
+
+$pdf->Cell(40, 5, '9.14 Educational Attainment:', 0, 0);
+$pdf->Cell(55, 5, $family['guardian_educational_attainment'], 'B', 0);
+$pdf->SetX(110); 
+$pdf->Cell(40, 5, '9.16 Ave. Monthly Income:', 0, 0);
+$pdf->Cell(45, 5, $family['guardian_monthly_income'], 'B', 1);
+$pdf->Ln(3);
 
 // Output the PDF
 $pdf->Output('NMIS_Profile.pdf', 'D');
-?> 

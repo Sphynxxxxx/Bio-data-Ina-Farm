@@ -6,25 +6,13 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Check if a specific user ID is provided
-    $userId = isset($_GET['id']) ? intval($_GET['id']) : null;
+    // Fetch the latest record (alternatively, you may want to use a specific ID from session)
+    $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    // If no ID is provided, redirect or show an error
-    if (!$userId) {
-        $error_message = "No user ID specified.";
-        // Optionally redirect to a user list page
-        // header("Location: user_list.php");
-        // exit();
-    } else {
-        // Fetch the specific user's record
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-        $stmt->execute([$userId]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // If user not found, handle the error
-        if (!$user) {
-            $error_message = "User not found.";
-        } else {
+    // If user ID exists, load all their related data
+    if ($user && isset($user['id'])) {
+        $userId = $user['id'];
         
         // Fetch education records
         $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
@@ -56,7 +44,6 @@ try {
         $familyStmt->execute([$userId]);
         $family_background = $familyStmt->fetchAll(PDO::FETCH_ASSOC);
     }
-}
     
     // Handle form submission for updates
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -181,7 +168,7 @@ try {
                           inclusive_dates_past, inclusive_dates_present, monthly_salary, occupation, status, working_experience) 
                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 
-                $workStmt = $pdo->prepare($workSql);
+                $workStmt = $pdo->prepare($workSql);  
                 
                 foreach ($_POST['company_name'] as $key => $company) {
                     if (!empty($company)) {
@@ -330,7 +317,7 @@ try {
             
             // Set success message and redirect
             $success_message = "Profile updated successfully!";
-            header("Location: admin_edit.php");
+            header("Location: ../../admin/view.php");
             exit();
             
         } catch (Exception $e) {
@@ -345,6 +332,7 @@ try {
     $error_message = "Database error: " . $e->getMessage();
 }
 ?>
+
 
 
 <!DOCTYPE html>
