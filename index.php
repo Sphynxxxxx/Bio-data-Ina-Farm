@@ -16,8 +16,8 @@
         }
         .header {
             padding: 10px 0;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: linear-gradient(90deg, pink, lightgreen, skyblue);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         .logo-container {
             display: flex;
@@ -27,15 +27,18 @@
             width: 120px;
             height: auto;
             margin-right: 20px;
+            filter: drop-shadow(1px 1px 0 white) 
+           
+
         }
         .title-container h1 {
-            color: #dc3545;
+            color:rgb(255, 255, 255);
             font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 0;
         }
         .subtitle {
-            color: #6c757d;
+            color:rgb(0, 0, 0);
             font-size: 1rem;
         }
         .card {
@@ -116,7 +119,6 @@
                     <img src="Images/id-card_1154552.png" class="card-img-top" alt="Student Internship">
                     <div class="card-body text-center">
                         <h3 class="card-title">Student Internship</h3>
-                        <p class="card-text option-description">For students seeking on-the-job training, internships, and apprenticeships under TESDA's supervision.</p>
                         <a href="#" class="btn btn-primary btn-lg">Fill Internship Form</a>
                     </div>
                 </div>
@@ -127,7 +129,6 @@
                     <img src="Images/tesda_logo.png" class="card-img-top" alt="TESDA Biodata">
                     <div class="card-body text-center">
                         <h3 class="card-title">TESDA Manpower Profile</h3>
-                        <p class="card-text option-description">For TESDA employees, trainers, assessors, and other technical personnel for the NMIS database.</p>
                         <a href="user\tesda_biodata.php" class="btn btn-primary btn-lg">Fill NMIS Form</a>
                     </div>
                 </div>
