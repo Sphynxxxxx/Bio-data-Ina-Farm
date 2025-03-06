@@ -278,6 +278,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             $familyStmt->execute($familyData);
         }
+
+
+        if (!empty($_POST['photo_data'])) {
+            // Check if user_photos table exists, create it if it doesn't 
+            $photoData = $_POST['photo_data'];
+            
+            // Check if the user already has a photo
+            $checkPhotoSql = "SELECT id FROM user_photos WHERE user_id = ?";
+            $checkPhotoStmt = $pdo->prepare($checkPhotoSql);
+            $checkPhotoStmt->execute([$userId]);
+            $existingPhoto = $checkPhotoStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($existingPhoto) {
+                // Update existing photo
+                $photoUpdateSql = "UPDATE user_photos SET photo_data = ?, uploaded_at = NOW() WHERE user_id = ?";
+                $photoStmt = $pdo->prepare($photoUpdateSql);
+                $photoStmt->execute([$photoData, $userId]);
+            } else {
+                // Insert new photo
+                $photoInsertSql = "INSERT INTO user_photos (user_id, photo_data) VALUES (?, ?)";
+                $photoStmt = $pdo->prepare($photoInsertSql);
+                $photoStmt->execute([$userId, $photoData]);
+            }
+        }
+        
         // Commit transaction
         $pdo->commit();
         $success_message = "Manpower profile submitted successfully!";
@@ -293,6 +318,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         $error_message = "Error: " . $e->getMessage();
     }
+
+    
 }
 ?>
 
@@ -330,7 +357,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <!-- Profile Photo -->
             <div class="signature-container">
                 <h2 class="signature-title">Signature</h2>
-                <div class="signature-box">ID PICTURE <br> (Passport Size)</div>
+                <div class="photo-container">
+                    <div class="signature-box" id="photo-box">
+                        <!-- Video element for webcam stream -->
+                        <video id="videoElement" autoplay style="display: none; width: 100%; height: 100%;"></video>
+                        <!-- Image element to display captured photo -->
+                        <img id="capturedPhoto" alt="ID Photo" style="display: none; max-width: 100%; max-height: 100%;">
+                        <!-- Text shown when no photo is captured -->
+                        <div id="photoPlaceholder">ID PICTURE <br> (Passport Size)</div>
+                    </div>
+                    <div class="camera-controls">
+                        <button type="button" id="startCamera" class="btn btn-secondary">Open Camera</button>
+                        <button type="button" id="capturePhoto" class="btn btn-secondary" style="display: none;">Take Photo</button>
+                        <button type="button" id="retakePhoto" class="btn btn-secondary" style="display: none;">Retake Photo</button>
+                        <!-- Hidden canvas element used for capturing the photo -->
+                        <canvas id="canvas" style="display: none;"></canvas>
+                        <!-- Hidden input to store captured photo data -->
+                        <input type="hidden" name="photo_data" id="photoData">
+                    </div>
+                </div>
             </div>
             
             <!-- TESDA Section -->
@@ -993,12 +1038,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
                 <button type="submit" class="btn btn-primary">Submit Manpower Profile</button>
                 <a href="user_view.php" class="btn btn-secondary">View Submitted Profile</a>
-                <a href="crud/edit.php" class="btn btn-third">Edit Submitted Profile</a>
+                <a href="crud\edit.php" class="btn btn-third">Edit Submitted Profile</a>
                 <a href="../index.php" class="btn btn-close">Close</a>
             </div>
         </form>
     </div>
-
+    <script src="js/camera.js"></script>
     <script>
     function addEducation() {
         const container = document.getElementById('education-container');

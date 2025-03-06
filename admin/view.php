@@ -57,6 +57,12 @@ $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
 $familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
 $familyStmt->execute([$userId]);
 $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
+
+// Photo Capture
+$photoStmt = $pdo->prepare("SELECT photo_data FROM user_photos WHERE user_id = ?");
+$photoStmt->execute([$user['id']]);
+$photo = $photoStmt->fetch(PDO::FETCH_ASSOC);
+
 ?>
 
 
@@ -81,8 +87,17 @@ $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
         <h2 class="manpower-profile">MANPOWER PROFILE</h2>
         <div class="signature-container">
             <h2 class="signature-title">Signature</h2>
-            <div class="signature-box">ID PICTURE <br> (Passport Size)</div>
+            <div class="signature-box">
+                <?php if (!empty($photo) && !empty($photo['photo_data'])): ?>
+                    <img src="<?php echo $photo['photo_data']; ?>" alt="ID Photo">
+                <?php elseif (!empty($user['photo_path']) && file_exists($user['photo_path'])): ?>
+                    <img src="<?php echo $user['photo_path']; ?>" alt="ID Photo">
+                <?php else: ?>
+                    <div class="photo-placeholder">ID PICTURE <br> (Passport Size)</div>
+                <?php endif; ?>
+            </div>
         </div>
+
         <div class="section">
             <div class="section-title">1. To be accomplished by TESDA</div>
             <div class="form-row">
@@ -505,19 +520,19 @@ $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
                         <div class="form-group">
                             <div class="form-personal">
                                 <div class="label-personal">Spouse Name:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['spouse_name'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['spouse_name'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['spouse_educational_attainment'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['spouse_educational_attainment'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['spouse_occupation'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['spouse_occupation'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['spouse_monthly_income'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['spouse_monthly_income'] ?? ''); ?></div>
                             </div>
                         </div>
                     </div>
@@ -527,19 +542,19 @@ $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
                         <div class="form-group">
                             <div class="form-personal">
                                 <div class="label-personal">Father's Name:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_name'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['father_name'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_educational_attainment'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['father_educational_attainment'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_occupation'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['father_occupation'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_monthly_income'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['father_monthly_income'] ?? ''); ?></div>
                             </div>
                         </div>
                     </div>
@@ -549,19 +564,19 @@ $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
                         <div class="form-group">
                             <div class="form-personal">
                                 <div class="label-personal">Mother's Name:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['mother_name'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['mother_name'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['mother_educational_attainment'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['mother_educational_attainment'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['mother_occupation'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['mother_occupation'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['mother_monthly_income'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['mother_monthly_income'] ?? ''); ?></div>
                             </div>
                         </div>
                     </div>
@@ -571,19 +586,19 @@ $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
                         <div class="form-group">
                             <div class="form-personal">
                                 <div class="label-personal">Name of Guardian:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_name'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['guardian_name'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_educational_attainment'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['guardian_educational_attainment'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_occupation'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['guardian_occupation'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_monthly_income'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['guardian_monthly_income'] ?? ''); ?></div>
                             </div>
                         </div>
                     </div>
@@ -597,13 +612,11 @@ $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (isset($family) && $family): ?>
+                        <?php if (!empty($family)): ?>
                             <?php 
-                            // If dependents are stored as comma-separated values
                             $dependents = explode(', ', $family['dependents'] ?? '');
                             $ages = explode(', ', $family['dependents_age'] ?? '');
                             
-                            // Display each dependent with their age
                             for ($i = 0; $i < count($dependents); $i++): 
                                 if (!empty($dependents[$i])): ?>
                                 <tr>
@@ -625,7 +638,7 @@ $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
         <!---------------------------------------------------------------------------->
         
         <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-            <a href="generate_pdf.php" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
+            <a href="generate_pdf.php?id=<?php echo $userId; ?>" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
             <a href="admin_dashboard.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
         </div>
 

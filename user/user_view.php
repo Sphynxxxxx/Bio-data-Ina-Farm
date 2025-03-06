@@ -10,6 +10,10 @@ try {
     $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
+    if (!$user) {
+        die("No user records found.");
+    }
+    
     // Fetch education records
     $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
     $eduStmt->execute([$user['id']]);
@@ -35,10 +39,14 @@ try {
     $competencyStmt->execute([$user['id']]);
     $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fetch Family Background
+    // Fetch Family Background - use fetch() instead of fetchAll() to get a single record
     $familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
     $familyStmt->execute([$user['id']]);
-    $family_background = $familyStmt->fetchAll(PDO::FETCH_ASSOC);
+    $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
+
+    $photoStmt = $pdo->prepare("SELECT photo_data FROM user_photos WHERE user_id = ?");
+    $photoStmt->execute([$user['id']]);
+    $photo = $photoStmt->fetch(PDO::FETCH_ASSOC);
 
 } catch(PDOException $e) {
     die("Connection failed: " . $e->getMessage());
@@ -66,8 +74,17 @@ try {
         <h2 class="manpower-profile">MANPOWER PROFILE</h2>
         <div class="signature-container">
             <h2 class="signature-title">Signature</h2>
-            <div class="signature-box">ID PICTURE <br> (Passport Size)</div>
+            <div class="signature-box">
+                <?php if (!empty($photo) && !empty($photo['photo_data'])): ?>
+                    <img src="<?php echo $photo['photo_data']; ?>" alt="ID Photo">
+                <?php elseif (!empty($user['photo_path']) && file_exists($user['photo_path'])): ?>
+                    <img src="<?php echo $user['photo_path']; ?>" alt="ID Photo">
+                <?php else: ?>
+                    <div class="photo-placeholder">ID PICTURE <br> (Passport Size)</div>
+                <?php endif; ?>
+            </div>
         </div>
+        
         <div class="section">
             <div class="section-title">1. To be accomplished by TESDA</div>
             <div class="form-row">
@@ -81,8 +98,9 @@ try {
                 </div>
             </div>
         </div>
-
+        <!----2. Manpower Profile--->
         <div class="section">
+            <div class="section-title">2. Manpower Profile</div>
             <div class="form-row">
                 <h3 class="name-title">Name:</h3>
                     <div class="form-group">
@@ -263,8 +281,9 @@ try {
         </div>
 
 
-        <!---#################### --->
+        <!---3. Personal Information --->
         <div class="section">
+            <div class="section-title">3. Personal Information</div>
             <div class="form-row">                
                     <div class="form-group">
                         <div class="form-personal">
@@ -524,19 +543,19 @@ try {
                         <div class="form-group">
                             <div class="form-personal">
                                 <div class="label-personal">Spouse Name:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['spouse_name'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['spouse_name'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['spouse_educational_attainment'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['spouse_educational_attainment'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['spouse_occupation'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['spouse_occupation'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['spouse_monthly_income'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['spouse_monthly_income'] ?? ''); ?></div>
                             </div>
                         </div>
                     </div>
@@ -546,19 +565,19 @@ try {
                         <div class="form-group">
                             <div class="form-personal">
                                 <div class="label-personal">Father's Name:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_name'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['father_name'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_educational_attainment'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['father_educational_attainment'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_occupation'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['father_occupation'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_monthly_income'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['father_monthly_income'] ?? ''); ?></div>
                             </div>
                         </div>
                     </div>
@@ -568,19 +587,19 @@ try {
                         <div class="form-group">
                             <div class="form-personal">
                                 <div class="label-personal">Mother's Name:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['mother_name'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['mother_name'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['mother_educational_attainment'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['mother_educational_attainment'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['mother_occupation'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['mother_occupation'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['mother_monthly_income'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['mother_monthly_income'] ?? ''); ?></div>
                             </div>
                         </div>
                     </div>
@@ -590,19 +609,19 @@ try {
                         <div class="form-group">
                             <div class="form-personal">
                                 <div class="label-personal">Name of Guardian:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_name'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['guardian_name'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_educational_attainment'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['guardian_educational_attainment'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_occupation'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['guardian_occupation'] ?? ''); ?></div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income:</div>
-                                <div class="value-value"><?php echo htmlspecialchars($family_background[0]['father_monthly_income'] ?? ''); ?></div>
+                                <div class="value-value"><?php echo htmlspecialchars($family['guardian_monthly_income'] ?? ''); ?></div>
                             </div>
                         </div>
                     </div>
@@ -616,11 +635,23 @@ try {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($family_background)): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($family_background[0]['dependents'] ?? ''); ?></td>
-                            <td><?php echo htmlspecialchars($family_background[0]['dependents_age'] ?? ''); ?></td>
-                        </tr>
+                        <?php if (!empty($family)): ?>
+                            <?php 
+                            $dependents = explode(', ', $family['dependents'] ?? '');
+                            $ages = explode(', ', $family['dependents_age'] ?? '');
+                            
+                            for ($i = 0; $i < count($dependents); $i++): 
+                                if (!empty($dependents[$i])): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($dependents[$i]); ?></td>
+                                    <td><?php echo htmlspecialchars($ages[$i] ?? ''); ?></td>
+                                </tr>
+                                <?php endif;
+                            endfor; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="2">No dependents information found</td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>

@@ -18,6 +18,7 @@
             padding: 10px 0;
             background: linear-gradient(90deg, pink, lightgreen, skyblue);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            
         }
         .logo-container {
             display: flex;
@@ -77,7 +78,7 @@
         .footer {
             background-color: #343a40;
             color: #fff;
-            padding-top: 10px;
+            padding-top: 50px;
             height: auto;
             margin-top: 50px;
             width: 100%;

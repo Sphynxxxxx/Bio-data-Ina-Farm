@@ -7,6 +7,7 @@ if (!isset($_SESSION['admin'])) {
     header('Location: admin.php');
     exit();
 }
+$userId = isset($_GET['id']) ? intval($_GET['id']) : null;
 
 class MYPDF extends TCPDF {
     public function Header() {
@@ -82,8 +83,20 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
+    // If userId is provided, fetch that specific user, otherwise get the latest
+    if ($userId) {
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
+    } else {
+        $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
+    }
+    
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // If no user found, display an error
+    if (!$user) {
+        die("User not found");
+    }
     
     // fetch from education
     $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ? ORDER BY year_from");
@@ -114,6 +127,10 @@ try {
     $familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
     $familyStmt->execute([$user['id']]);
     $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
+
+    $photoStmt = $pdo->prepare("SELECT photo_data FROM user_photos WHERE user_id = ?");
+    $photoStmt->execute([$user['id']]);
+    $photo = $photoStmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$family) {
         $family = [
@@ -163,9 +180,35 @@ $pdf->Line(65, 70, 138, 70);
 
 
 $pdf->Rect(157, 42, 38, 40); 
-$pdf->SetFont('Times', '', 8);
-$pdf->Text(167.5, 60, 'ID PICTURE');
-$pdf->Text(167, 65, '(Passport Size)');
+
+// Add ID Photo if available
+if (!empty($photo) && !empty($photo['photo_data'])) {
+    // Extract image data - need to handle base64 encoded string
+    $imgData = $photo['photo_data'];
+    
+    // Remove data URL prefix if present (e.g., "data:image/png;base64,")
+    if (strpos($imgData, 'data:') === 0) {
+        $imgData = preg_replace('/^data:image\/\w+;base64,/', '', $imgData);
+    }
+    
+    // Decode base64 data
+    $imgData = base64_decode($imgData);
+    
+    // Create a temporary file
+    $tempFile = tempnam(sys_get_temp_dir(), 'pdf_img');
+    file_put_contents($tempFile, $imgData);
+    
+    // Add the image to the PDF, positioning it within the rectangle
+    $pdf->Image($tempFile, 157, 42, 38, 40, '', '', '', false, 300, '', false, false, 0);
+    
+    // Clean up temporary file
+    unlink($tempFile);
+} else {
+    // If no photo available, display text
+    $pdf->SetFont('Times', '', 8);
+    $pdf->Text(167.5, 60, 'ID PICTURE');
+    $pdf->Text(167, 65, '(Passport Size)');
+}
 
 // Section 1 - TESDA Information
 $pdf->SetXY(15, 84);

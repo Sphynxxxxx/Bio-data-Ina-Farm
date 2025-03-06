@@ -6,44 +6,51 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Fetch the latest record (alternatively, you may want to use a specific ID from session)
+    // Get the latest user record instead of using ID from URL
     $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    // If user ID exists, load all their related data
-    if ($user && isset($user['id'])) {
-        $userId = $user['id'];
-        
-        // Fetch education records
-        $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
-        $eduStmt->execute([$userId]);
-        $education = $eduStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Fetch working experience
-        $workStmt = $pdo->prepare("SELECT * FROM work_experience WHERE user_id = ?");
-        $workStmt->execute([$userId]);
-        $work_experience = $workStmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Fetch training/Seminar Attended
-        $trainingStmt = $pdo->prepare("SELECT * FROM training_seminar WHERE user_id = ?");
-        $trainingStmt->execute([$userId]);
-        $training_seminar = $trainingStmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Fetch Licenses/Examinations Passed
-        $licenseStmt = $pdo->prepare("SELECT * FROM license_examination WHERE user_id = ?");
-        $licenseStmt->execute([$userId]);
-        $license_examination = $licenseStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Fetch Competency Assessment Passed
-        $competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
-        $competencyStmt->execute([$userId]);
-        $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Fetch Family Background
-        $familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
-        $familyStmt->execute([$userId]);
-        $family_background = $familyStmt->fetchAll(PDO::FETCH_ASSOC);
+    // If no user found, redirect with error
+    if (!$user) {
+        $_SESSION['error'] = "No user records found.";
+        header('Location: ../user/tesda_biodata.php');
+        exit();
     }
+    
+    $userId = $user['id'];
+    // Fetch education records
+    $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
+    $eduStmt->execute([$userId]);
+    $education = $eduStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch working experience
+    $workStmt = $pdo->prepare("SELECT * FROM work_experience WHERE user_id = ?");
+    $workStmt->execute([$userId]);
+    $work_experience = $workStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Fetch training/Seminar Attended
+    $trainingStmt = $pdo->prepare("SELECT * FROM training_seminar WHERE user_id = ?");
+    $trainingStmt->execute([$userId]);
+    $training_seminar = $trainingStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Fetch Licenses/Examinations Passed
+    $licenseStmt = $pdo->prepare("SELECT * FROM license_examination WHERE user_id = ?");
+    $licenseStmt->execute([$userId]);
+    $license_examination = $licenseStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch Competency Assessment Passed
+    $competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
+    $competencyStmt->execute([$userId]);
+    $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch Family Background
+    $familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
+    $familyStmt->execute([$userId]);
+    $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
+
+    $photoStmt = $pdo->prepare("SELECT photo_data FROM user_photos WHERE user_id = ?");
+    $photoStmt->execute([$user['id']]);
+    $photo = $photoStmt->fetch(PDO::FETCH_ASSOC);
     
     // Handle form submission for updates
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -127,197 +134,465 @@ try {
             
             $updateUserStmt->execute($updateUserParams);
             
-            // For each section, first delete existing records, then insert new ones
+            // EDUCATION RECORDS
+            $submittedEduIds = [];
             
-            // Delete existing education records
-            $pdo->prepare("DELETE FROM education WHERE user_id = ?")->execute([$userId]);
-            
-            // Re-insert education records
+            // Handle education records - update existing or insert new
             if (isset($_POST['school_name']) && is_array($_POST['school_name'])) {
-                $eduSql = "INSERT INTO education (user_id, school_name, educational_level, 
-                          year_from, year_to, degree, major, minor, units_earned, honors) 
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                
-                $eduStmt = $pdo->prepare($eduSql);
-                
                 foreach ($_POST['school_name'] as $key => $school) {
                     if (!empty($school)) {
-                        $eduData = [
-                            $userId,
-                            $school,
-                            $_POST['educational_level'][$key] ?? '',
-                            $_POST['year_from'][$key] ?? '',
-                            $_POST['year_to'][$key] ?? '',
-                            $_POST['degree'][$key] ?? '',
-                            $_POST['major'][$key] ?? '',
-                            $_POST['minor'][$key] ?? '',
-                            $_POST['units_earned'][$key] ?? '',
-                            $_POST['honors'][$key] ?? ''
-                        ];
-                        $eduStmt->execute($eduData);
+                        $eduId = isset($_POST['edu_id'][$key]) && !empty($_POST['edu_id'][$key]) ? 
+                                intval($_POST['edu_id'][$key]) : null;
+                        
+                        if ($eduId) {
+                            // Update existing record
+                            $submittedEduIds[] = $eduId;
+                            
+                            $updateEduSql = "UPDATE education SET 
+                                school_name = ?,
+                                educational_level = ?,
+                                year_from = ?,
+                                year_to = ?,
+                                degree = ?,
+                                major = ?,
+                                minor = ?,
+                                units_earned = ?,
+                                honors = ?
+                                WHERE id = ? AND user_id = ?";
+                                
+                            $updateEduStmt = $pdo->prepare($updateEduSql);
+                            $updateEduStmt->execute([
+                                $school,
+                                $_POST['educational_level'][$key] ?? '',
+                                $_POST['year_from'][$key] ?? '',
+                                $_POST['year_to'][$key] ?? '',
+                                $_POST['degree'][$key] ?? '',
+                                $_POST['major'][$key] ?? '',
+                                $_POST['minor'][$key] ?? '',
+                                $_POST['units_earned'][$key] ?? '',
+                                $_POST['honors'][$key] ?? '',
+                                $eduId,
+                                $userId
+                            ]);
+                        } else {
+                            // Insert new record
+                            $insertEduSql = "INSERT INTO education 
+                                (user_id, school_name, educational_level, year_from, year_to, degree, major, minor, units_earned, honors)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                
+                            $insertEduStmt = $pdo->prepare($insertEduSql);
+                            $insertEduStmt->execute([
+                                $userId,
+                                $school,
+                                $_POST['educational_level'][$key] ?? '',
+                                $_POST['year_from'][$key] ?? '',
+                                $_POST['year_to'][$key] ?? '',
+                                $_POST['degree'][$key] ?? '',
+                                $_POST['major'][$key] ?? '',
+                                $_POST['minor'][$key] ?? '',
+                                $_POST['units_earned'][$key] ?? '',
+                                $_POST['honors'][$key] ?? ''
+                            ]);
+                            
+                            // Get and track the ID of the newly inserted record
+                            $submittedEduIds[] = $pdo->lastInsertId();
+                        }
                     }
                 }
+                
+                // Delete any education records that weren't updated or inserted
+                if (!empty($submittedEduIds)) {
+                    $placeholders = str_repeat('?,', count($submittedEduIds) - 1) . '?';
+                    $deleteEduSql = "DELETE FROM education WHERE user_id = ? AND id NOT IN ($placeholders)";
+                    $deleteEduParams = array_merge([$userId], $submittedEduIds);
+                    $pdo->prepare($deleteEduSql)->execute($deleteEduParams);
+                } else {
+                    // If no education records submitted, delete all for this user
+                    $pdo->prepare("DELETE FROM education WHERE user_id = ?")->execute([$userId]);
+                }
+            } else {
+                // If no education section in form, delete all education records for user
+                $pdo->prepare("DELETE FROM education WHERE user_id = ?")->execute([$userId]);
             }
             
-            // Delete existing work experience records
-            $pdo->prepare("DELETE FROM work_experience WHERE user_id = ?")->execute([$userId]);
+            // WORK EXPERIENCE
+            // Collect all submitted work experience IDs
+            $submittedWorkIds = [];
             
-            // Re-insert work experience records
             if (isset($_POST['company_name']) && is_array($_POST['company_name'])) {
-                $workSql = "INSERT INTO work_experience (user_id, company_name, position, 
-                          inclusive_dates_past, inclusive_dates_present, monthly_salary, occupation, status, working_experience) 
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                
-                $workStmt = $pdo->prepare($workSql);  
-                
                 foreach ($_POST['company_name'] as $key => $company) {
                     if (!empty($company)) {
-                        $workData = [
-                            $userId,
-                            $company,
-                            $_POST['position'][$key] ?? '',
-                            $_POST['work_date_from'][$key] ?? '',
-                            $_POST['work_date_to'][$key] ?? '',
-                            $_POST['monthly_salary'][$key] ?? '',
-                            $_POST['occupation'][$key] ?? '',
-                            $_POST['status'][$key] ?? '',
-                            $_POST['working_experience'][$key] ?? ''
-                        ];
-                        $workStmt->execute($workData);
+                        $workId = isset($_POST['work_id'][$key]) && !empty($_POST['work_id'][$key]) ? 
+                                 intval($_POST['work_id'][$key]) : null;
+                        
+                        if ($workId) {
+                            // Update existing record
+                            $submittedWorkIds[] = $workId;
+                            
+                            $updateWorkSql = "UPDATE work_experience SET 
+                                company_name = ?,
+                                position = ?,
+                                inclusive_dates_past = ?,
+                                inclusive_dates_present = ?,
+                                monthly_salary = ?,
+                                occupation = ?,
+                                status = ?,
+                                working_experience = ?
+                                WHERE id = ? AND user_id = ?";
+                                
+                            $updateWorkStmt = $pdo->prepare($updateWorkSql);
+                            $updateWorkStmt->execute([
+                                $company,
+                                $_POST['position'][$key] ?? '',
+                                $_POST['work_date_from'][$key] ?? '',
+                                $_POST['work_date_to'][$key] ?? '',
+                                $_POST['monthly_salary'][$key] ?? '',
+                                $_POST['occupation'][$key] ?? '',
+                                $_POST['status'][$key] ?? '',
+                                $_POST['working_experience'][$key] ?? '',
+                                $workId,
+                                $userId
+                            ]);
+                        } else {
+                            // Insert new record
+                            $insertWorkSql = "INSERT INTO work_experience 
+                                (user_id, company_name, position, inclusive_dates_past, inclusive_dates_present, 
+                                monthly_salary, occupation, status, working_experience)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                
+                            $insertWorkStmt = $pdo->prepare($insertWorkSql);
+                            $insertWorkStmt->execute([
+                                $userId,
+                                $company,
+                                $_POST['position'][$key] ?? '',
+                                $_POST['work_date_from'][$key] ?? '',
+                                $_POST['work_date_to'][$key] ?? '',
+                                $_POST['monthly_salary'][$key] ?? '',
+                                $_POST['occupation'][$key] ?? '',
+                                $_POST['status'][$key] ?? '',
+                                $_POST['working_experience'][$key] ?? ''
+                            ]);
+                            
+                            $submittedWorkIds[] = $pdo->lastInsertId();
+                        }
                     }
                 }
+                
+                // Delete any work records that weren't updated or inserted
+                if (!empty($submittedWorkIds)) {
+                    $placeholders = str_repeat('?,', count($submittedWorkIds) - 1) . '?';
+                    $deleteWorkSql = "DELETE FROM work_experience WHERE user_id = ? AND id NOT IN ($placeholders)";
+                    $deleteWorkParams = array_merge([$userId], $submittedWorkIds);
+                    $pdo->prepare($deleteWorkSql)->execute($deleteWorkParams);
+                } else {
+                    // If no work records submitted, delete all for this user
+                    $pdo->prepare("DELETE FROM work_experience WHERE user_id = ?")->execute([$userId]);
+                }
+            } else {
+                // If no work section in form, delete all work records for user
+                $pdo->prepare("DELETE FROM work_experience WHERE user_id = ?")->execute([$userId]);
             }
             
-            // Delete existing training/seminar records
-            $pdo->prepare("DELETE FROM training_seminar WHERE user_id = ?")->execute([$userId]);
+            // TRAINING SEMINAR
+            // Collect all submitted training IDs
+            $submittedTrainingIds = [];
             
-            // Re-insert training/seminar records
             if (isset($_POST['training_title']) && is_array($_POST['training_title'])) {
-                $trainingSql = "INSERT INTO training_seminar (user_id, tittle, venue, 
-                               inclusive_dates_past, inclusive_dates_present, certificate, no_of_hours, 
-                               training_base, category, conducted_by, proficiency) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                
-                $trainingStmt = $pdo->prepare($trainingSql);
-                
                 foreach ($_POST['training_title'] as $key => $title) {
                     if (!empty($title)) {
-                        $trainingData = [
-                            $userId,
-                            $title,
-                            $_POST['training_venue'][$key] ?? '',
-                            $_POST['training_date_from'][$key] ?? '',
-                            $_POST['training_date_to'][$key] ?? '',
-                            $_POST['certificate'][$key] ?? '',
-                            $_POST['no_of_hours'][$key] ?? '',
-                            $_POST['training_base'][$key] ?? '',
-                            $_POST['category'][$key] ?? '',
-                            $_POST['conducted_by'][$key] ?? '',
-                            $_POST['proficiency'][$key] ?? ''
-                        ];
-                        $trainingStmt->execute($trainingData);
+                        $trainingId = isset($_POST['training_id'][$key]) && !empty($_POST['training_id'][$key]) ? 
+                                     intval($_POST['training_id'][$key]) : null;
+                        
+                        if ($trainingId) {
+                            // Update existing record
+                            $submittedTrainingIds[] = $trainingId;
+                            
+                            $updateTrainingSql = "UPDATE training_seminar SET 
+                                tittle = ?,
+                                venue = ?,
+                                inclusive_dates_past = ?,
+                                inclusive_dates_present = ?,
+                                certificate = ?,
+                                no_of_hours = ?,
+                                training_base = ?,
+                                category = ?,
+                                conducted_by = ?,
+                                proficiency = ?
+                                WHERE id = ? AND user_id = ?";
+                                
+                            $updateTrainingStmt = $pdo->prepare($updateTrainingSql);
+                            $updateTrainingStmt->execute([
+                                $title,
+                                $_POST['training_venue'][$key] ?? '',
+                                $_POST['training_date_from'][$key] ?? '',
+                                $_POST['training_date_to'][$key] ?? '',
+                                $_POST['certificate'][$key] ?? '',
+                                $_POST['no_of_hours'][$key] ?? '',
+                                $_POST['training_base'][$key] ?? '',
+                                $_POST['category'][$key] ?? '',
+                                $_POST['conducted_by'][$key] ?? '',
+                                $_POST['proficiency'][$key] ?? '',
+                                $trainingId,
+                                $userId
+                            ]);
+                        } else {
+                            // Insert new record
+                            $insertTrainingSql = "INSERT INTO training_seminar 
+                                (user_id, tittle, venue, inclusive_dates_past, inclusive_dates_present,
+                                certificate, no_of_hours, training_base, category, conducted_by, proficiency)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                
+                            $insertTrainingStmt = $pdo->prepare($insertTrainingSql);
+                            $insertTrainingStmt->execute([
+                                $userId,
+                                $title,
+                                $_POST['training_venue'][$key] ?? '',
+                                $_POST['training_date_from'][$key] ?? '',
+                                $_POST['training_date_to'][$key] ?? '',
+                                $_POST['certificate'][$key] ?? '',
+                                $_POST['no_of_hours'][$key] ?? '',
+                                $_POST['training_base'][$key] ?? '',
+                                $_POST['category'][$key] ?? '',
+                                $_POST['conducted_by'][$key] ?? '',
+                                $_POST['proficiency'][$key] ?? ''
+                            ]);
+                            
+                            $submittedTrainingIds[] = $pdo->lastInsertId();
+                        }
                     }
                 }
+                
+                // Delete any training records that weren't updated or inserted
+                if (!empty($submittedTrainingIds)) {
+                    $placeholders = str_repeat('?,', count($submittedTrainingIds) - 1) . '?';
+                    $deleteTrainingSql = "DELETE FROM training_seminar WHERE user_id = ? AND id NOT IN ($placeholders)";
+                    $deleteTrainingParams = array_merge([$userId], $submittedTrainingIds);
+                    $pdo->prepare($deleteTrainingSql)->execute($deleteTrainingParams);
+                } else {
+                    // If no training records submitted, delete all for this user
+                    $pdo->prepare("DELETE FROM training_seminar WHERE user_id = ?")->execute([$userId]);
+                }
+            } else {
+                // If no training section in form, delete all training records for user
+                $pdo->prepare("DELETE FROM training_seminar WHERE user_id = ?")->execute([$userId]);
             }
             
-            // Delete existing license/examination records
-            $pdo->prepare("DELETE FROM license_examination WHERE user_id = ?")->execute([$userId]);
+            // LICENSE/EXAMINATION
+            // Collect all submitted license IDs
+            $submittedLicenseIds = [];
             
-            // Re-insert license/examination records
             if (isset($_POST['license_title']) && is_array($_POST['license_title'])) {
-                $licenseSql = "INSERT INTO license_examination (user_id, license_tittle, year_taken, 
-                              examination_venue, ratings, remarks, expiry_date) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?)";
-                
-                $licenseStmt = $pdo->prepare($licenseSql);
-                
                 foreach ($_POST['license_title'] as $key => $title) {
                     if (!empty($title)) {
-                        $licenseData = [
-                            $userId,
-                            $title,
-                            $_POST['year_taken'][$key] ?? '',
-                            $_POST['examination_venue'][$key] ?? '',
-                            $_POST['ratings'][$key] ?? '',
-                            $_POST['remarks'][$key] ?? '',
-                            $_POST['expiry_date'][$key] ?? ''
-                        ];
-                        $licenseStmt->execute($licenseData);
+                        $licenseId = isset($_POST['license_id'][$key]) && !empty($_POST['license_id'][$key]) ? 
+                                    intval($_POST['license_id'][$key]) : null;
+                        
+                        if ($licenseId) {
+                            // Update existing record
+                            $submittedLicenseIds[] = $licenseId;
+                            
+                            $updateLicenseSql = "UPDATE license_examination SET 
+                                license_tittle = ?,
+                                year_taken = ?,
+                                examination_venue = ?,
+                                ratings = ?,
+                                remarks = ?,
+                                expiry_date = ?
+                                WHERE id = ? AND user_id = ?";
+                                
+                            $updateLicenseStmt = $pdo->prepare($updateLicenseSql);
+                            $updateLicenseStmt->execute([
+                                $title,
+                                $_POST['year_taken'][$key] ?? '',
+                                $_POST['examination_venue'][$key] ?? '',
+                                $_POST['ratings'][$key] ?? '',
+                                $_POST['remarks'][$key] ?? '',
+                                $_POST['expiry_date'][$key] ?? '',
+                                $licenseId,
+                                $userId
+                            ]);
+                        } else {
+                            // Insert new record
+                            $insertLicenseSql = "INSERT INTO license_examination 
+                                (user_id, license_tittle, year_taken, examination_venue, ratings, remarks, expiry_date)
+                                VALUES (?, ?, ?, ?, ?, ?, ?)";
+                                
+                            $insertLicenseStmt = $pdo->prepare($insertLicenseSql);
+                            $insertLicenseStmt->execute([
+                                $userId,
+                                $title,
+                                $_POST['year_taken'][$key] ?? '',
+                                $_POST['examination_venue'][$key] ?? '',
+                                $_POST['ratings'][$key] ?? '',
+                                $_POST['remarks'][$key] ?? '',
+                                $_POST['expiry_date'][$key] ?? ''
+                            ]);
+                            
+                            $submittedLicenseIds[] = $pdo->lastInsertId();
+                        }
                     }
                 }
+                
+                // Delete any license records that weren't updated or inserted
+                if (!empty($submittedLicenseIds)) {
+                    $placeholders = str_repeat('?,', count($submittedLicenseIds) - 1) . '?';
+                    $deleteLicenseSql = "DELETE FROM license_examination WHERE user_id = ? AND id NOT IN ($placeholders)";
+                    $deleteLicenseParams = array_merge([$userId], $submittedLicenseIds);
+                    $pdo->prepare($deleteLicenseSql)->execute($deleteLicenseParams);
+                } else {
+                    // If no license records submitted, delete all for this user
+                    $pdo->prepare("DELETE FROM license_examination WHERE user_id = ?")->execute([$userId]);
+                }
+            } else {
+                // If no license section in form, delete all license records for user
+                $pdo->prepare("DELETE FROM license_examination WHERE user_id = ?")->execute([$userId]);
             }
             
-            // Delete existing competency assessment records
-            $pdo->prepare("DELETE FROM competency_assessment WHERE user_id = ?")->execute([$userId]);
+            // COMPETENCY ASSESSMENT
+            $submittedCompetencyIds = [];
             
-            // Re-insert competency assessment records
             if (isset($_POST['industry_sector']) && is_array($_POST['industry_sector'])) {
-                $competencySql = "INSERT INTO competency_assessment (user_id, industry_sector, 
-                                 trade_area, occupation, classification_level, competency, specialization) 
-                                 VALUES (?, ?, ?, ?, ?, ?, ?)";
-                
-                $competencyStmt = $pdo->prepare($competencySql);
-                
                 foreach ($_POST['industry_sector'] as $key => $sector) {
                     if (!empty($sector)) {
-                        $competencyData = [
-                            $userId,
-                            $sector,
-                            $_POST['trade_area'][$key] ?? '',
-                            $_POST['occupation'][$key] ?? '',
-                            $_POST['classification_level'][$key] ?? '',
-                            $_POST['competency'][$key] ?? '',
-                            $_POST['specialization'][$key] ?? ''
-                        ];
-                        $competencyStmt->execute($competencyData);
+                        $competencyId = isset($_POST['competency_id'][$key]) && !empty($_POST['competency_id'][$key]) ? 
+                                       intval($_POST['competency_id'][$key]) : null;
+                        
+                        if ($competencyId) {
+                            // Update existing record
+                            $submittedCompetencyIds[] = $competencyId;
+                            
+                            $updateCompetencySql = "UPDATE competency_assessment SET 
+                                industry_sector = ?,
+                                trade_area = ?,
+                                occupation = ?,
+                                classification_level = ?,
+                                competency = ?,
+                                specialization = ?
+                                WHERE id = ? AND user_id = ?";
+                                
+                            $updateCompetencyStmt = $pdo->prepare($updateCompetencySql);
+                            $updateCompetencyStmt->execute([
+                                $sector,
+                                $_POST['trade_area'][$key] ?? '',
+                                $_POST['occupation'][$key] ?? '',
+                                $_POST['classification_level'][$key] ?? '',
+                                $_POST['competency'][$key] ?? '',
+                                $_POST['specialization'][$key] ?? '',
+                                $competencyId,
+                                $userId
+                            ]);
+                        } else {
+                            // Insert new record
+                            $insertCompetencySql = "INSERT INTO competency_assessment 
+                                (user_id, industry_sector, trade_area, occupation, classification_level, competency, specialization)
+                                VALUES (?, ?, ?, ?, ?, ?, ?)";
+                                
+                            $insertCompetencyStmt = $pdo->prepare($insertCompetencySql);
+                            $insertCompetencyStmt->execute([
+                                $userId,
+                                $sector,
+                                $_POST['trade_area'][$key] ?? '',
+                                $_POST['occupation'][$key] ?? '',
+                                $_POST['classification_level'][$key] ?? '',
+                                $_POST['competency'][$key] ?? '',
+                                $_POST['specialization'][$key] ?? ''
+                            ]);
+                            
+                            $submittedCompetencyIds[] = $pdo->lastInsertId();
+                        }
                     }
                 }
+                
+                // Delete any competency records that weren't updated or inserted
+                if (!empty($submittedCompetencyIds)) {
+                    $placeholders = str_repeat('?,', count($submittedCompetencyIds) - 1) . '?';
+                    $deleteCompetencySql = "DELETE FROM competency_assessment WHERE user_id = ? AND id NOT IN ($placeholders)";
+                    $deleteCompetencyParams = array_merge([$userId], $submittedCompetencyIds);
+                    $pdo->prepare($deleteCompetencySql)->execute($deleteCompetencyParams);
+                } else {
+                    // If no competency records submitted, delete all for this user
+                    $pdo->prepare("DELETE FROM competency_assessment WHERE user_id = ?")->execute([$userId]);
+                }
+            } else {
+                // If no competency section in form, delete all competency records for user
+                $pdo->prepare("DELETE FROM competency_assessment WHERE user_id = ?")->execute([$userId]);
             }
             
-            // Delete existing family background record
-            $pdo->prepare("DELETE FROM family_background WHERE user_id = ?")->execute([$userId]);
-            
-            // Re-insert family background record
+            // FAMILY BACKGROUND
             if (isset($_POST['spouse_name'])) {
-                $familySql = "INSERT INTO family_background (user_id, spouse_name, spouse_educational_attainment, spouse_occupation, 
-                                spouse_monthly_income, father_name, father_educational_attainment, father_occupation, father_monthly_income,
-                                mother_name, mother_educational_attainment, mother_occupation, mother_monthly_income, guardian_name, 
-                                guardian_educational_attainment, guardian_occupation, guardian_monthly_income, dependents, dependents_age) 
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                
-                $familyStmt = $pdo->prepare($familySql);
-                
-                $familyData = [
-                    $userId,
-                    $_POST['spouse_name'] ?? '',
-                    $_POST['spouse_educational_attainment'] ?? '',
-                    $_POST['spouse_occupation'] ?? '',
-                    $_POST['spouse_monthly_income'] ?? '',
-                    $_POST['father_name'] ?? '',
-                    $_POST['father_educational_attainment'] ?? '',
-                    $_POST['father_occupation'] ?? '',
-                    $_POST['father_monthly_income'] ?? '',
-                    $_POST['mother_name'] ?? '',
-                    $_POST['mother_educational_attainment'] ?? '',
-                    $_POST['mother_occupation'] ?? '',
-                    $_POST['mother_monthly_income'] ?? '',
-                    $_POST['guardian_name'] ?? '',
-                    $_POST['guardian_educational_attainment'] ?? '',
-                    $_POST['guardian_occupation'] ?? '',
-                    $_POST['guardian_monthly_income'] ?? '',
-                    $_POST['dependents'] ?? '',
-                    $_POST['dependents_age'] ?? ''
-                ];
-                
-                $familyStmt->execute($familyData);
+                $familyExists = $pdo->prepare("SELECT COUNT(*) FROM family_background WHERE user_id = ?");
+                $familyExists->execute([$userId]);
+                $exists = $familyExists->fetchColumn() > 0;
+            
+                if ($exists) {
+                    // Update existing record
+                    $familySql = "UPDATE family_background SET 
+                        spouse_name = ?, spouse_educational_attainment = ?, spouse_occupation = ?, spouse_monthly_income = ?, 
+                        father_name = ?, father_educational_attainment = ?, father_occupation = ?, father_monthly_income = ?, 
+                        mother_name = ?, mother_educational_attainment = ?, mother_occupation = ?, mother_monthly_income = ?, 
+                        guardian_name = ?, guardian_educational_attainment = ?, guardian_occupation = ?, guardian_monthly_income = ?, 
+                        dependents = ?, dependents_age = ? WHERE user_id = ?";
+                    
+                    $pdo->prepare($familySql)->execute([
+                        $_POST['spouse_name'] ?? '',
+                        $_POST['spouse_educational_attainment'] ?? '',
+                        $_POST['spouse_occupation'] ?? '',
+                        $_POST['spouse_monthly_income'] ?? '',
+                        $_POST['father_name'] ?? '',
+                        $_POST['father_educational_attainment'] ?? '',
+                        $_POST['father_occupation'] ?? '',
+                        $_POST['father_monthly_income'] ?? '',
+                        $_POST['mother_name'] ?? '',
+                        $_POST['mother_educational_attainment'] ?? '',
+                        $_POST['mother_occupation'] ?? '',
+                        $_POST['mother_monthly_income'] ?? '',
+                        $_POST['guardian_name'] ?? '',
+                        $_POST['guardian_educational_attainment'] ?? '',
+                        $_POST['guardian_occupation'] ?? '',
+                        $_POST['guardian_monthly_income'] ?? '',
+                        $_POST['dependents'] ?? '',
+                        $_POST['dependents_age'] ?? '',
+                        $userId
+                    ]);
+                } else {
+                    // Insert new record
+                    $familySql = "INSERT INTO family_background 
+                        (user_id, spouse_name, spouse_educational_attainment, spouse_occupation, spouse_monthly_income, 
+                        father_name, father_educational_attainment, father_occupation, father_monthly_income, 
+                        mother_name, mother_educational_attainment, mother_occupation, mother_monthly_income, 
+                        guardian_name, guardian_educational_attainment, guardian_occupation, guardian_monthly_income, 
+                        dependents, dependents_age) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    
+                    $pdo->prepare($familySql)->execute([
+                        $userId,
+                        $_POST['spouse_name'] ?? '',
+                        $_POST['spouse_educational_attainment'] ?? '',
+                        $_POST['spouse_occupation'] ?? '',
+                        $_POST['spouse_monthly_income'] ?? '',
+                        $_POST['father_name'] ?? '',
+                        $_POST['father_educational_attainment'] ?? '',
+                        $_POST['father_occupation'] ?? '',
+                        $_POST['father_monthly_income'] ?? '',
+                        $_POST['mother_name'] ?? '',
+                        $_POST['mother_educational_attainment'] ?? '',
+                        $_POST['mother_occupation'] ?? '',
+                        $_POST['mother_monthly_income'] ?? '',
+                        $_POST['guardian_name'] ?? '',
+                        $_POST['guardian_educational_attainment'] ?? '',
+                        $_POST['guardian_occupation'] ?? '',
+                        $_POST['guardian_monthly_income'] ?? '',
+                        $_POST['dependents'] ?? '',
+                        $_POST['dependents_age'] ?? ''
+                    ]);
+                }
             }
             
             // Commit transaction
             $pdo->commit();
             
-            // Set success message and redirect
-            $success_message = "Profile updated successfully!";
-            header("Location: ../../user/user_view.php");
+            // Set success message and redirect back to the view page with the user ID
+            $_SESSION['profile_updated'] = true;
+            header("Location: edit.php?id={$userId}");
             exit();
             
         } catch (Exception $e) {
@@ -340,9 +615,25 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit NMIS Manpower Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../../admin/css/index.css">
 </head>
 <body>
+    <?php if (isset($_SESSION['profile_updated'])): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <strong>Profile Updated Successfully!</strong> Your changes have been saved.
+        <?php unset($_SESSION['profile_updated']); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error!</strong> <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
     <div class="container">
         <!-- Header Section -->
         <div class="header">
@@ -950,25 +1241,25 @@ try {
                             <div class="form-personal">
                                 <div class="label-personal">Spouse's Name:</div>
                                 <div class="value-value">
-                                    <input type="text" name="spouse_name" value="<?php echo htmlspecialchars($family_background[0]['spouse_name'] ?? ''); ?>">
+                                    <input type="text" name="spouse_name" value="<?php echo htmlspecialchars($family['spouse_name'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
                                 <div class="value-value">
-                                    <input type="text" name="spouse_educational_attainment" value="<?php echo htmlspecialchars($family_background[0]['spouse_educational_attainment'] ?? ''); ?>">
+                                    <input type="text" name="spouse_educational_attainment" value="<?php echo htmlspecialchars($family['spouse_educational_attainment'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation: </div>
                                 <div class="value-value">
-                                    <input type="text" name="spouse_occupation" value="<?php echo htmlspecialchars($family_background[0]['spouse_occupation'] ?? ''); ?>">
+                                    <input type="text" name="spouse_occupation" value="<?php echo htmlspecialchars($family['spouse_occupation'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income: </div>
                                 <div class="value-value">
-                                    <input type="text" name="spouse_monthly_income" value="<?php echo htmlspecialchars($family_background[0]['spouse_monthly_income'] ?? ''); ?>">
+                                    <input type="text" name="spouse_monthly_income" value="<?php echo htmlspecialchars($family['spouse_monthly_income'] ?? ''); ?>">
                                 </div>
                             </div>
                         </div>
@@ -981,25 +1272,25 @@ try {
                             <div class="form-personal">
                                 <div class="label-personal">Father's Name:</div>
                                 <div class="value-value">
-                                    <input type="text" name="father_name" value="<?php echo htmlspecialchars($family_background[0]['father_name'] ?? ''); ?>">
+                                    <input type="text" name="father_name" value="<?php echo htmlspecialchars($family['father_name'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
                                 <div class="value-value">
-                                    <input type="text" name="father_educational_attainment" value="<?php echo htmlspecialchars($family_background[0]['father_educational_attainment'] ?? ''); ?>">
+                                    <input type="text" name="father_educational_attainment" value="<?php echo htmlspecialchars($family['father_educational_attainment'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation: </div>
                                 <div class="value-value">
-                                    <input type="text" name="father_occupation" value="<?php echo htmlspecialchars($family_background[0]['father_occupation'] ?? ''); ?>">
+                                    <input type="text" name="father_occupation" value="<?php echo htmlspecialchars($family['father_occupation'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income: </div>
                                 <div class="value-value">
-                                    <input type="text" name="father_monthly_income" value="<?php echo htmlspecialchars($family_background[0]['father_monthly_income'] ?? ''); ?>">
+                                    <input type="text" name="father_monthly_income" value="<?php echo htmlspecialchars($family['father_monthly_income'] ?? ''); ?>">
                                 </div>
                             </div>
                         </div>
@@ -1012,25 +1303,25 @@ try {
                             <div class="form-personal">
                                 <div class="label-personal">Mother's Name:</div>
                                 <div class="value-value">
-                                    <input type="text" name="mother_name" value="<?php echo htmlspecialchars($family_background[0]['mother_name'] ?? ''); ?>">
+                                    <input type="text" name="mother_name" value="<?php echo htmlspecialchars($family['mother_name'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment: </div>
                                 <div class="value-value">
-                                    <input type="text" name="mother_educational_attainment" value="<?php echo htmlspecialchars($family_background[0]['mother_educational_attainment'] ?? ''); ?>">
+                                    <input type="text" name="mother_educational_attainment" value="<?php echo htmlspecialchars($family['mother_educational_attainment'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation: </div>
                                 <div class="value-value">
-                                    <input type="text" name="mother_occupation" value="<?php echo htmlspecialchars($family_background[0]['mother_occupation'] ?? ''); ?>">
+                                    <input type="text" name="mother_occupation" value="<?php echo htmlspecialchars($family['mother_occupation'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income: </div>
                                 <div class="value-value">
-                                    <input type="text" name="mother_monthly_income" value="<?php echo htmlspecialchars($family_background[0]['mother_monthly_income'] ?? ''); ?>">
+                                    <input type="text" name="mother_monthly_income" value="<?php echo htmlspecialchars($family['mother_monthly_income'] ?? ''); ?>">
                                 </div>
                             </div>
                         </div>
@@ -1043,25 +1334,25 @@ try {
                             <div class="form-personal">
                                 <div class="label-personal">Guardian's Name:</div>
                                 <div class="value-value">
-                                    <input type="text" name="guardian_name" value="<?php echo htmlspecialchars($family_background[0]['guardian_name'] ?? ''); ?>">
+                                    <input type="text" name="guardian_name" value="<?php echo htmlspecialchars($family['guardian_name'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Educational Attainment:</div>
                                 <div class="value-value">
-                                    <input type="text" name="guardian_educational_attainment" value="<?php echo htmlspecialchars($family_background[0]['guardian_educational_attainment'] ?? ''); ?>">
+                                    <input type="text" name="guardian_educational_attainment" value="<?php echo htmlspecialchars($family['guardian_educational_attainment'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Occupation: </div>
                                 <div class="value-value">
-                                    <input type="text" name="guardian_occupation" value="<?php echo htmlspecialchars($family_background[0]['guardian_occupation'] ?? ''); ?>">
+                                    <input type="text" name="guardian_occupation" value="<?php echo htmlspecialchars($family['guardian_occupation'] ?? ''); ?>">
                                 </div>
                             </div>
                             <div class="form-personal">
                                 <div class="label-personal">Ave. Monthly Income: </div>
                                 <div class="value-value">
-                                    <input type="text" name="guardian_monthly_income" value="<?php echo htmlspecialchars($family_background[0]['guardian_monthly_income'] ?? ''); ?>">
+                                    <input type="text" name="guardian_monthly_income" value="<?php echo htmlspecialchars($family['guardian_monthly_income'] ?? ''); ?>">
                                 </div>
                             </div>
                         </div>
@@ -1077,8 +1368,8 @@ try {
                     </thead>
                     <tbody>
                         <tr>
-                            <td><input type="text" name="dependents" value="<?php echo htmlspecialchars($family_background[0]['dependents'] ?? ''); ?>"></td>
-                            <td><input type="text" name="dependents_age" value="<?php echo htmlspecialchars($family_background[0]['dependents_age'] ?? ''); ?>"></td>
+                            <td><input type="text" name="dependents" value="<?php echo htmlspecialchars($family['dependents'] ?? ''); ?>"></td>
+                            <td><input type="text" name="dependents_age" value="<?php echo htmlspecialchars($family['dependents_age'] ?? ''); ?>"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -1092,7 +1383,7 @@ try {
         <?php else: ?>
             <div class="alert alert-warning">No user profile found to edit.</div>
         <?php endif; ?>
-        
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     function addEducation() {
         const container = document.getElementById('education-container');
