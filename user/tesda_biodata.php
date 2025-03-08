@@ -355,25 +355,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         <form method="POST" action="" enctype="multipart/form-data">
             <!-- Profile Photo -->
-            <div class="signature-container">
-                <h2 class="signature-title">Signature</h2>
-                <div class="photo-container">
-                    <div class="signature-box" id="photo-box">
-                        <!-- Video element for webcam stream -->
-                        <video id="videoElement" autoplay style="display: none; width: 100%; height: 100%;"></video>
-                        <!-- Image element to display captured photo -->
-                        <img id="capturedPhoto" alt="ID Photo" style="display: none; max-width: 100%; max-height: 100%;">
-                        <!-- Text shown when no photo is captured -->
-                        <div id="photoPlaceholder">ID PICTURE <br> (Passport Size)</div>
+            <div class="container">
+                <div class="content-row">
+                    <!-- Signature area (left side) -->
+                    <div class="signature-area">
+                        <!-- Added placeholder element for signature line -->
+                        <div id="signaturePlaceholder">______________________________________________________________</div>
+                        <img id="capturedSignature" alt="Signature" style="display: none; max-width: 100%; max-height: 60px;">
+                        <div class="signature-label">Signature</div>
+                        
+                        <!-- Signature control buttons -->
+                        <div class="signature-controls">
+                            <button type="button" id="openSignatureModal" class="btn btn-secondary">Sign Here</button>
+                            <button type="button" id="clearSignature" class="btn btn-secondary" style="display: none;">Clear</button>
+                        </div>
+                        
+                        <!-- Hidden input for signature data -->
+                        <input type="hidden" name="signature_data" id="signatureData">
                     </div>
-                    <div class="camera-controls">
-                        <button type="button" id="startCamera" class="btn btn-secondary">Open Camera</button>
-                        <button type="button" id="capturePhoto" class="btn btn-secondary" style="display: none;">Take Photo</button>
-                        <button type="button" id="retakePhoto" class="btn btn-secondary" style="display: none;">Retake Photo</button>
+                    
+                    <!-- Photo area (right side) -->
+                    <div class="photo-container">
+                        <div class="signature-box" id="photo-box">
+                            <!-- Video element for webcam stream -->
+                            <video id="videoElement" autoplay style="display: none; width: 100%; height: 100%;"></video>
+                            <!-- Image element to display captured photo -->
+                            <img id="capturedPhoto" alt="ID Photo" style="display: none; max-width: 100%; max-height: 100%;">
+                            <!-- Text shown when no photo is captured -->
+                            <div id="photoPlaceholder">ID PICTURE<br>(Passport Size)</div>
+                        </div>
+                        <button type="button" id="startCamera" class="btn camera-btn">Open Camera</button>
+                        <button type="button" id="capturePhoto" class="btn camera-btn" style="display: none;">Take Photo</button>
+                        <button type="button" id="retakePhoto" class="btn camera-btn" style="display: none;">Retake Photo</button>
                         <!-- Hidden canvas element used for capturing the photo -->
                         <canvas id="canvas" style="display: none;"></canvas>
                         <!-- Hidden input to store captured photo data -->
                         <input type="hidden" name="photo_data" id="photoData">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signature Modal (popup) -->
+            <div id="signatureModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h3>Please sign below</h3>
+                    <canvas id="signatureCanvas"></canvas>
+                    <div class="modal-buttons">
+                        <button type="button" id="clearCanvas" class="btn btn-secondary">Clear</button>
+                        <button type="button" id="saveSignature" class="btn btn-primary">Save Signature</button>
                     </div>
                 </div>
             </div>
@@ -1044,6 +1074,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
     </div>
     <script src="js/camera.js"></script>
+    <script src="js/signature.js"></script>
     <script>
     function addEducation() {
         const container = document.getElementById('education-container');

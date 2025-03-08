@@ -85,7 +85,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 20px;
+    margin-top: auto;
     position: relative;
 }
 
@@ -98,12 +98,28 @@
     flex-grow: 1;
 }
 
-.signature-title::before {
-    content: "";
-    display: block;
-    width: 40%;
-    margin: 5px auto 0;
-    border-bottom: 1px solid rgb(0, 0, 0);
+.signature-line-container {
+    width: 100%;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.signature-line {
+    width: 80%;
+    height: 1px;
+    background-color: #000;
+    position: relative;
+    min-height: 1px;
+    margin-bottom: 5px;
+}
+
+
+.photo-container {
+    position: flex;
+    width: 200px; 
+    margin-left: auto;  
 }
 
 .signature-box {
@@ -132,16 +148,7 @@
     margin-bottom: 20px;
 }
 
-.photo-box {
-    border: 1px solid #000;
-    width: 150px;
-    height: 180px;
-    margin-left: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f5f5f5;
-}
+
 
 /* Section Styles */
 .section {
@@ -360,33 +367,111 @@ select {
     border: none;
 }
 
-.photo-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 15px;
+
+/*photo container */
+
+.camera-btn {
+    width: auto;
+    margin-top: 5px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 15px; 
+    cursor: pointer;
+    text-align: center;
+    margin-left: -130px; /* This could be causing positioning issues */
+    z-index: 10; /* Add this to ensure the button is clickable */
+    position: relative; /* Add this to work with z-index */
+
 }
-.signature-box {
-    width: 200px;
-    height: 200px;
-    border: 2px dashed #ccc;
+
+#photoPlaceholder br + span {
+    color: blue;  
+    font-size: 12px;
+}
+
+#capturedPhoto {
+    background-color: white !important;;
+    border: 1px solid #ddd;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+#photo-box {
+    background-color: white !important;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
     overflow: hidden;
-    background-color: #f9f9f9;
 }
-.camera-controls {
-    margin-top: 10px;
+.container {
+    width: 100%;
+    padding: 0 20px;
+}
+
+.content-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.signature-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+    margin-top: 80px; 
+    padding-top: 30px; 
+    position: relative;
+}
+
+#signaturePlaceholder {
+    position: absolute;
+    width: 150%;
+    text-align: center;
+    top: 10px;
+    color: #000000;
+}
+
+
+.signature-label {
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.signature-controls {
     display: flex;
     gap: 10px;
 }
-#photoPlaceholder {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+
+/* Hide the signature buttons after saving to avoid clutter */
+#openSignatureModal.signed {
+    display: none;
+}
+
+/* Modal styles remain the same as your existing CSS */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
     height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
 }

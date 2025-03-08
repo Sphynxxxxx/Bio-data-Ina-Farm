@@ -14,6 +14,10 @@
             display: flex;
             flex-direction: column;
         }
+
+        .container {
+            flex: 1; 
+        }
         .header {
             padding: 10px 0;
             background: linear-gradient(90deg, pink, lightgreen, skyblue);
@@ -78,15 +82,17 @@
         .footer {
             background-color: #343a40;
             color: #fff;
-            padding-top: 50px;
-            height: auto;
-            margin-top: 50px;
+            padding-top: 10px;
+            height: 100px;
+            margin-top: auto; 
             width: 100%;
         }
-        .option-description {
-            min-height: 80px;
-            margin-bottom: 1.5rem;
+
+        .footer p {
+            margin: 0px;
+            font-size: 0.85rem;
         }
+        
         .developer-credit {
             font-size: 0.75rem;
             color: #adb5bd;
