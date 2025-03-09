@@ -128,9 +128,15 @@ try {
     $familyStmt->execute([$user['id']]);
     $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
 
+    // fetch from user photo
     $photoStmt = $pdo->prepare("SELECT photo_data FROM user_photos WHERE user_id = ?");
     $photoStmt->execute([$user['id']]);
     $photo = $photoStmt->fetch(PDO::FETCH_ASSOC);
+
+    // fetch from user signature
+    $signatureStmt = $pdo->prepare("SELECT signature_data FROM user_signatures WHERE user_id = ?");
+    $signatureStmt->execute([$user['id']]);
+    $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$family) {
         $family = [
@@ -178,20 +184,37 @@ $pdf->SetFont('Times', '', 12);
 $pdf->Cell(140, 10, 'Signature', 0, 0, 'C');
 $pdf->Line(65, 70, 138, 70); 
 
+// Display signature if available
+if (!empty($signature) && !empty($signature['signature_data'])) {
+    $sigData = $signature['signature_data'];
+    
+    if (strpos($sigData, 'data:') === 0) {
+        $sigData = preg_replace('/^data:image\/\w+;base64,/', '', $sigData);
+    }
+    
+    $sigData = base64_decode($sigData);
+    
+    // Create a temporary file
+    $tempSigFile = tempnam(sys_get_temp_dir(), 'pdf_sig');
+    file_put_contents($tempSigFile, $sigData);
+    
+    // Add the signature image to the PDF, positioning it above the line
+    $pdf->Image($tempSigFile, 65, 55, 73, 15, '', '', '', false, 300, '', false, false, 0);
+    
+    unlink($tempSigFile);
+}
+
 
 $pdf->Rect(157, 42, 38, 40); 
 
 // Add ID Photo if available
 if (!empty($photo) && !empty($photo['photo_data'])) {
-    // Extract image data - need to handle base64 encoded string
     $imgData = $photo['photo_data'];
     
-    // Remove data URL prefix if present (e.g., "data:image/png;base64,")
     if (strpos($imgData, 'data:') === 0) {
         $imgData = preg_replace('/^data:image\/\w+;base64,/', '', $imgData);
     }
     
-    // Decode base64 data
     $imgData = base64_decode($imgData);
     
     // Create a temporary file
@@ -204,7 +227,6 @@ if (!empty($photo) && !empty($photo['photo_data'])) {
     // Clean up temporary file
     unlink($tempFile);
 } else {
-    // If no photo available, display text
     $pdf->SetFont('Times', '', 8);
     $pdf->Text(167.5, 60, 'ID PICTURE');
     $pdf->Text(167, 65, '(Passport Size)');

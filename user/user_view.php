@@ -48,6 +48,11 @@ try {
     $photoStmt->execute([$user['id']]);
     $photo = $photoStmt->fetch(PDO::FETCH_ASSOC);
 
+    // Fetch user's signature
+    $signatureStmt = $pdo->prepare("SELECT signature_data FROM user_signatures WHERE user_id = ?");
+    $signatureStmt->execute([$user['id']]);
+    $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
+
 } catch(PDOException $e) {
     die("Connection failed: " . $e->getMessage());
 }
@@ -72,9 +77,18 @@ try {
             <div class="form-title"><strong>NMIS FORM -01A</strong> <br> <span style="font-size: 10px;">(For TPIS)</span></div>
         </div>
         <h2 class="manpower-profile">MANPOWER PROFILE</h2>
+
+        <!-- Photo and signature -->
         <div class="signature-container">
-            <h2 class="signature-title">Signature</h2>
-            <div class="signature-box">
+            <div class="signature-area">
+                <?php if (!empty($signature) && !empty($signature['signature_data'])): ?>
+                    <img src="<?php echo $signature['signature_data']; ?>" alt="Signature" class="centered-signature">
+                <?php else: ?>
+                <?php endif; ?>
+                <h2 class="signature-title">Signature</h2>
+            </div>
+            
+            <div class="photo-box">
                 <?php if (!empty($photo) && !empty($photo['photo_data'])): ?>
                     <img src="<?php echo $photo['photo_data']; ?>" alt="ID Photo">
                 <?php elseif (!empty($user['photo_path']) && file_exists($user['photo_path'])): ?>
@@ -85,6 +99,7 @@ try {
             </div>
         </div>
         
+         <!----1. To be accomplished by TESDA--->
         <div class="section">
             <div class="section-title">1. To be accomplished by TESDA</div>
             <div class="form-row">
@@ -98,6 +113,7 @@ try {
                 </div>
             </div>
         </div>
+
         <!----2. Manpower Profile--->
         <div class="section">
             <div class="section-title">2. Manpower Profile</div>

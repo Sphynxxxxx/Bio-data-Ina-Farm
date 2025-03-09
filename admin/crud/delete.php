@@ -46,6 +46,9 @@ try {
     
     // Delete photo records
     $pdo->prepare("DELETE FROM user_photos WHERE user_id = ?")->execute([$userId]);
+
+    //Delete signature records
+    $pdo->prepare("DELETE FROM user_signatures WHERE user_id = ?")->execute([$userId]);
     
     // Finally, delete the user record
     $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");

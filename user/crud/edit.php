@@ -606,6 +606,10 @@ try {
 } catch (PDOException $e) {
     $error_message = "Database error: " . $e->getMessage();
 }
+
+$signatureStmt = $pdo->prepare("SELECT signature_data FROM user_signatures WHERE user_id = ?");
+$signatureStmt->execute([$user['id']]);
+$signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
 ?>
 
 
@@ -616,7 +620,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit NMIS Manpower Profile</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../../admin/css/index.css">
+    <link rel="stylesheet" href="../../user/css/index.css">
 </head>
 <body>
     <?php if (isset($_SESSION['profile_updated'])): ?>
@@ -657,10 +661,27 @@ try {
         
         <?php if (isset($user) && !empty($user)): ?>
         <form method="POST" action="" enctype="multipart/form-data">
-            <!-- Profile Photo -->
+
+            <!-- Photo and signature -->
             <div class="signature-container">
-                <h2 class="signature-title">Signature</h2>
-                <div class="signature-box">ID PICTURE <br> (Passport Size)</div>
+                <div class="signature-area">
+                    <?php if (!empty($signature) && !empty($signature['signature_data'])): ?>
+                        <img src="<?php echo $signature['signature_data']; ?>" alt="Signature" class="centered-signature">
+                    <?php else: ?>
+                    <?php endif; ?>
+                    <h2 class="signature-title">Signature</h2>
+                    
+                </div>
+                
+                <div class="photo-box">
+                    <?php if (!empty($photo) && !empty($photo['photo_data'])): ?>
+                        <img src="<?php echo $photo['photo_data']; ?>" alt="ID Photo">
+                    <?php elseif (!empty($user['photo_path']) && file_exists($user['photo_path'])): ?>
+                        <img src="<?php echo $user['photo_path']; ?>" alt="ID Photo">
+                    <?php else: ?>
+                        <div class="photo-placeholder">ID PICTURE <br> (Passport Size)</div>
+                    <?php endif; ?>
+                </div>
             </div>
             
             <!-- TESDA Section -->

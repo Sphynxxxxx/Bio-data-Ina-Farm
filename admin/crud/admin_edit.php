@@ -633,6 +633,10 @@ try {
 } catch (PDOException $e) {
     $error_message = "Database error: " . $e->getMessage();
 }
+
+$signatureStmt = $pdo->prepare("SELECT signature_data FROM user_signatures WHERE user_id = ?");
+$signatureStmt->execute([$user['id']]);
+$signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
 ?>
 
 
@@ -671,8 +675,15 @@ try {
         <form method="POST" action="" enctype="multipart/form-data">
             <!-- Profile Photo -->
             <div class="signature-container">
-                <h2 class="signature-title">Signature</h2>
-                <div class="signature-box">
+                <div class="signature-area">
+                    <?php if (!empty($signature) && !empty($signature['signature_data'])): ?>
+                        <img src="<?php echo $signature['signature_data']; ?>" alt="Signature" class="centered-signature">
+                    <?php else: ?>
+                    <?php endif; ?>
+                    <h2 class="signature-title">Signature</h2>
+                </div>
+                
+                <div class="photo-box">
                     <?php if (!empty($photo) && !empty($photo['photo_data'])): ?>
                         <img src="<?php echo $photo['photo_data']; ?>" alt="ID Photo">
                     <?php elseif (!empty($user['photo_path']) && file_exists($user['photo_path'])): ?>

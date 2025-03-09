@@ -63,6 +63,11 @@ $photoStmt = $pdo->prepare("SELECT photo_data FROM user_photos WHERE user_id = ?
 $photoStmt->execute([$user['id']]);
 $photo = $photoStmt->fetch(PDO::FETCH_ASSOC);
 
+// Fetch user's signature
+$signatureStmt = $pdo->prepare("SELECT signature_data FROM user_signatures WHERE user_id = ?");
+$signatureStmt->execute([$user['id']]);
+$signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
+
 ?>
 
 
@@ -85,9 +90,18 @@ $photo = $photoStmt->fetch(PDO::FETCH_ASSOC);
             <div class="form-title"><strong>NMIS FORM -01A</strong> <br> <span style="font-size: 10px;">(For TPIS)</span></div>
         </div>
         <h2 class="manpower-profile">MANPOWER PROFILE</h2>
+        
+        <!-- Photo and signature -->
         <div class="signature-container">
-            <h2 class="signature-title">Signature</h2>
-            <div class="signature-box">
+            <div class="signature-area">
+                <?php if (!empty($signature) && !empty($signature['signature_data'])): ?>
+                    <img src="<?php echo $signature['signature_data']; ?>" alt="Signature" class="centered-signature">
+                <?php else: ?>
+                <?php endif; ?>
+                <h2 class="signature-title">Signature</h2>
+            </div>
+            
+            <div class="photo-box">
                 <?php if (!empty($photo) && !empty($photo['photo_data'])): ?>
                     <img src="<?php echo $photo['photo_data']; ?>" alt="ID Photo">
                 <?php elseif (!empty($user['photo_path']) && file_exists($user['photo_path'])): ?>

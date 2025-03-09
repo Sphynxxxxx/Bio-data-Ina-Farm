@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set canvas dimensions
     function resizeCanvas() {
         // Set canvas dimensions based on its parent container
-        const parentWidth = signatureCanvas.parentElement.clientWidth - 40; // Account for padding
+        const parentWidth = signatureCanvas.parentElement.clientWidth - 40; 
         signatureCanvas.width = parentWidth;
-        signatureCanvas.height = 200;
+        signatureCanvas.height = 500;
         
         // Set line properties
         ctx.lineWidth = 2;
@@ -87,34 +87,35 @@ document.addEventListener('DOMContentLoaded', function() {
         const imageData = ctx.getImageData(0, 0, signatureCanvas.width, signatureCanvas.height);
         const data = imageData.data;
         let isEmpty = true;
-        
-        // Check if all pixel values are 0 (transparent)
+
         for (let i = 0; i < data.length; i += 4) {
-            if (data[i+3] !== 0) {
+            if (data[i+3] !== 0) { // Checking alpha channel
                 isEmpty = false;
                 break;
             }
         }
-        
+
         if (isEmpty) {
             alert('Please draw your signature before saving.');
             return;
         }
-        
+
         // Get data URL of the signature
         const dataURL = signatureCanvas.toDataURL('image/png');
-        
+
         // Update hidden input with signature data
         signatureDataInput.value = dataURL;
-        
+
         // Show the signature in the box
         signaturePlaceholder.style.display = 'none';
         capturedSignature.src = dataURL;
         capturedSignature.style.display = 'block';
-        
+        capturedSignature.style.maxHeight = '150px'; // Ensure larger display
+        capturedSignature.style.width = 'auto'; // Maintain aspect ratio
+
         // Show clear button
         clearSignatureBtn.style.display = 'inline-block';
-        
+
         // Close the modal
         signatureModal.style.display = 'none';
     }

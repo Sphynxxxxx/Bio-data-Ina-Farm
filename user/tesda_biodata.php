@@ -302,6 +302,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $photoStmt->execute([$userId, $photoData]);
             }
         }
+
+
+        // Handle signature data
+        if (!empty($_POST['signature_data'])) {
+            $signatureData = $_POST['signature_data'];
+            
+            // Check if the user already has a signature
+            $checkSignatureSql = "SELECT id FROM user_signatures WHERE user_id = ?";
+            $checkSignatureStmt = $pdo->prepare($checkSignatureSql);
+            $checkSignatureStmt->execute([$userId]);
+            $existingSignature = $checkSignatureStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($existingSignature) {
+                // Update existing signature
+                $signatureUpdateSql = "UPDATE user_signatures SET signature_data = ?, uploaded_at = NOW() WHERE user_id = ?";
+                $signatureStmt = $pdo->prepare($signatureUpdateSql);
+                $signatureStmt->execute([$signatureData, $userId]);
+            } else {
+                // Insert new signature
+                $signatureInsertSql = "INSERT INTO user_signatures (user_id, signature_data) VALUES (?, ?)";
+                $signatureStmt = $pdo->prepare($signatureInsertSql);
+                $signatureStmt->execute([$userId, $signatureData]);
+            }
+        }
         
         // Commit transaction
         $pdo->commit();
@@ -329,7 +353,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NMIS Manpower Profile</title>
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/tesda.css">
 </head>
 <body>
     <div class="container">
