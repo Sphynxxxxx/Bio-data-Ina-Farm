@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 02, 2025 at 06:16 PM
+-- Generation Time: Mar 23, 2025 at 09:11 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -169,15 +169,35 @@ CREATE TABLE `users` (
   `gsis_no` varchar(20) DEFAULT NULL,
   `tin_no` varchar(20) DEFAULT NULL,
   `distinguish_marks` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `program_type` enum('internship','tesda') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `users`
+-- Table structure for table `user_photos`
 --
 
-INSERT INTO `users` (`id`, `nmis_code`, `nmis_entry`, `lastname`, `firstname`, `middlename`, `address_street`, `address_barangay`, `address_district`, `address_city`, `address_province`, `address_region`, `address_zip`, `address_boxNo`, `sex`, `civil_status`, `contact_number`, `tel_number`, `email`, `fax_number`, `other_contact`, `fax`, `employment_type`, `employment_status`, `birthdate`, `birth_place`, `citizenship`, `religion`, `height`, `weight`, `blood_type`, `sss_no`, `gsis_no`, `tin_no`, `distinguish_marks`, `created_at`) VALUES
-(15, '1212121', NULL, 'Uy', 'rynie', 'C', '', '', '', '', '', '', '', '', 'Male', 'Single', '', '', '', '', '', NULL, 'Employed', 'Temporary', '0000-00-00', '', '', '', 0.00, 0.00, '', '', '', '', '', '2025-03-02 14:04:21');
+CREATE TABLE `user_photos` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `photo_data` longtext DEFAULT NULL,
+  `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_signatures`
+--
+
+CREATE TABLE `user_signatures` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `signature_data` text NOT NULL,
+  `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -244,6 +264,20 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `user_photos`
+--
+ALTER TABLE `user_photos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `user_signatures`
+--
+ALTER TABLE `user_signatures`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_signatures_ibfk_1` (`user_id`);
+
+--
 -- Indexes for table `work_experience`
 --
 ALTER TABLE `work_experience`
@@ -258,43 +292,55 @@ ALTER TABLE `work_experience`
 -- AUTO_INCREMENT for table `competency_assessment`
 --
 ALTER TABLE `competency_assessment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `education`
 --
 ALTER TABLE `education`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `family_background`
 --
 ALTER TABLE `family_background`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- AUTO_INCREMENT for table `license_examination`
 --
 ALTER TABLE `license_examination`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `training_seminar`
 --
 ALTER TABLE `training_seminar`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
+
+--
+-- AUTO_INCREMENT for table `user_photos`
+--
+ALTER TABLE `user_photos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT for table `user_signatures`
+--
+ALTER TABLE `user_signatures`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `work_experience`
 --
 ALTER TABLE `work_experience`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- Constraints for dumped tables
@@ -329,6 +375,18 @@ ALTER TABLE `license_examination`
 --
 ALTER TABLE `training_seminar`
   ADD CONSTRAINT `fk_training_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_photos`
+--
+ALTER TABLE `user_photos`
+  ADD CONSTRAINT `user_photos_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_signatures`
+--
+ALTER TABLE `user_signatures`
+  ADD CONSTRAINT `user_signatures_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `work_experience`
