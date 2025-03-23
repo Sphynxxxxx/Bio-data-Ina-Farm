@@ -6,8 +6,17 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Get the latest user record instead of using ID from URL
-    $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
+    // Get the user ID from URL parameter or use the latest record
+    $userId = isset($_GET['id']) ? intval($_GET['id']) : null;
+    
+    if ($userId) {
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
+    } else {
+        // Get the latest user record if no ID is provided
+        $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
+    }
+    
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
     // If no user found, redirect with error
@@ -18,6 +27,23 @@ try {
     }
     
     $userId = $user['id'];
+    
+    // Determine program type (default to 'tesda' if not set)
+    $programType = $user['program_type'] ?? 'tesda';
+    
+    // Set page title and redirect URL based on program type
+    if ($programType == 'internship') {
+        $pageTitle = "Edit Student Internship Profile";
+        $redirectUrl = "../../user/internship_view.php";
+        $headerTitle = "Student Internship";
+        $profileTitle = "EDIT STUDENT INTERNSHIP PROFILE";
+    } else {
+        $pageTitle = "Edit TESDA Profile";
+        $redirectUrl = "../../user/tesda_view.php";
+        $headerTitle = "TESDA Program";
+        $profileTitle = "EDIT TESDA MANPOWER PROFILE";
+    }
+    
     // Fetch education records
     $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
     $eduStmt->execute([$userId]);
@@ -58,8 +84,12 @@ try {
             // Begin transaction
             $pdo->beginTransaction();
             
+            // Get the program_type from the hidden form field
+            $program_type = $_POST['program_type'] ?? $user['program_type'];
+            
             // Update user data
             $updateUserSql = "UPDATE users SET 
+                program_type = ?,
                 nmis_code = ?,
                 lastname = ?,
                 firstname = ?,
@@ -96,8 +126,12 @@ try {
             
             $updateUserStmt = $pdo->prepare($updateUserSql);
             
+            // Set nmis_code to empty string for internship
+            $nmisCode = ($program_type == 'internship') ? '' : ($_POST['nmis_code'] ?? '');
+            
             $updateUserParams = [
-                $_POST['nmis_code'],
+                $program_type,
+                $nmisCode,
                 $_POST['lastname'],
                 $_POST['firstname'],
                 $_POST['middlename'],
@@ -612,13 +646,12 @@ $signatureStmt->execute([$user['id']]);
 $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit NMIS Manpower Profile</title>
+    <title><?php echo $pageTitle; ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../../user/css/index.css">
 </head>
@@ -641,16 +674,16 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
     <div class="container">
         <!-- Header Section -->
         <div class="header">
-            <img src="../../admin/assets/tesda_logo.png" alt="TESDA Logo">
             <div class="header-text">
-                <h2>Technical Education and Skills Development Authority</h2>
-                <p>Pangasiwaan sa Edukasyong Teknikal at Pagpapaunlad ng Kasanayan</p>
+                <h2><?php echo $headerTitle; ?></h2>
             </div>
+            <?php if ($programType == 'tesda'): ?>
             <div class="form-title"><strong>NMIS FORM -01A</strong> <br> <span style="font-size: 10px;">(For TPIS)</span></div>
+            <?php endif; ?>
         </div>
         
-        <h2 class="manpower-profile">EDIT MANPOWER PROFILE</h2>
-        
+        <h2 class="manpower-profile"><?php echo $profileTitle; ?></h2>
+                
         <?php if (isset($success_message)): ?>
             <div class="alert alert-success"><?php echo $success_message; ?></div>
         <?php endif; ?>
@@ -661,6 +694,8 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
         
         <?php if (isset($user) && !empty($user)): ?>
         <form method="POST" action="" enctype="multipart/form-data">
+            <!-- Hidden field to preserve program type -->
+            <input type="hidden" name="program_type" value="<?php echo htmlspecialchars($programType); ?>">
 
             <!-- Photo and signature -->
             <div class="signature-container">
@@ -684,7 +719,8 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
                 </div>
             </div>
             
-            <!-- TESDA Section -->
+            <!-- TESDA Section - Only show for TESDA program type -->
+            <?php if ($programType == 'tesda'): ?>
             <div class="section">
                 <div class="section-title">1. To be accomplished by TESDA</div>
                 <div class="form-row">
@@ -698,10 +734,14 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
                     </div>
                 </div>
             </div>
+            <?php else: ?>
+            <!-- Hidden field for internship program type -->
+            <input type="hidden" name="nmis_code" value="">
+            <?php endif; ?>
             
             <!--2. Manpower Profile -->
             <div class="section">
-                <div class="section-title">2. Manpower Profile</div>
+                <div class="section-title"><?php echo ($programType == 'internship') ? '1. Student Profile' : '2. Manpower Profile'; ?></div>
                 <div class="form-row">
                     <h3 class="name-title">Name:</h3>
                     <div class="form-group">
@@ -890,7 +930,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
             
             <!-- 3. Personal Background-->
             <div class="section">
-                <div class="section-title">3. Personal Information</div>
+                <div class="section-title"><?php echo ($programType == 'internship') ? '2. Personal Information' : '3. Personal Information'; ?></div>
                 <div class="form-row">                
                     <div class="form-group">
                         <div class="form-personal">
@@ -969,7 +1009,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
             
             <!-- 4. Educational Background-->
             <div class="section">
-                <div class="section-title">4. Educational Background</div>
+                <div class="section-title"><?php echo ($programType == 'internship') ? '3. Educational Background' : '4. Educational Background'; ?></div>
                 <table>
                     <thead>
                         <tr>
@@ -1036,7 +1076,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
             
             <!-- 5. Work Experience -->
             <div class="section">
-                <div class="section-title">5. Working Experience</div>
+                <div class="section-title"><?php echo ($programType == 'internship') ? '4. Working Experience' : '5. Working Experience'; ?></div>
                 <table>
                     <thead>
                         <tr>
@@ -1082,7 +1122,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
             
             <!-- 6. Training Seminar Attended -->
             <div class="section">
-                <div class="section-title">6. Training Seminar Attended</div>
+                <div class="section-title"><?php echo ($programType == 'internship') ? '5. Training Seminar Attended' : '6. Training Seminar Attended'; ?></div>
                 <table>
                     <thead>
                         <tr>
@@ -1106,7 +1146,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
                                     <td><input type="date" name="training_date_from[]" value="<?php echo htmlspecialchars($training['inclusive_dates_past'] ?? ''); ?>"></td>
                                     <td><input type="date" name="training_date_to[]" value="<?php echo htmlspecialchars($training['inclusive_dates_present'] ?? ''); ?>"></td>
                                     <td>
-                                        <select name="certificate[]">
+                                    <select name="certificate[]">
                                             <option value="">Select Certificate</option>
                                             <option value="A" <?php echo ($training['certificate'] == 'A') ? 'selected' : ''; ?>>A - Certificate of Attendance</option>
                                             <option value="C" <?php echo ($training['certificate'] == 'C') ? 'selected' : ''; ?>>C - Certificate of Competencies</option>
@@ -1159,10 +1199,30 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
                                     </select>
                                 </td>
                                 <td><input type="text" name="no_of_hours[]"></td>
-                                <td><input type="text" name="training_base[]"></td>
-                                <td><input type="text" name="category[]"></td>
+                                <td>
+                                    <select name="training_base[]">
+                                        <option value="">Select Training Base</option>
+                                        <option value="L">L - Local</option>
+                                        <option value="F">F - Foreign</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="category[]">
+                                        <option value="">Select Category</option>
+                                        <option value="T">T - Trade Skills Upgrading Program</option>
+                                        <option value="N">N - Non-Trade Skills Upgrading Program</option>
+                                        <option value="M">M - Training Management</option>
+                                    </select>
+                                </td>
                                 <td><input type="text" name="conducted_by[]"></td>
-                                <td><input type="text" name="proficiency[]"></td>
+                                <td>
+                                    <select name="proficiency[]">
+                                        <option value="">Select Proficiency</option>
+                                        <option value="B">B - Beginner</option>
+                                        <option value="I">I - Intermediate</option>
+                                        <option value="A">A - Advanced</option>
+                                    </select>
+                                </td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -1172,7 +1232,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
             
             <!-- 7. License/Examination -->
             <div class="section">
-                <div class="section-title">7. License/Examinations Passed</div>
+                <div class="section-title"><?php echo ($programType == 'internship') ? '6. License/Examinations Passed' : '7. License/Examinations Passed'; ?></div>
                 <table>
                     <thead>
                         <tr>
@@ -1213,7 +1273,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
             
             <!-- 8. Competency Assessment Passed -->
             <div class="section">
-                <div class="section-title">8. Competency Assessment Passed</div>
+                <div class="section-title"><?php echo ($programType == 'internship') ? '7. Competency Assessment Passed' : '8. Competency Assessment Passed'; ?></div>
                 <table>
                     <thead>
                         <tr>
@@ -1254,7 +1314,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
             
             <!-- 9. Family Background -->
             <div class="section">
-                <div class="section-title">9. Family Background</div>
+                <div class="section-title"><?php echo ($programType == 'internship') ? '8. Family Background' : '9. Family Background'; ?></div>
                 
                 <div class="section"> 
                     <div class="form-row">
@@ -1398,12 +1458,13 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
             
             <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
                 <button type="submit" class="btn btn-primary">Update Profile</button>
-                <a href="../../user/user_view.php" class="btn btn-secondary">Cancel</a>
+                <a href="<?php echo $redirectUrl; ?>" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
         <?php else: ?>
             <div class="alert alert-warning">No user profile found to edit.</div>
         <?php endif; ?>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     function addEducation() {

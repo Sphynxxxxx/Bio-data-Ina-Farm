@@ -47,8 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <label for="password" class="form-label">Password</label>
                                 <input type="password" class="form-control" id="password" name="password" required>
                             </div>
-                            <div class="d-grid">
+                            <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary">Login</button>
+                                <a href="index.php" class="btn btn-secondary">Back to Biodata</a>
                             </div>
                         </form>
                     </div>

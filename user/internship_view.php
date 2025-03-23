@@ -2,6 +2,9 @@
 session_start();
 require_once __DIR__ . '/../connections/config.php';
 
+$sql = "SELECT * FROM users WHERE program_type = 'internship'";
+$stmt = $pdo->query($sql);
+
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -63,7 +66,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NMIS Manpower Profile</title>
+    <title>Student Internship</title>
     <link rel="stylesheet" href="css/user_view.css">    
 </head>
 <body>
@@ -71,12 +74,11 @@ try {
         <div class="header">
             <img src="assets/tesda_logo.png" alt="TESDA Logo">
             <div class="header-text">
-                <h2>Technical Education and Skills Development Authority</h2>
-                <p>Pangasiwaan sa Edukasyong Teknikal at Pagpapaunlad ng Kasanayan</p>
+                <h2>Student Internship Program</h2>
             </div>
-            <div class="form-title"><strong>NMIS FORM -01A</strong> <br> <span style="font-size: 10px;">(For TPIS)</span></div>
+            <!--<div class="form-title"><strong>NMIS FORM -01A</strong> <br> <span style="font-size: 10px;">(For TPIS)</span></div>-->
         </div>
-        <h2 class="manpower-profile">MANPOWER PROFILE</h2>
+        <h2 class="manpower-profile">STUDENT INTERNSHIP</h2>
 
         <!-- Photo and signature -->
         <div class="signature-container">
@@ -100,7 +102,7 @@ try {
         </div>
         
          <!----1. To be accomplished by TESDA--->
-        <div class="section">
+        <!----<div class="section">
             <div class="section-title">1. To be accomplished by TESDA</div>
             <div class="form-row">
                 <h3 class="name-title" style="font-size: 0.7em;">NMIS Manpower Code:</h3>
@@ -112,11 +114,11 @@ try {
                     <div class="value"><?php echo htmlspecialchars($user['nmis_entry'] ?? ''); ?></div>
                 </div>
             </div>
-        </div>
+        </div>--->
 
         <!----2. Manpower Profile--->
         <div class="section">
-            <div class="section-title">2. Manpower Profile</div>
+            <div class="section-title">1. Student Profile</div>
             <div class="form-row">
                 <h3 class="name-title">Name:</h3>
                     <div class="form-group">
@@ -299,7 +301,7 @@ try {
 
         <!---3. Personal Information --->
         <div class="section">
-            <div class="section-title">3. Personal Information</div>
+            <div class="section-title">2. Personal Information</div>
             <div class="form-row">                
                     <div class="form-group">
                         <div class="form-personal">
@@ -356,7 +358,7 @@ try {
 
         <!-- 4. Educational Background-->
         <div class="section">
-            <div class="section-title">4. Educational Background</div>
+            <div class="section-title">3. Educational Background</div>
             <table>
                 <thead>
                     <tr>
@@ -390,7 +392,7 @@ try {
 
         <!-- 5. Working Experience-->
         <div class="section">
-            <div class="section-title">5. Working Experience (For Trainers, mandatory field 5.5)</div>
+            <div class="section-title">4. Working Experience (For Trainers, mandatory field 5.5)</div>
             <table>
                 <thead>
                     <tr>
@@ -422,7 +424,7 @@ try {
 
         <!-- 6. Training Seminar Attendee-->
         <div class="section">
-            <div class="section-title">6. Training Seminar Attended</div>
+            <div class="section-title">5. Training Seminar Attended</div>
             <table>
                 <thead>
                     <tr>
@@ -495,7 +497,7 @@ try {
 
         <!-- 7. License/Examination-->
         <div class="section">
-            <div class="section-title">7. License/Examinations Passed</div>
+            <div class="section-title">6. License/Examinations Passed</div>
             <table>
                 <thead>
                     <tr>
@@ -524,7 +526,7 @@ try {
 
         <!-- 8. Competency Assessment Passed-->
         <div class="section">
-            <div class="section-title">8. Competency Assessment Passed</div>
+            <div class="section-title">7. Competency Assessment Passed</div>
             <table>
                 <thead>
                     <tr>
@@ -553,7 +555,7 @@ try {
 
         <!-- 9. Family Background-->
         <div class="section">
-            <div class="section-title">9. Family Background</div>
+            <div class="section-title">8. Family Background</div>
                 <div class="section">
                     <div class="form-row">                
                         <div class="form-group">
@@ -677,8 +679,8 @@ try {
         <!---------------------------------------------------------------------------->
         
         <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-            <a href="../admin/generate_pdf.php" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
-            <a href="tesda_biodata.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
+            <a href="../admin/internship_pdf.php" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
+            <a href="student_internship.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
         </div>
 
     </div>
