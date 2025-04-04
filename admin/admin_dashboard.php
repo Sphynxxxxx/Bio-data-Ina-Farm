@@ -295,10 +295,15 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
         .badge-tesda {
             background-color: #007bff;
         }
+
+        .employee-badge {
+            background-color: #6610f2 !important;
+        }
         
-        .badge-employee {
+        .bg-purple {
             background-color: #6610f2;
         }
+
         
         .dashboard-stats {
             margin-bottom: 30px;
@@ -529,7 +534,7 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
                                             <?php elseif ($reg['program_type'] == 'tesda'): ?>
                                                 <span class="badge bg-primary">TESDA</span>
                                             <?php elseif ($reg['program_type'] == 'employee'): ?>
-                                                <span class="badge bg-purple">Ina Farmers</span>
+                                                <span class="badge bg-secondary employee-badge">Employee</span>
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo htmlspecialchars($reg['contact_number'] ?: 'N/A'); ?></td>
