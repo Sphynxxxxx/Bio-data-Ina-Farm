@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'] ?? '';
     
     // For demonstration purposes - replace with proper authentication
-    if ($username === 'admin' && $password === 'admin123') {
+    if ($username === 'inafarmerslearningsite2025' && $password === 'inafarm2025') {
         $_SESSION['admin'] = true;
         header('Location: admin/admin_dashboard.php');
         exit();

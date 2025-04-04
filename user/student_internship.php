@@ -330,7 +330,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         // Commit transaction
         $pdo->commit();
-        $success_message = "Manpower profile submitted successfully!";
+        $success_message = "Student profile submitted successfully!";
         
         // Redirect to view page
         header('Location: internship_view.php');
@@ -361,6 +361,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <!-- Header Section -->
         <div class="header">
             <div class="header-text">
+                <img src="assets/inafarm_long logo.png" alt="InaFarm Logo">
                 <!--<h2>Student Internship</h2>
                 <p>Pangasiwaan sa Edukasyong Teknikal at Pagpapaunlad ng Kasanayan</p>-->
             </div>
@@ -776,8 +777,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <tr class="work-entry">
                             <td><input type="text" name="company_name[]"></td>
                             <td><input type="text" name="position[]"></td>
-                            <td><input type="date" name="inclusive_dates_past[]" placeholder="From"></td>
-                            <td><input type="date" name="inclusive_dates_present[]" placeholder="To"></td>
+                            <td><input type="text" name="inclusive_dates_past[]" placeholder="From"></td>
+                            <td><input type="text" name="inclusive_dates_present[]" placeholder="To"></td>
                             <td><input type="text" name="monthly_salary[]"></td>
                             <td><input type="text" name="occupation[]"></td>
                             <td><input type="text" name="status[]"></td>
@@ -810,8 +811,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <tr class="training-entry">
                             <td><input type="text" name="training_title[]"></td>
                             <td><input type="text" name="training_venue[]"></td>
-                            <td><input type="date" name="training_date_from[]" placeholder="From"></td>
-                            <td><input type="date" name="training_date_to[]" placeholder="To"></td>
+                            <td><input type="text" name="training_date_from[]" placeholder="From"></td>
+                            <td><input type="text" name="training_date_to[]" placeholder="To"></td>
                             <td>
                                 <select name="certificate[]">
                                     <option value="">Select Certificate</option>
@@ -1090,7 +1091,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             
             <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-                <button type="submit" class="btn btn-primary">Submit Manpower Profile</button>
+                <button type="submit" class="btn btn-primary">Submit Student Profile</button>
                 <a href="internship_view.php" class="btn btn-secondary">View Submitted Profile</a>
                 <a href="crud\edit.php" class="btn btn-third">Edit Submitted Profile</a>
                 <a href="../index.php" class="btn btn-close">Close</a>

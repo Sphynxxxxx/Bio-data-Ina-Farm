@@ -2,7 +2,7 @@
 session_start();
 require_once __DIR__ . '/../connections/config.php';
 
-$sql = "SELECT * FROM users WHERE program_type = 'internship'";
+$sql = "SELECT * FROM users WHERE program_type = 'employee'";
 $stmt = $pdo->query($sql);
 
 try {
@@ -66,7 +66,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Internship</title>
+    <title>Ina Farm Employee Biodata Form</title>
     <link rel="stylesheet" href="css/user_view.css">    
 </head>
 <body>
@@ -74,11 +74,11 @@ try {
         <div class="header">
             <img src="assets/inafarm_long logo.png" alt="InaFarm Logo">
             <div class="header-text">
-                <h2>Student Internship Program</h2>
+                <h2>Ina Farm Biodata Form</h2>
             </div>
             <!--<div class="form-title"><strong>NMIS FORM -01A</strong> <br> <span style="font-size: 10px;">(For TPIS)</span></div>-->
         </div>
-        <h2 class="manpower-profile">STUDENT INTERNSHIP</h2>
+        <h2 class="manpower-profile">INA FARM EMPLOYEE PROFILE</h2>
 
         <!-- Photo and signature -->
         <div class="signature-container">
@@ -679,8 +679,8 @@ try {
         <!---------------------------------------------------------------------------->
         
         <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-            <a href="../admin/Internship_pdf.php" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
-            <a href="student_internship.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
+            <a href="../admin/ina_farm_pdf.php" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
+            <a href="ina_farm_biodata.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
         </div>
 
     </div>

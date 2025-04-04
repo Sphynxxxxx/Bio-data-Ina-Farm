@@ -21,41 +21,39 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
+    // Disable foreign key checks
+    $pdo->exec('SET FOREIGN_KEY_CHECKS=0;');
+    
     // Begin transaction
     $pdo->beginTransaction();
     
-    // Delete all related records first
+    // List of tables to delete from (in order)
+    $tables = [
+        'user_signatures',
+        'user_photos',
+        'family_background',
+        'competency_assessment',
+        'license_examination',
+        'training_seminar',
+        'work_experience',
+        'education'
+    ];
     
-    // Delete education records
-    $pdo->prepare("DELETE FROM education WHERE user_id = ?")->execute([$userId]);
+    // Delete records from each table
+    foreach ($tables as $table) {
+        $stmt = $pdo->prepare("DELETE FROM `$table` WHERE user_id = ?");
+        $stmt->execute([$userId]);
+    }
     
-    // Delete work experience records
-    $pdo->prepare("DELETE FROM work_experience WHERE user_id = ?")->execute([$userId]);
-    
-    // Delete training seminar records
-    $pdo->prepare("DELETE FROM training_seminar WHERE user_id = ?")->execute([$userId]);
-    
-    // Delete license examination records
-    $pdo->prepare("DELETE FROM license_examination WHERE user_id = ?")->execute([$userId]);
-    
-    // Delete competency assessment records
-    $pdo->prepare("DELETE FROM competency_assessment WHERE user_id = ?")->execute([$userId]);
-    
-    // Delete family background records
-    $pdo->prepare("DELETE FROM family_background WHERE user_id = ?")->execute([$userId]);
-    
-    // Delete photo records
-    $pdo->prepare("DELETE FROM user_photos WHERE user_id = ?")->execute([$userId]);
-
-    //Delete signature records
-    $pdo->prepare("DELETE FROM user_signatures WHERE user_id = ?")->execute([$userId]);
-    
-    // Finally, delete the user record
+    // Delete the user record
     $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
     $stmt->execute([$userId]);
     
     // Commit the transaction
     $pdo->commit();
+    
+    // Re-enable foreign key checks
+    $pdo->exec('SET FOREIGN_KEY_CHECKS=1;');
     
     $_SESSION['success'] = "Record deleted successfully.";
     header('Location: ../admin_dashboard.php');
@@ -65,6 +63,9 @@ try {
     // Rollback the transaction on error
     if (isset($pdo)) {
         $pdo->rollBack();
+        
+        // Re-enable foreign key checks
+        $pdo->exec('SET FOREIGN_KEY_CHECKS=1;');
     }
     
     $_SESSION['error'] = "Error deleting record: " . $e->getMessage();

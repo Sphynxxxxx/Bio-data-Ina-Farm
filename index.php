@@ -243,7 +243,8 @@ session_start();
         </div>
 
         <div class="row g-4 justify-content-center">
-            <div class="col-md-5">
+            <!-- Student Internship Program Card -->
+            <div class="col-md-4">
                 <div class="program-card card shadow h-100">
                     <div class="text-center pt-4">
                         <i class="bi bi-mortarboard card-icon"></i>
@@ -267,7 +268,8 @@ session_start();
                 </div>
             </div>
             
-            <div class="col-md-5">
+            <!-- TESDA Training Programs Card -->
+            <div class="col-md-4">
                 <div class="program-card card shadow h-100">
                     <div class="text-center pt-4">
                         <i class="bi bi-award card-icon"></i>
@@ -290,6 +292,33 @@ session_start();
                     </div>
                 </div>
             </div>
+            
+            <!-- Ina Farmers Employers Biodata Form Card -->
+            <div class="col-md-4">
+                <div class="program-card card shadow h-100">
+                    <div class="text-center pt-4">
+                        <i class="bi bi-people card-icon"></i>
+                    </div>
+                    <img src="Images/ina farm logo.png" class="card-img-top" alt="Ina Farmers">
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="card-title">Ina Farm Employee Biodata Form</h3>
+                        <p class="program-description">Connect with agricultural employers through our Ina Farmers network. Submit your biodata to gain access to farming employment opportunities.</p>
+                        <ul class="text-start mb-4">
+                            <li>Direct connection with agricultural employers</li>
+                            <li>Employment in modern farming operations</li>
+                            <li>Opportunities for skilled and entry-level positions</li>
+                            <li>Access to sustainable farming initiatives</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="user/ina_farm_biodata.php" class="btn btn-primary btn-lg">
+                                <i class="bi bi-person-plus me-2"></i>Submit Employer Biodata
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         </div>
     </div>
 

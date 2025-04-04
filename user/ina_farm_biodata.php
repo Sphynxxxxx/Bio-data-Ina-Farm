@@ -21,8 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         // Initialize arrays to store form data with default values
         $userData = [
-            'program_type' => 'tesda', 
-            'nmis_code' => $_POST['nmis_code'] ?? '',
+            'program_type' => 'employee',
             'lastname' => $_POST['lastname'] ?? '',
             'firstname' => $_POST['firstname'] ?? '',
             'middlename' => $_POST['middlename'] ?? '',
@@ -55,22 +54,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'gsis_no' => $_POST['gsis_no'] ?? '',
             'tin_no' => $_POST['tin_no'] ?? ''
         ];
-        
+
         
         // Insert into users table
-        $sql = "INSERT INTO users (program_type, nmis_code, lastname, firstname, middlename, address_street, 
+        $sql = "INSERT INTO users (program_type, lastname, firstname, middlename, address_street, 
                 address_barangay, address_district, address_city, address_province, address_region, address_zip, address_boxNo,
                 sex, civil_status, tel_number, contact_number, email, fax_number, other_contact, 
                 employment_type, employment_status, birthdate, birth_place, citizenship, religion, height, weight, 
                 blood_type, distinguish_marks, sss_no, gsis_no, tin_no) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         $stmt = $pdo->prepare($sql);
         
         // Ensure we're passing the exact number of parameters in the correct order
         $params = [
             $userData['program_type'],
-            $userData['nmis_code'],
             $userData['lastname'],
             $userData['firstname'],
             $userData['middlename'],
@@ -332,10 +330,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         // Commit transaction
         $pdo->commit();
-        $success_message = "Manpower profile submitted successfully!";
+        $success_message = "Employee profile submitted successfully!";
         
         // Redirect to view page
-        header('Location: tesda_view.php');
+        header('Location: ina_farm_biodata_view.php');
         exit();
         
     } catch (Exception $e) {
@@ -355,22 +353,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NMIS Manpower Profile</title>
+    <title>Ina Farm Employee Biodata Form</title>
     <link rel="stylesheet" href="css/tesda.css">
 </head>
 <body>
     <div class="container">
         <!-- Header Section -->
         <div class="header">
-            <img src="assets/tesda_logo.png" alt="TESDA Logo">
             <div class="header-text">
-                <h2>Technical Education and Skills Development Authority</h2>
-                <p>Pangasiwaan sa Edukasyong Teknikal at Pagpapaunlad ng Kasanayan</p>
+                <img src="assets/inafarm_long logo.png" alt="InaFarm Logo">
+                <!--<p>Pangasiwaan sa Edukasyong Teknikal at Pagpapaunlad ng Kasanayan</p>-->
             </div>
-            <div class="form-title"><strong>NMIS FORM -01A</strong> <br> <span style="font-size: 10px;">(For TPIS)</span></div>
+            <!--<div class="form-title"><strong>NMIS FORM -01A</strong> <br> <span style="font-size: 10px;">(For TPIS)</span></div>-->
         </div>
         
-        <h2 class="manpower-profile">MANPOWER PROFILE</h2>
+        <h2 class="manpower-profile">INA FARM EMPLOYEE PROFILE</h2>
         
         <?php if (isset($success_message)): ?>
             <div class="alert alert-success"><?php echo $success_message; ?></div>
@@ -436,7 +433,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             
             <!-- TESDA Section -->
-            <div class="section">
+            <!--<div class="section">
                 <div class="section-title">1. To be accomplished by TESDA</div>
                 <div class="form-row">
                     <h3 class="name-title" style="font-size: 0.7em;">NMIS Manpower Code:</h3>
@@ -448,7 +445,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <input type="date" name="entry_date" class="value">
                     </div>
                 </div>
-            </div>
+            </div>-->
             
             <!-- Personal Information -->
             <div class="section">
@@ -1093,8 +1090,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             
             <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-                <button type="submit" class="btn btn-primary">Submit Manpower Profile</button>
-                <a href="tesda_view.php" class="btn btn-secondary">View Submitted Profile</a>
+                <button type="submit" class="btn btn-primary">Submit Employee Profile</button>
+                <a href="ina_farm_biodata_view.php" class="btn btn-secondary">View Submitted Profile</a>
                 <a href="crud\edit.php" class="btn btn-third">Edit Submitted Profile</a>
                 <a href="../index.php" class="btn btn-close">Close</a>
             </div>

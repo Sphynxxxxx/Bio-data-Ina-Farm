@@ -30,6 +30,9 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) AS count FROM users WHERE program_type = 'tesda'");
     $totalTesda = $stmt->fetchColumn();
     
+    $stmt = $pdo->query("SELECT COUNT(*) AS count FROM users WHERE program_type = 'employee'");
+    $totalInaFarmers = $stmt->fetchColumn();
+    
     // Get recent registrations for the dashboard summary
     $stmt = $pdo->query("SELECT id, lastname, firstname, middlename, program_type, employment_status, contact_number, 
                          email, created_at, DATE_FORMAT(created_at, '%M %d, %Y') AS formatted_date 
@@ -51,6 +54,9 @@ try {
     } elseif ($viewType == 'tesda') {
         $query .= " AND program_type = 'tesda'";
         $countQuery .= " AND program_type = 'tesda'";
+    } elseif ($viewType == 'employee') {
+        $query .= " AND program_type = 'employee'";
+        $countQuery .= " AND program_type = 'employee'";
     }
     
     // Add search filter
@@ -290,6 +296,10 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
             background-color: #007bff;
         }
         
+        .badge-employee {
+            background-color: #6610f2;
+        }
+        
         .dashboard-stats {
             margin-bottom: 30px;
         }
@@ -364,6 +374,11 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
                             <i class="bi bi-person-vcard"></i> TESDA Registrations
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin_dashboard.php?view=employee">
+                            <i class="bi bi-people"></i> Ina Farmers Employee Registration
+                        </a>
+                    </li>
                     <li class="nav-item mt-5">
                         <a class="nav-link text-danger" href="crud/admin_logout.php">
                             <i class="bi bi-box-arrow-right"></i> Logout
@@ -397,22 +412,28 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
 
                 <!-- Dashboard stats -->
                 <div class="row dashboard-stats">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="dashboard-card card-stats p-3 text-center">
-                            <div class="stat-value"><?php echo $totalInternships + $totalTesda; ?></div>
+                            <div class="stat-value"><?php echo $totalInternships + $totalTesda + $totalInaFarmers; ?></div>
                             <div class="stat-label">Total Registrations</div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="dashboard-card card-stats p-3 text-center">
                             <div class="stat-value"><?php echo $totalInternships; ?></div>
                             <div class="stat-label">Internship Registrations</div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="dashboard-card card-stats p-3 text-center">
                             <div class="stat-value"><?php echo $totalTesda; ?></div>
                             <div class="stat-label">TESDA Registrations</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="dashboard-card card-stats p-3 text-center">
+                            <div class="stat-value"><?php echo $totalInaFarmers; ?></div>
+                            <div class="stat-label">Ina Farmers Employee Registrations</div>
                         </div>
                     </div>
                 </div>
@@ -428,6 +449,9 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?php echo ($viewType == 'tesda') ? 'active' : ''; ?>" href="admin_dashboard.php?view=tesda">TESDA Programs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($viewType == 'employee') ? 'active' : ''; ?>" href="admin_dashboard.php?view=employee">Ina Farmers Employees</a>
                         </li>
                     </ul>
                 </div>
@@ -465,6 +489,8 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
                             echo 'Student Internship Registrations';
                         } elseif ($viewType == 'tesda') {
                             echo 'TESDA Program Registrations';
+                        } elseif ($viewType == 'employee') {
+                            echo 'Ina Farmers Employee Registrations';
                         } else {
                             echo 'All Registrations';
                         }
@@ -500,8 +526,10 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
                                         <td>
                                             <?php if ($reg['program_type'] == 'internship'): ?>
                                                 <span class="badge bg-success">Internship</span>
-                                            <?php else: ?>
+                                            <?php elseif ($reg['program_type'] == 'tesda'): ?>
                                                 <span class="badge bg-primary">TESDA</span>
+                                            <?php elseif ($reg['program_type'] == 'employee'): ?>
+                                                <span class="badge bg-purple">Ina Farmers</span>
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo htmlspecialchars($reg['contact_number'] ?: 'N/A'); ?></td>
@@ -511,6 +539,10 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
                                             <div class="btn-group">
                                                 <?php if ($reg['program_type'] == 'internship'): ?>
                                                 <a href="internship_view.php?id=<?php echo $reg['id']; ?>" class="btn btn-sm btn-info">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+                                                <?php elseif ($reg['program_type'] == 'employee'): ?>
+                                                <a href="inafarm_employee.php?id=<?php echo $reg['id']; ?>" class="btn btn-sm btn-info">
                                                     <i class="bi bi-eye"></i> View
                                                 </a>
                                                 <?php else: ?>
@@ -563,7 +595,15 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
                                     <div class="alert alert-info">No recent registrations found.</div>
                                 <?php else: ?>
                                     <?php foreach ($recentRegistrations as $recent): ?>
-                                    <a href="<?php echo ($recent['program_type'] == 'internship') ? 'internship_view.php?id=' : 'view.php?id='; ?><?php echo $recent['id']; ?>" class="list-group-item list-group-item-action">
+                                    <a href="<?php 
+                                        if ($recent['program_type'] == 'internship') {
+                                            echo 'internship_view.php?id=';
+                                        } elseif ($recent['program_type'] == 'employee') {
+                                            echo 'inafarm_employee.php?id=';
+                                        } else {
+                                            echo 'view.php?id=';
+                                        }
+                                    ?><?php echo $recent['id']; ?>" class="list-group-item list-group-item-action">
                                         <div class="d-flex w-100 justify-content-between">
                                             <h5 class="mb-1"><?php echo htmlspecialchars($recent['lastname'] . ', ' . $recent['firstname'] . ' ' . $recent['middlename']); ?></h5>
                                             <small><?php echo date('M d, Y', strtotime($recent['created_at'])); ?></small>
@@ -572,8 +612,10 @@ $adminName = $_SESSION['admin_name'] ?? 'Administrator';
                                         <small>
                                             <?php if ($recent['program_type'] == 'internship'): ?>
                                                 <span class="badge bg-success">Student Internship</span>
-                                            <?php else: ?>
+                                            <?php elseif ($recent['program_type'] == 'tesda'): ?>
                                                 <span class="badge bg-primary">TESDA Program</span>
+                                            <?php elseif ($recent['program_type'] == 'employee'): ?>
+                                                <span class="badge bg-purple">Ina Farmers Employee</span>
                                             <?php endif; ?>
                                         </small>
                                     </a>

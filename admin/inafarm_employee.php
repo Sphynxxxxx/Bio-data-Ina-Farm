@@ -2,84 +2,93 @@
 session_start();
 require_once __DIR__ . '/../connections/config.php';
 
-$sql = "SELECT * FROM users WHERE program_type = 'internship'";
-$stmt = $pdo->query($sql);
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    // Fetch the latest record 
-    $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$user) {
-        die("No user records found.");
-    }
-    
-    // Fetch education records
-    $eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
-    $eduStmt->execute([$user['id']]);
-    $education = $eduStmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Fetch working experience
-    $workStmt = $pdo->prepare("SELECT * FROM work_experience WHERE user_id = ?");
-    $workStmt->execute([$user['id']]);
-    $work_experience = $workStmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Fetch training/Seminar Attended
-    $trainingStmt = $pdo->prepare("SELECT * FROM training_seminar WHERE user_id = ?");
-    $trainingStmt->execute([$user['id']]);
-    $training_seminar = $trainingStmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Fetch Licenses/Examinations Passed
-    $licenseStmt = $pdo->prepare("SELECT * FROM license_examination WHERE user_id = ?");
-    $licenseStmt->execute([$user['id']]);
-    $license_examination = $licenseStmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Fetch Competency Assessment Passed
-    $competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
-    $competencyStmt->execute([$user['id']]);
-    $competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Fetch Family Background - use fetch() instead of fetchAll() to get a single record
-    $familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
-    $familyStmt->execute([$user['id']]);
-    $family = $familyStmt->fetch(PDO::FETCH_ASSOC);
-
-    $photoStmt = $pdo->prepare("SELECT photo_data FROM user_photos WHERE user_id = ?");
-    $photoStmt->execute([$user['id']]);
-    $photo = $photoStmt->fetch(PDO::FETCH_ASSOC);
-
-    // Fetch user's signature
-    $signatureStmt = $pdo->prepare("SELECT signature_data FROM user_signatures WHERE user_id = ?");
-    $signatureStmt->execute([$user['id']]);
-    $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
-
-} catch(PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+if (!isset($_SESSION['admin'])) {
+    header('Location: admin.php');
+    exit();
 }
+
+// Check if ID is provided
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    $_SESSION['error'] = "No user ID specified.";
+    header('Location: admin_dashboard.php');
+    exit();
+}
+
+$userId = intval($_GET['id']);
+
+// Fetch specific user data based on ID
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$userId]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user) {
+    $_SESSION['error'] = "User not found.";
+    header('Location: admin_dashboard.php');
+    exit();
+}
+
+// Fetch related data for this specific user
+// Education
+$eduStmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ?");
+$eduStmt->execute([$userId]);
+$education = $eduStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Work experience
+$workStmt = $pdo->prepare("SELECT * FROM work_experience WHERE user_id = ?");
+$workStmt->execute([$userId]);
+$work_experience = $workStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Training/seminar
+$trainingStmt = $pdo->prepare("SELECT * FROM training_seminar WHERE user_id = ?");
+$trainingStmt->execute([$userId]);
+$training_seminar = $trainingStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// License/examination
+$licenseStmt = $pdo->prepare("SELECT * FROM license_examination WHERE user_id = ?");
+$licenseStmt->execute([$userId]);
+$license_examination = $licenseStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Competency assessment
+$competencyStmt = $pdo->prepare("SELECT * FROM competency_assessment WHERE user_id = ?");
+$competencyStmt->execute([$userId]);
+$competency_assessment = $competencyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Family background
+$familyStmt = $pdo->prepare("SELECT * FROM family_background WHERE user_id = ?");
+$familyStmt->execute([$userId]);
+$family = $familyStmt->fetch(PDO::FETCH_ASSOC);
+
+// Photo Capture
+$photoStmt = $pdo->prepare("SELECT photo_data FROM user_photos WHERE user_id = ?");
+$photoStmt->execute([$user['id']]);
+$photo = $photoStmt->fetch(PDO::FETCH_ASSOC);
+
+// Fetch user's signature
+$signatureStmt = $pdo->prepare("SELECT signature_data FROM user_signatures WHERE user_id = ?");
+$signatureStmt->execute([$user['id']]);
+$signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Internship</title>
-    <link rel="stylesheet" href="css/user_view.css">    
+    <title>Ina Farm Employee Biodata Form</title>
+    <link rel="stylesheet" href="css/view.css">    
 </head>
 <body>
     <div class="container">
         <div class="header">
             <img src="assets/inafarm_long logo.png" alt="InaFarm Logo">
             <div class="header-text">
-                <h2>Student Internship Program</h2>
+                <h2>Ina Farm Biodata Form</h2>
             </div>
-            <!--<div class="form-title"><strong>NMIS FORM -01A</strong> <br> <span style="font-size: 10px;">(For TPIS)</span></div>-->
         </div>
-        <h2 class="manpower-profile">STUDENT INTERNSHIP</h2>
-
+        <h2 class="manpower-profile">INA FARM EMPLOYEE PROFILE</h2>
+        
         <!-- Photo and signature -->
         <div class="signature-container">
             <div class="signature-area">
@@ -100,9 +109,8 @@ try {
                 <?php endif; ?>
             </div>
         </div>
-        
-         <!----1. To be accomplished by TESDA--->
-        <!----<div class="section">
+
+        <!--<div class="section">
             <div class="section-title">1. To be accomplished by TESDA</div>
             <div class="form-row">
                 <h3 class="name-title" style="font-size: 0.7em;">NMIS Manpower Code:</h3>
@@ -114,11 +122,11 @@ try {
                     <div class="value"><?php echo htmlspecialchars($user['nmis_entry'] ?? ''); ?></div>
                 </div>
             </div>
-        </div>--->
+        </div>-->
 
-        <!----2. Manpower Profile--->
+        <!---2. Manpower Profile --->
         <div class="section">
-            <div class="section-title">1. Student Profile</div>
+            <div class="section-title">1. Manpower Profile</div>
             <div class="form-row">
                 <h3 class="name-title">Name:</h3>
                     <div class="form-group">
@@ -424,7 +432,7 @@ try {
 
         <!-- 6. Training Seminar Attendee-->
         <div class="section">
-            <div class="section-title">5. Training Seminar Attended</div>
+            <div class="section-title">7. Training Seminar Attended</div>
             <table>
                 <thead>
                     <tr>
@@ -446,50 +454,13 @@ try {
                         <td><?php echo htmlspecialchars($training['venue'] ?? ''); ?></td>
                         <td><?php echo htmlspecialchars($training['inclusive_dates_past'] ?? ''); ?></td> 
                         <td><?php echo htmlspecialchars($training['inclusive_dates_present'] ?? ''); ?></td>  
-                        <td>
-                            <?php 
-                            $cert_codes = [
-                                'A' => 'A - Certificate of Attendance',
-                                'C' => 'C - Certificate of Competencies',
-                                'P' => 'P - Certificate of Proficiency',
-                                'S' => 'S - Skills Training Certificate',
-                                'T' => 'T - Training Certificate'
-                            ];
-                            echo htmlspecialchars($cert_codes[$training['certificate']] ?? $training['certificate'] ?? '');
-                            ?>
-                        </td>
+                        <td><?php echo htmlspecialchars($training['certificate'] ?? ''); ?></td>
                         <td><?php echo htmlspecialchars($training['no_of_hours'] ?? ''); ?></td>
-                        <td>
-                            <?php 
-                            $base_codes = [
-                                'L' => 'L - Local',
-                                'F' => 'F - Foreign'
-                            ];
-                            echo htmlspecialchars($base_codes[$training['training_base']] ?? $training['training_base'] ?? '');
-                            ?>
-                        </td>
-                        <td>
-                            <?php 
-                            $category_codes = [
-                                'T' => 'T - Trade Skills Upgrading Program',
-                                'N' => 'N - Non-Trade Skills Upgrading Program',
-                                'M' => 'M - Training Management'
-                            ];
-                            echo htmlspecialchars($category_codes[$training['category']] ?? $training['category'] ?? '');
-                            ?>
-                        </td>
+                        <td><?php echo htmlspecialchars($training['training_base'] ?? ''); ?></td>
+                        <td><?php echo htmlspecialchars($training['category'] ?? ''); ?></td>
                         <td><?php echo htmlspecialchars($training['conducted_by'] ?? ''); ?></td>
-                        <td>
-                            <?php 
-                            $proficiency_codes = [
-                                'B' => 'B - Beginner',
-                                'I' => 'I - Intermediate',
-                                'A' => 'A - Advanced'
-                            ];
-                            echo htmlspecialchars($proficiency_codes[$training['proficiency']] ?? $training['proficiency'] ?? '');
-                            ?>
-                        </td>
-                    </tr>
+                        <td><?php echo htmlspecialchars($training['proficiency'] ?? ''); ?></td>
+                     </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
@@ -497,7 +468,7 @@ try {
 
         <!-- 7. License/Examination-->
         <div class="section">
-            <div class="section-title">6. License/Examinations Passed</div>
+            <div class="section-title">7. License/Examinations Passed</div>
             <table>
                 <thead>
                     <tr>
@@ -679,8 +650,8 @@ try {
         <!---------------------------------------------------------------------------->
         
         <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-            <a href="../admin/Internship_pdf.php" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
-            <a href="student_internship.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
+            <a href="inafarm_employee_pdf.php?id=<?php echo $userId; ?>" class="btn btn-primary" style="display: inline-block; margin-right: 100px;">Download PDF</a>
+            <a href="admin_dashboard.php" class="btn btn-secondary" style="display: inline-block;">Back to Dashboard</a>
         </div>
 
     </div>
