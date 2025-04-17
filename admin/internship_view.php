@@ -261,7 +261,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
                                 <input type="checkbox" class="checkbox" <?php echo ($user['employment_type'] == 'Unemployed') ? 'checked' : ''; ?>>
                                 <div class="label-check">Unemployed</div>
                             </div>
-
+                            
                         </div>
                     </div>
 

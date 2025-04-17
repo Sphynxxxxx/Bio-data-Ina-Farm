@@ -236,6 +236,7 @@ try {
                         </div>
                     </div>
 
+                    
                     <div class="form-group">
                         <h3 class="name-title" style="font-size: 0.7em;">Employment Type:</h3>
                         <div class="form-checkbox">
@@ -253,7 +254,15 @@ try {
                                 <input type="checkbox" class="checkbox" <?php echo ($user['employment_type'] == 'Unemployed') ? 'checked' : ''; ?>>
                                 <div class="label-check">Unemployed</div>
                             </div>
-
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox" id="other-checkbox" <?php echo ($user['employment_type'] == 'Other') ? 'checked' : ''; ?>>
+                                <div class="label-check">Other than above pls. specify</div>
+                            </div>
+                            
+                            <div class="other-text-field" style="margin-top: 8px; padding-left: 25px; <?php echo ($user['employment_type'] == 'Other') ? '' : 'display: none;'; ?>">
+                                <input type="text" name="employment_type_other" class="form-control" placeholder="Please specify" value="<?php echo isset($user['employment_type_other']) ? htmlspecialchars($user['employment_type_other']) : ''; ?>">
+                            </div>
                         </div>
                     </div>
 

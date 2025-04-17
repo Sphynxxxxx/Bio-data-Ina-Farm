@@ -326,11 +326,12 @@ $rightColumn = 95;
 // Set starting position
 $startX = 15;
 $startY = $pdf->GetY();
-$boxHeight = 40; // Adjust height based on content
-$boxWidth = 30;  // Half of the page width (approx)
+$boxHeight = 40; 
+$boxWidth = 20;  
 
 // Draw rectangle for "Sex"
 $pdf->Rect($startX, $startY, $boxWidth, $boxHeight);
+$pdf->SetXY($startX, $startY);  // Added explicit SetXY position
 $pdf->SetFont('Times', 'B', 10);
 $pdf->Cell(25, 8, 'Sex', 0, 1);
 $pdf->SetTextColor(0, 0, 0);
@@ -346,9 +347,10 @@ foreach ($sexes as $sex) {
     $yPosition += 8;
 }
 
-// Draw rectangle for "Civil Status"
-$pdf->Rect($startX + $boxWidth + 0, $startY, $boxWidth, $boxHeight);
-$pdf->SetXY($startX + $boxWidth + 0, $startY);
+// Draw rectangle for "Civil Status" immediately after Sex box with no gap
+$civilStatusX = $startX + $boxWidth; // This places it right after the Sex box
+$pdf->Rect($civilStatusX, $startY, $boxWidth + 5, $boxHeight); // Added +5 to width to fit "Civil Status" text
+$pdf->SetXY($civilStatusX, $startY);
 $pdf->SetFont('Times', 'B', 10);
 $pdf->Cell(35, 8, 'Civil Status', 0, 1);
 $pdf->SetTextColor(0, 0, 0);
@@ -358,69 +360,147 @@ $pdf->SetFont('Times', '', 10);
 $statuses = ['Single', 'Married', 'Widow/er', 'Separated'];
 $yPosition = $startY + 8;
 foreach ($statuses as $status) {
-    $pdf->SetXY($startX + $boxWidth + 3, $yPosition);
+    $pdf->SetXY($civilStatusX + 3, $yPosition);
     $pdf->Cell(5, 5, $user['civil_status'] == $status ? 'X' : '', 1, 0, 'C'); // Checkbox
     $pdf->Cell(25, 5, $status, 0, 1);
     $yPosition += 8;
 }
 
+// Define the positions for all boxes
+$startX = 15;
+$boxHeight = 40; 
+
+// Define box widths
+$sexBoxWidth = 20;
+$civilStatusBoxWidth = 25;
+$contactBoxWidth = $boxWidth + 40; // Explicitly define the contact box width
+
+// Calculate the starting position for Contact Numbers box
+$contactX = $startX + $sexBoxWidth + $civilStatusBoxWidth; // Position it right after Civil Status
+
 // Draw rectangle for "Contact Number(s)"
-$pdf->Rect($startX + ($boxWidth * 2) + 0, $startY, $boxWidth + 30, $boxHeight);
-$pdf->SetXY($startX + ($boxWidth * 2) + 0, $startY);
+$pdf->Rect($contactX, $startY, $contactBoxWidth, $boxHeight);
+$pdf->SetXY($contactX, $startY);
 $pdf->SetFont('Times', 'B', 10);
 $pdf->Cell(40, 8, 'Contact Number(s)', 0, 1);
 $pdf->SetTextColor(0, 0, 0);
 
 // Move cursor below the title
-$pdf->SetFont('Times', '', 5);
+$pdf->SetFont('Times', '', 10);
 $yPosition = $startY + 8;
 
 // Telephone Number
-$pdf->SetXY($startX + ($boxWidth * 2) + 1, $yPosition);
+$pdf->SetXY($contactX + 1, $yPosition);
+$pdf->SetFont('Times', '', 10); 
 $pdf->Cell(15, 5, 'Tel. No.:', 0, 0);
+$pdf->SetFont('Times', '', 9); 
 $pdf->Cell(38, 5, $user['tel_number'], 'B', 1);
 
 // Move down for Cellular Number
 $yPosition += 8;
-$pdf->SetXY($startX + ($boxWidth * 2) + 1, $yPosition);
+$pdf->SetXY($contactX + 1, $yPosition);
+$pdf->SetFont('Times', '', 10); 
 $pdf->Cell(15, 5, 'Cellular:', 0, 0);
+$pdf->SetFont('Times', '', 9); 
 $pdf->Cell(38, 5, $user['contact_number'], 'B', 1);
 
 // Move down for Email
 $yPosition += 8;
-$pdf->SetXY($startX + ($boxWidth * 2) + 1, $yPosition);
+$pdf->SetXY($contactX + 1, $yPosition);
+$pdf->SetFont('Times', '', 10); 
 $pdf->Cell(15, 5, 'Email:', 0, 0);
+$pdf->SetFont('Times', '', 9); 
 $pdf->Cell(38, 5, $user['email'], 'B', 1);
 
-// Move down fo Fax
+// Move down for Fax
 $yPosition += 8;
-$pdf->SetXY($startX + ($boxWidth * 2) + 1, $yPosition);
+$pdf->SetXY($contactX + 1, $yPosition);
+$pdf->SetFont('Times', '', 10); 
 $pdf->Cell(15, 5, 'Fax:', 0, 0);
-$pdf->Cell(38, 5, $user['fax'], 'B', 1);
+$pdf->SetFont('Times', '', 9); 
+$pdf->Cell(38, 5, $user['fax_number'], 'B', 1); 
 
-
-// Set dimensions
-$boxWidth = 40;  
-$boxHeight = 40; 
+// Position the Employment Type box immediately after Contact Numbers box with no gap
+$employmentTypeX = $contactX + $contactBoxWidth;
 
 // Draw rectangle for "Employment Type"
-$pdf->Rect($startX + ($boxWidth * 3) + 0, $startY, $boxWidth + 20, $boxHeight);
-$pdf->SetXY($startX + ($boxWidth * 3) + 0, $startY);
+$pdf->Rect($employmentTypeX, $startY, $boxWidth + 20, $boxHeight + 8); 
+$pdf->SetXY($employmentTypeX, $startY);
 $pdf->SetFont('Times', 'B', 10);
-$pdf->Cell(40, 8, 'Employment Type', 0, 1);
+$pdf->Cell(40, 8, '2.6 Employment Type', 0, 1);
 $pdf->SetTextColor(0, 0, 0);
 
 // Draw Employment Type checkboxes
 $pdf->SetFont('Times', '', 10);
-$employment_types = ['Employed', 'Self-Employed', 'Unemployed'];
+$employment_types = ['Employed', 'Self-employed', 'Unemployed', 'Other'];
 $yPosition = $startY + 8;
 foreach ($employment_types as $type) {
-    $pdf->SetXY($startX + ($boxWidth * 3) + 3, $yPosition);
-    $pdf->Cell(5, 5, $user['employment_type'] == $type ? 'X' : '', 1, 0, 'C'); // Checkbox
-    $pdf->Cell(30, 5, $type, 0, 1);
+    if ($type == 'Other') {
+        // Add "Other than above" label
+        $pdf->SetXY($employmentTypeX + 3, $yPosition);
+        $pdf->Cell(35, 3, 'Other than above', 0, 1);
+        $yPosition += 5;
+        
+        // Draw checkbox with "pls. specify" label
+        $pdf->SetXY($employmentTypeX + 3, $yPosition);
+        $pdf->Cell(5, 5, $user['employment_type'] == $type ? 'X' : '', 1, 0, 'C'); // Checkbox
+        $pdf->Cell(30, 5, 'pls. specify:', 0, 1);
+        
+        // If "Other" is selected, display the specified text below
+        if ($user['employment_type'] == 'Other' && !empty($user['employment_type_other'])) {
+            $pdf->SetXY($employmentTypeX + 8, $yPosition + 5);
+            $pdf->Cell(50, 5, $user['employment_type_other'], 'B', 1); // Added underline
+        }
+    } else {
+        // Normal options
+        $pdf->SetXY($employmentTypeX + 3, $yPosition);
+        $pdf->Cell(5, 5, $user['employment_type'] == $type ? 'X' : '', 1, 0, 'C'); // Checkbox
+        $pdf->Cell(30, 5, $type, 0, 1);
+    }
+    
     $yPosition += 8;
 }
 
+// Define the width of the Employment Type box
+$employmentTypeWidth = $boxWidth + 20;
+
+// Calculate position for Employment Status - right after Employment Type with no gap
+$employmentStatusX = $employmentTypeX + $employmentTypeWidth;
+
+// Draw rectangle for "Employment Status" - make it taller to fit more options
+$pdf->Rect($employmentStatusX, $startY, $boxWidth + 20, $boxHeight + 30); // Increased height
+$pdf->SetXY($employmentStatusX, $startY);
+$pdf->SetFont('Times', 'B', 10);
+$pdf->Cell(40, 8, '2.7 Employment Status', 0, 1);
+$pdf->SetTextColor(0, 0, 0);
+
+// Draw Employment Status checkboxes with expanded list
+$pdf->SetFont('Times', '', 10);
+$employment_statuses = [
+    'Casual',
+    'Contractual',
+    'Job Order',
+    'Temporary',
+    'Probationary',
+    'Regular',
+    'Permanent',
+    'Trainee/OJT'
+];
+
+$yPosition = $startY + 8;
+foreach ($employment_statuses as $index => $status) {
+    // Add a divider before Trainee/OJT
+    if ($status == 'Trainee/OJT') {
+        $pdf->SetXY($employmentStatusX + 3, $yPosition);
+        $pdf->Cell(35, 3, 'If Student', 0, 1);
+        $yPosition += 5;
+    }
+    
+    $pdf->SetXY($employmentStatusX + 3, $yPosition);
+    $pdf->Cell(5, 5, $user['employment_status'] == $status ? 'X' : '', 1, 0, 'C'); // Checkbox
+    $pdf->Cell(30, 5, $status, 0, 1);
+    $yPosition += 7; // Slightly reduced spacing to fit all options
+}
 
 // 3. Personal Information
 $pdf->Ln(15);

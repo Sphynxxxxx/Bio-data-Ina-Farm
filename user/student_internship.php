@@ -41,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'fax_number' => $_POST['fax_number'] ?? '',
             'other_contact' => $_POST['other_contact'] ?? '',
             'employment_type' => $_POST['employment_type'] ?? '',
+            'employment_type_other' => ($_POST['employment_type'] == 'Other') ? ($_POST['employment_type_other'] ?? '') : '', 
             'employment_status' => $_POST['employment_status'] ?? '',
             'birthdate' => $_POST['birthdate'] ?? '',
             'birth_place' => $_POST['birth_place'] ?? '',
@@ -60,9 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql = "INSERT INTO users (program_type, lastname, firstname, middlename, address_street, 
                 address_barangay, address_district, address_city, address_province, address_region, address_zip, address_boxNo,
                 sex, civil_status, tel_number, contact_number, email, fax_number, other_contact, 
-                employment_type, employment_status, birthdate, birth_place, citizenship, religion, height, weight, 
+                employment_type, employment_type_other, employment_status, birthdate, birth_place, citizenship, religion, height, weight, 
                 blood_type, distinguish_marks, sss_no, gsis_no, tin_no) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 
         $stmt = $pdo->prepare($sql);
         
@@ -88,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $userData['fax_number'],
             $userData['other_contact'],
             $userData['employment_type'],
+            $userData['employment_type_other'],
             $userData['employment_status'],
             $userData['birthdate'],
             $userData['birth_place'],
@@ -593,6 +596,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="checkbox-group">
                                 <input type="radio" name="employment_type" value="Unemployed" class="checkbox">
                                 <div class="label-check">Unemployed</div>
+                            </div>
+                            <label for="Other than above">Other than above</label>
+                            <div class="checkbox-group">
+                                <input type="radio" name="employment_type" value="Other" class="checkbox">
+                                <div class="label-check">pls. specify</div>
+                            </div>
+                            <div class="other-specify-field" style="margin-top: 8px; display: none;">
+                                <input type="text" name="employment_type_other" class="form-control" placeholder="Please specify">
                             </div>
                         </div>
                     </div>
@@ -1149,6 +1160,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         newEntry.querySelectorAll('input').forEach(input => input.value = '');
         container.appendChild(newEntry);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const otherRadio = document.querySelector('input[name="employment_type"][value="Other"]');
+        const otherField = document.querySelector('.other-specify-field');
+        
+        // Show/hide the text field based on radio selection
+        document.querySelectorAll('input[name="employment_type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                otherField.style.display = (otherRadio.checked) ? 'block' : 'none';
+            });
+        });
+    });
     </script>
 </body>
 </html> 
