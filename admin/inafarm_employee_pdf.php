@@ -60,7 +60,7 @@ $pdf->SetTitle('Ina Farm Employee Profile');
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 // Set margins
-$pdf->SetMargins(15, 35, 15);
+$pdf->SetMargins(10, 35, 10);
 $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -226,7 +226,7 @@ if (!empty($photo) && !empty($photo['photo_data'])) {
 }
 
 // Section 1 - Student Information
-$pdf->SetXY(15, 84);
+$pdf->SetXY(10, 84);
 $pdf->SetFont('Times', 'B', 10);
 $pdf->SetFillColor(177, 176, 176); 
 $pdf->SetTextColor(255, 0, 0);
@@ -913,6 +913,7 @@ $pdf->Ln();
 
 
 // 6. Licenses/Examination Passed
+//6.  Licenses/Examination Passed
 if ($pdf->GetY() > 220) {
     $pdf->AddPage();
 }
@@ -921,35 +922,47 @@ $pdf->Ln(4); // Reduced spacing
 $pdf->SetFont('Times', 'B', 12);
 $pdf->SetFillColor(177, 176, 176);
 $pdf->SetTextColor(255, 0, 0);
-$pdf->Cell(0, 8, '6. Licenses/Examination Passed', 0, 1, 'L', true);
+$pdf->Cell(0, 8, '6.  Licenses/Examination Passed', 0, 1, 'L', true);
 $pdf->SetTextColor(0, 0, 0);
 
 $pdf->Ln(1); 
 
-$colWidth1 = 45;  // Title (reduced)
-$colWidth2 = 22;  // Year Taken (reduced)
-$colWidth3 = 45;  // Examination Venue (reduced)
-$colWidth4 = 25;  // Ratings (reduced)
-$colWidth5 = 25;  // Remarks (reduced)
-$colWidth6 = 28;  // Expiry Date (reduced)
+// Define column widths for better layout
+$colWidth1 = 45;  // Title
+$colWidth2 = 22;  // Year Taken
+$colWidth3 = 45;  // Examination Venue
+$colWidth4 = 25;  // Ratings
+$colWidth5 = 25;  // Remarks
+$colWidth6 = 28;  // Expiry Date
 
 $pdf->SetFont('Times', '', 10);
 
+// Store the starting X position for alignment
 $startX = $pdf->GetX();
 $y = $pdf->GetY();
 
+// Headers - use MultiCell for all headers that might need wrapping
 $pdf->SetXY($startX, $y);
 $pdf->MultiCell($colWidth1, 10, "Title", 1, 'C');
-$pdf->SetXY($startX + $colWidth1, $y);
+$pdf->SetXY($startX + $colWidth1, $y); 
 
-$pdf->Cell($colWidth2, 10, "Year Taken", 1, 0, 'C');
-$pdf->Cell($colWidth3, 10, "Examination Venue", 1, 0, 'C');
-$pdf->Cell($colWidth4, 10, "Ratings", 1, 0, 'C');
-$pdf->Cell($colWidth5, 10, "Remarks", 1, 0, 'C');
-$pdf->Cell($colWidth6, 10, "Expiry Date", 1, 1, 'C');
+$pdf->MultiCell($colWidth2, 10, "Year Taken", 1, 'C');
+$pdf->SetXY($startX + $colWidth1 + $colWidth2, $y);
+
+$pdf->MultiCell($colWidth3, 10, "Examination Venue", 1, 'C');
+$pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3, $y);
+
+$pdf->MultiCell($colWidth4, 10, "Ratings", 1, 'C');
+$pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3 + $colWidth4, $y);
+
+$pdf->MultiCell($colWidth5, 10, "Remarks", 1, 'C');
+$pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3 + $colWidth4 + $colWidth5, $y);
+
+$pdf->MultiCell($colWidth6, 10, "Expiry Date", 1, 'C');
+
 
 $pdf->SetFont('Times', '', 7);
-$fixedRowHeight = 15; // Reduced row height
+$fixedRowHeight = 15; // Row height
 
 foreach ($license_examination as $license) {
     // Check if we need to add a page break before this row
@@ -958,23 +971,51 @@ foreach ($license_examination as $license) {
         
         // Redraw the header on the new page
         $pdf->SetFont('Times', '', 10);
-        $pdf->Cell($colWidth1, 10, "Title", 1, 0, 'C');
-        $pdf->Cell($colWidth2, 10, "Year Taken", 1, 0, 'C');
-        $pdf->Cell($colWidth3, 10, "Examination Venue", 1, 0, 'C');
-        $pdf->Cell($colWidth4, 10, "Ratings", 1, 0, 'C');
-        $pdf->Cell($colWidth5, 10, "Remarks", 1, 0, 'C');
-        $pdf->Cell($colWidth6, 10, "Expiry Date", 1, 1, 'C');
+        $y = $pdf->GetY();
+        
+        $pdf->SetXY($startX, $y);
+        $pdf->MultiCell($colWidth1, 10, "Title", 1, 'C');
+        $pdf->SetXY($startX + $colWidth1, $y); 
+        
+        $pdf->MultiCell($colWidth2, 10, "Year Taken", 1, 'C');
+        $pdf->SetXY($startX + $colWidth1 + $colWidth2, $y);
+        
+        $pdf->MultiCell($colWidth3, 10, "Examination Venue", 1, 'C');
+        $pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3, $y);
+        
+        $pdf->MultiCell($colWidth4, 10, "Ratings", 1, 'C');
+        $pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3 + $colWidth4, $y);
+        
+        $pdf->MultiCell($colWidth5, 10, "Remarks", 1, 'C');
+        $pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3 + $colWidth4 + $colWidth5, $y);
+        
+        $pdf->MultiCell($colWidth6, 10, "Expiry Date", 1, 'C');
+        
+        $pdf->Ln();
         $pdf->SetFont('Times', '', 7);
     }
 
-    $rowY = $pdf->GetY();
+    $startX = $pdf->GetX();
+    $startY = $pdf->GetY();
+
+    // Title with wrapping - use MultiCell for proper text wrapping
+    $pdf->MultiCell($colWidth1, $fixedRowHeight, substr($license['license_tittle'], 0, 50), 1, 'L');
+    $pdf->SetXY($startX + $colWidth1, $startY);
     
-    // Try using a simpler approach without MultiCells for better page flow
-    $pdf->Cell($colWidth1, $fixedRowHeight, substr($license['license_tittle'], 0, 30), 1, 0, 'L');
+    // Year taken
     $pdf->Cell($colWidth2, $fixedRowHeight, substr($license['year_taken'], 0, 10), 1, 0, 'C');
-    $pdf->Cell($colWidth3, $fixedRowHeight, substr($license['examination_venue'], 0, 30), 1, 0, 'L');
+    
+    // Examination venue with wrapping - use MultiCell for proper text wrapping
+    $pdf->MultiCell($colWidth3, $fixedRowHeight, substr($license['examination_venue'], 0, 50), 1, 'L');
+    $pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3, $startY);
+
+    // Ratings
     $pdf->Cell($colWidth4, $fixedRowHeight, substr($license['ratings'], 0, 10), 1, 0, 'R');
+    
+    // Remarks
     $pdf->Cell($colWidth5, $fixedRowHeight, substr($license['remarks'], 0, 15), 1, 0, 'L');
+    
+    // Expiry date
     $pdf->Cell($colWidth6, $fixedRowHeight, substr($license['expiry_date'], 0, 15), 1, 1, 'L');
 }
 
