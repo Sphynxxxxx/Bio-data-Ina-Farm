@@ -174,8 +174,8 @@ $pdf->Cell(0, 10, 'STUDENT INTERNSHIP PROFILE', 0, 1, 'C');
 $pdf->SetTextColor(0, 0, 0);
 
 //line below
-$pdf->Line(15, 40, 195, 40); 
-$pdf->Line(15, 40.5, 195, 40.5);
+$pdf->Line(10, 40, 200, 40); 
+$pdf->Line(10, 40.5, 200, 40.5);
 
 
 // Add signature box
@@ -270,19 +270,19 @@ $pdf->Cell(20, 10, 'Name:', 0, 0);
 $pdf->SetFont('Times', '', 5);
 $pdf->SetXY(50, 113);
 $pdf->SetFont('Times', '', 9);
-$pdf->Cell(49, 6, $user['lastname'], 1, 0, 'C');
-$pdf->Cell(48, 6, $user['firstname'], 1, 0, 'C'); 
-$pdf->Cell(48, 6, $user['middlename'], 1, 1, 'C'); 
+$pdf->Cell(50, 6, $user['lastname'], 1, 0, 'C');
+$pdf->Cell(50, 6, $user['firstname'], 1, 0, 'C'); 
+$pdf->Cell(50, 6, $user['middlename'], 1, 1, 'C'); 
 
 // Move down before adding labels
 $pdf->Ln(2);
 
 // Set new X position for labels to align with the boxes
 $pdf->SetXY(50, 119); 
-$pdf->SetFont('Times', '', 8);
-$pdf->Cell(49, 5, 'Last', 0, 0, 'C'); 
-$pdf->Cell(48, 5, 'First', 0, 0, 'C'); 
-$pdf->Cell(48, 5, 'Middle', 0, 1, 'C'); 
+$pdf->SetFont('Times', '', 10);
+$pdf->Cell(50, 5, 'Last', 0, 0, 'C'); 
+$pdf->Cell(50, 5, 'First', 0, 0, 'C'); 
+$pdf->Cell(50, 5, 'Middle', 0, 1, 'C'); 
 
 
 // Address
@@ -291,28 +291,28 @@ $pdf->Cell(30, 10, 'Mailing Address:', 0, 0);
 
 $pdf->SetFont('Times', '', 9);
 $pdf->SetXY(50, 127);
-$pdf->Cell(49, 5, $user['address_street'], 1, 0, 'C');
-$pdf->Cell(48, 5, $user['address_barangay'], 1, 0, 'C');
-$pdf->Cell(48, 5, $user['address_district'], 1, 1, 'C'); 
+$pdf->Cell(50, 5, $user['address_street'], 1, 0, 'C');
+$pdf->Cell(50, 5, $user['address_barangay'], 1, 0, 'C');
+$pdf->Cell(50, 5, $user['address_district'], 1, 1, 'C'); 
 
 $pdf->SetXY(50, 132);
 $pdf->SetFont('Times', '', 10);
-$pdf->Cell(49, 5, 'Number, Street', 0, 0, 'C'); 
-$pdf->Cell(48, 5, 'Barangay', 0, 0, 'C'); 
-$pdf->Cell(48, 5, 'Congressional District', 0, 1, 'C');
+$pdf->Cell(50, 5, 'Number, Street', 0, 0, 'C'); 
+$pdf->Cell(50, 5, 'Barangay', 0, 0, 'C'); 
+$pdf->Cell(50, 5, 'Congressional District', 0, 1, 'C');
 
 // City, Province, Region
 $pdf->SetFont('Times', '', 9);
 $pdf->SetXY(50, 140);
-$pdf->Cell(49, 5, $user['address_city'], 1, 0, 'C');
-$pdf->Cell(48, 5, $user['address_province'], 1, 0, 'C');
-$pdf->Cell(48, 5, $user['address_region'], 1, 1, 'C');
+$pdf->Cell(50, 5, $user['address_city'], 1, 0, 'C');
+$pdf->Cell(50, 5, $user['address_province'], 1, 0, 'C');
+$pdf->Cell(50, 5, $user['address_region'], 1, 1, 'C');
 
 $pdf->SetXY(50, 145);
 $pdf->SetFont('Times', '', 10);
-$pdf->Cell(49, 5, 'City/Municipality', 0, 0, 'C');
-$pdf->Cell(48, 5, 'Province', 0, 0, 'C');
-$pdf->Cell(48, 5, 'Region', 0, 1, 'C');
+$pdf->Cell(50, 5, 'City/Municipality', 0, 0, 'C');
+$pdf->Cell(50, 5, 'Province', 0, 0, 'C');
+$pdf->Cell(50, 5, 'Region', 0, 1, 'C');
 
 // Personal Details Section
 $pdf->Ln(5);
@@ -324,15 +324,24 @@ $leftColumn = 95;
 $rightColumn = 95;
 
 
+//////
+
 // Set starting position
-$startX = 15;
+$startX = 10;
 $startY = $pdf->GetY();
-$boxHeight = 40; 
-$boxWidth = 20;  
+$boxHeight = 70; 
+$baseBoxWidth = 20;  
+
+// Define box widths
+$sexBoxWidth = 25;
+$civilStatusBoxWidth = 30;
+$contactBoxWidth = $baseBoxWidth + 40;
+$employmentTypeWidth = $baseBoxWidth + 17;
+$employmentStatusWidth = $baseBoxWidth + 18;
 
 // Draw rectangle for "Sex"
-$pdf->Rect($startX, $startY, $boxWidth, $boxHeight);
-$pdf->SetXY($startX, $startY);  // Added explicit SetXY position
+$pdf->Rect($startX, $startY, $sexBoxWidth, $boxHeight);
+$pdf->SetXY($startX, $startY);
 $pdf->SetFont('Times', 'B', 10);
 $pdf->Cell(25, 8, 'Sex', 0, 1);
 $pdf->SetTextColor(0, 0, 0);
@@ -345,12 +354,14 @@ foreach ($sexes as $sex) {
     $pdf->SetXY($startX + 3, $yPosition);
     $pdf->Cell(5, 5, $user['sex'] == $sex ? 'X' : '', 1, 0, 'C'); // Checkbox
     $pdf->Cell(20, 5, $sex, 0, 1);
-    $yPosition += 8;
+    $yPosition += 10; // Increased spacing between options
 }
 
-// Draw rectangle for "Civil Status" immediately after Sex box with no gap
-$civilStatusX = $startX + $boxWidth; // This places it right after the Sex box
-$pdf->Rect($civilStatusX, $startY, $boxWidth + 5, $boxHeight); // Added +5 to width to fit "Civil Status" text
+// Calculate Civil Status position - right after Sex box
+$civilStatusX = $startX + $sexBoxWidth;
+
+// Draw rectangle for "Civil Status" 
+$pdf->Rect($civilStatusX, $startY, $civilStatusBoxWidth, $boxHeight);
 $pdf->SetXY($civilStatusX, $startY);
 $pdf->SetFont('Times', 'B', 10);
 $pdf->Cell(35, 8, 'Civil Status', 0, 1);
@@ -364,20 +375,11 @@ foreach ($statuses as $status) {
     $pdf->SetXY($civilStatusX + 3, $yPosition);
     $pdf->Cell(5, 5, $user['civil_status'] == $status ? 'X' : '', 1, 0, 'C'); // Checkbox
     $pdf->Cell(25, 5, $status, 0, 1);
-    $yPosition += 8;
+    $yPosition += 10; 
 }
 
-// Define the positions for all boxes
-$startX = 15;
-$boxHeight = 40; 
-
-// Define box widths
-$sexBoxWidth = 20;
-$civilStatusBoxWidth = 25;
-$contactBoxWidth = $boxWidth + 40; // Explicitly define the contact box width
-
-// Calculate the starting position for Contact Numbers box
-$contactX = $startX + $sexBoxWidth + $civilStatusBoxWidth; // Position it right after Civil Status
+// Calculate Contact Numbers position - right after Civil Status box
+$contactX = $civilStatusX + $civilStatusBoxWidth;
 
 // Draw rectangle for "Contact Number(s)"
 $pdf->Rect($contactX, $startY, $contactBoxWidth, $boxHeight);
@@ -388,7 +390,7 @@ $pdf->SetTextColor(0, 0, 0);
 
 // Move cursor below the title
 $pdf->SetFont('Times', '', 10);
-$yPosition = $startY + 8;
+$yPosition = $startY + 10; // Increased spacing after title
 
 // Telephone Number
 $pdf->SetXY($contactX + 1, $yPosition);
@@ -398,7 +400,7 @@ $pdf->SetFont('Times', '', 9);
 $pdf->Cell(38, 5, $user['tel_number'], 'B', 1);
 
 // Move down for Cellular Number
-$yPosition += 8;
+$yPosition += 10; // Increased spacing
 $pdf->SetXY($contactX + 1, $yPosition);
 $pdf->SetFont('Times', '', 10); 
 $pdf->Cell(15, 5, 'Cellular:', 0, 0);
@@ -406,7 +408,7 @@ $pdf->SetFont('Times', '', 9);
 $pdf->Cell(38, 5, $user['contact_number'], 'B', 1);
 
 // Move down for Email
-$yPosition += 8;
+$yPosition += 10; // Increased spacing
 $pdf->SetXY($contactX + 1, $yPosition);
 $pdf->SetFont('Times', '', 10); 
 $pdf->Cell(15, 5, 'Email:', 0, 0);
@@ -414,27 +416,27 @@ $pdf->SetFont('Times', '', 9);
 $pdf->Cell(38, 5, $user['email'], 'B', 1);
 
 // Move down for Fax
-$yPosition += 8;
+$yPosition += 10; // Increased spacing
 $pdf->SetXY($contactX + 1, $yPosition);
 $pdf->SetFont('Times', '', 10); 
 $pdf->Cell(15, 5, 'Fax:', 0, 0);
 $pdf->SetFont('Times', '', 9); 
 $pdf->Cell(38, 5, $user['fax_number'], 'B', 1); 
 
-// Position the Employment Type box immediately after Contact Numbers box with no gap
+// Calculate Employment Type position - right after Contact Numbers box
 $employmentTypeX = $contactX + $contactBoxWidth;
 
 // Draw rectangle for "Employment Type"
-$pdf->Rect($employmentTypeX, $startY, $boxWidth + 20, $boxHeight + 8); 
+$pdf->Rect($employmentTypeX, $startY, $employmentTypeWidth, $boxHeight); 
 $pdf->SetXY($employmentTypeX, $startY);
 $pdf->SetFont('Times', 'B', 10);
-$pdf->Cell(40, 8, '2.6 Employment Type', 0, 1);
+$pdf->Cell(40, 8, 'Employment Type', 0, 1);
 $pdf->SetTextColor(0, 0, 0);
 
 // Draw Employment Type checkboxes
 $pdf->SetFont('Times', '', 10);
 $employment_types = ['Employed', 'Self-employed', 'Unemployed', 'Other'];
-$yPosition = $startY + 8;
+$yPosition = $startY + 10; // Increased spacing after title
 foreach ($employment_types as $type) {
     if ($type == 'Other') {
         // Add "Other than above" label
@@ -459,24 +461,21 @@ foreach ($employment_types as $type) {
         $pdf->Cell(30, 5, $type, 0, 1);
     }
     
-    $yPosition += 8;
+    $yPosition += 10; // Increased spacing
 }
 
-// Define the width of the Employment Type box
-$employmentTypeWidth = $boxWidth + 20;
-
-// Calculate position for Employment Status - right after Employment Type with no gap
+// Calculate Employment Status position - right after Employment Type box
 $employmentStatusX = $employmentTypeX + $employmentTypeWidth;
 
-// Draw rectangle for "Employment Status" - make it taller to fit more options
-$pdf->Rect($employmentStatusX, $startY, $boxWidth + 20, $boxHeight + 30); // Increased height
+// Draw rectangle for "Employment Status" with SAME height as others
+$pdf->Rect($employmentStatusX, $startY, $employmentStatusWidth, $boxHeight);
 $pdf->SetXY($employmentStatusX, $startY);
 $pdf->SetFont('Times', 'B', 10);
-$pdf->Cell(40, 8, '2.7 Employment Status', 0, 1);
+$pdf->Cell(40, 8, 'Employment Status', 0, 1);
 $pdf->SetTextColor(0, 0, 0);
 
-// Draw Employment Status checkboxes with expanded list
-$pdf->SetFont('Times', '', 10);
+// Draw Employment Status checkboxes - with more spacing between options
+$pdf->SetFont('Times', 'I', 10); // Set italic font for all status options
 $employment_statuses = [
     'Casual',
     'Contractual',
@@ -488,22 +487,32 @@ $employment_statuses = [
     'Trainee/OJT'
 ];
 
-$yPosition = $startY + 8;
+$yPosition = $startY + 10;
+$statusSpacing = 6;
+
 foreach ($employment_statuses as $index => $status) {
-    // Add a divider before Trainee/OJT
+    // For Trainee/OJT, add a small label
     if ($status == 'Trainee/OJT') {
         $pdf->SetXY($employmentStatusX + 3, $yPosition);
-        $pdf->Cell(35, 3, 'If Student', 0, 1);
-        $yPosition += 5;
+        $pdf->SetFont('Times', 'I', 8); 
+        $pdf->Cell(35, 3, 'If Student:', 0, 1);
+        $yPosition += 4;
+        
+        $pdf->SetXY($employmentStatusX + 3, $yPosition);
+        $pdf->Cell(5, 5, $user['employment_status'] == $status ? 'X' : '', 1, 0, 'C');
+        $pdf->SetFont('Times', 'I', 10); 
+        $pdf->Cell(30, 5, $status, 0, 1);
+    } else {
+        $pdf->SetXY($employmentStatusX + 3, $yPosition);
+        $pdf->Cell(5, 5, $user['employment_status'] == $status ? 'X' : '', 1, 0, 'C');
+        $pdf->SetFont('Times', 'I', 10); 
+        $pdf->Cell(30, 5, $status, 0, 1);
     }
-    
-    $pdf->SetXY($employmentStatusX + 3, $yPosition);
-    $pdf->Cell(5, 5, $user['employment_status'] == $status ? 'X' : '', 1, 0, 'C'); // Checkbox
-    $pdf->Cell(30, 5, $status, 0, 1);
-    $yPosition += 7; // Slightly reduced spacing to fit all options
+    $yPosition += $statusSpacing;
+    $pdf->Ln();
 }
 
-// 3. Personal Information
+// 2. Personal Information
 $pdf->Ln(5);
 $pdf->SetFont('Times', '', 12);
 $pdf->SetFillColor(177, 176, 176);
@@ -514,50 +523,119 @@ $pdf->SetTextColor(0, 0, 0);
 $pdf->Ln(1);
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$width = 180;  
+$width = 190;  
 $height = 40;
 
 // Draw the rectangle 
 $pdf->Rect($x, $y, $width, $height);
 $pdf->Ln(3);
 
+// Left side fields
+$leftX = $pdf->GetX();
+$midX = $leftX + 65; // Position for middle column fields
+$rightX = $midX + 65; // Position for right column fields
+$currentY = $pdf->GetY();
+
+// First row - three fields
+// Birthdate - left side
+$pdf->SetXY($leftX, $currentY);
 $pdf->SetFont('Times', '', 10);
-$pdf->Cell(30, 5, 'Birthdate:', 0, 0);
+$pdf->Cell(20
+, 5, 'Birthdate:', 0, 0);
 $pdf->SetFont('Times', '', 9);
-$pdf->Cell(40, 5, $user['birthdate'], 'B', 1);
-$pdf->Ln(1);
+$pdf->Cell(40, 5, $user['birthdate'], 'B', 0);
 
+// Weight - middle
+$pdf->SetXY($midX, $currentY);
 $pdf->SetFont('Times', '', 10);
-$pdf->Cell(30, 5, 'Birthplace:', 0, 0);
+$pdf->Cell(20, 5, 'Weight:', 0, 0);
 $pdf->SetFont('Times', '', 9);
-$pdf->Cell(40, 5, $user['birth_place'], 'B', 1);
-$pdf->Ln(1);
+$pdf->Cell(40, 5, $user['weight'], 'B', 0);
 
+// Distinguishing Marks - right side
+$pdf->SetXY($rightX, $currentY);
 $pdf->SetFont('Times', '', 10);
-$pdf->Cell(30, 5, 'Citizenship:', 0, 0);
-$pdf->SetFont('Times', '', 9);
-$pdf->Cell(40, 5, $user['citizenship'], 'B', 1);
-$pdf->Ln(1);
+$pdf->Cell(60, 5, 'Distinguishing Marks:', 0, 1);
 
+// Position the value field below the label
+$pdf->SetXY($rightX, $currentY + 5); // Move down 5 units
+$pdf->SetFont('Times', '', 9);
+$pdf->Cell(50, 5, $user['distinguish_marks'], 'B', 1);
+
+$currentY += 6; // Move to next line
+
+// Second row
+// Birthplace - left side
+$pdf->SetXY($leftX, $currentY);
 $pdf->SetFont('Times', '', 10);
-$pdf->Cell(30, 5, 'Religion:', 0, 0);
+$pdf->Cell(20, 5, 'Birthplace:', 0, 0);
 $pdf->SetFont('Times', '', 9);
-$pdf->Cell(40, 5, $user['religion'], 'B', 1);
-$pdf->Ln(1);
+$pdf->Cell(40, 5, $user['birth_place'], 'B', 0);
 
+// Blood Type - middle
+$pdf->SetXY($midX, $currentY);
 $pdf->SetFont('Times', '', 10);
-$pdf->Cell(30, 5, 'Height:', 0, 0);
+$pdf->Cell(20, 5, 'Blood Type:', 0, 0);
 $pdf->SetFont('Times', '', 9);
-$pdf->Cell(40, 5, $user['height'], 'B', 1);
-$pdf->Ln(1);
+$pdf->Cell(40, 5, $user['blood_type'], 'B', 1);
 
+$currentY += 6; // Move to next line
 
+// Third row
+// Citizenship - left side
+$pdf->SetXY($leftX, $currentY);
+$pdf->SetFont('Times', '', 10);
+$pdf->Cell(20, 5, 'Citizenship:', 0, 0);
+$pdf->SetFont('Times', '', 9);
+$pdf->Cell(40, 5, $user['citizenship'], 'B', 0);
 
+// SSS No - middle
+$pdf->SetXY($midX, $currentY);
+$pdf->SetFont('Times', '', 10);
+$pdf->Cell(20, 5, 'SSS No:', 0, 0);
+$pdf->SetFont('Times', '', 9);
+$pdf->Cell(40, 5, $user['sss_no'], 'B', 1);
+
+$currentY += 6; // Move to next line
+
+// Fourth row
+// Religion - left side
+$pdf->SetXY($leftX, $currentY);
+$pdf->SetFont('Times', '', 10);
+$pdf->Cell(20, 5, 'Religion:', 0, 0);
+$pdf->SetFont('Times', '', 9);
+$pdf->Cell(40, 5, $user['religion'], 'B', 0);
+
+// GSIS No - middle
+$pdf->SetXY($midX, $currentY);
+$pdf->SetFont('Times', '', 10);
+$pdf->Cell(20, 5, 'GSIS No:', 0, 0);
+$pdf->SetFont('Times', '', 9);
+$pdf->Cell(40, 5, $user['gsis_no'], 'B', 1);
+
+$currentY += 6; // Move to next line
+
+// Fifth row
+// Height - left side
+$pdf->SetXY($leftX, $currentY);
+$pdf->SetFont('Times', '', 10);
+$pdf->Cell(20, 5, 'Height:', 0, 0);
+$pdf->SetFont('Times', '', 9);
+$pdf->Cell(40, 5, $user['height'], 'B', 0);
+
+// TIN No - middle
+$pdf->SetXY($midX, $currentY);
+$pdf->SetFont('Times', '', 10);
+$pdf->Cell(20, 5, 'TIN No:', 0, 0);
+$pdf->SetFont('Times', '', 9);
+$pdf->Cell(40, 5, $user['tin_no'], 'B', 1);
+
+$pdf->Ln(1); 
 
 $pdf->Ln(25); 
 
 
-// Educational Background
+// 3. Educational Background
 $pdf->Ln(5);
 $pdf->SetFont('Times', 'B', 12);
 $pdf->SetFillColor(177, 176, 176);
@@ -640,7 +718,6 @@ foreach ($education as $edu) {
 }
 
 //4. Working Experience
-
 $pdf->Ln(5);
 $pdf->SetFont('Times', 'B', 12);
 $pdf->SetFillColor(177, 176, 176);
@@ -721,7 +798,7 @@ foreach ($work_experience as $work) {
 
 $pdf->Cell(0, 5, '(For more information, indicate on a sperate sheet)', 0, 1);
 
-//6. Training/Seminars Attended
+//5. Training/Seminars Attended
 $pdf->Ln(5);
 $pdf->SetFont('Times', 'B', 12);
 $pdf->SetFillColor(177, 176, 176);
@@ -731,102 +808,115 @@ $pdf->SetTextColor(0, 0, 0);
 
 $pdf->Ln(1); 
 
+// Define column widths for consistency
+$colWidth1 = 25;  // Title
+$colWidth2 = 20;  // Venue
+$colWidth3 = 26;  // Inclusive Dates
+$colWidth4 = 20;  // Certificate Received
+$colWidth5 = 19;  // # of Hours
+$colWidth6 = 20;  // Training Base
+$colWidth7 = 18;  // Category
+$colWidth8 = 23;  // Conducted By
+$colWidth9 = 19;  // Proficiency
+
 $pdf->SetFont('Times', '', 10);
 
-// Headers
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(25, 15, "Title", 1, 'C'); // Fixed spelling of "Title"
-$pdf->SetXY($x + 25, $y); 
+// Get starting position for the table
+$startTableX = $pdf->GetX();
+$startTableY = $pdf->GetY();
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "Venue", 1, 'C'); 
-$pdf->SetXY($x + 20, $y); 
+// Headers - first column
+$pdf->SetXY($startTableX, $startTableY);
+$pdf->MultiCell($colWidth1, 15, "Title", 1, 'C');
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(26, 15, "Inclusive Dates", 1, 'C'); 
-$pdf->SetXY($x + 26, $y); 
+// Calculate positions based on column widths
+$pos1 = $startTableX + $colWidth1;
+$pos2 = $pos1 + $colWidth2;
+$pos3 = $pos2 + $colWidth3;
+$pos4 = $pos3 + $colWidth4;
+$pos5 = $pos4 + $colWidth5;
+$pos6 = $pos5 + $colWidth6;
+$pos7 = $pos6 + $colWidth7;
+$pos8 = $pos7 + $colWidth8;
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "Certificate Received", 1, 'C'); 
-$pdf->SetXY($x + 20, $y); 
+// Headers - remaining columns
+$pdf->SetXY($pos1, $startTableY);
+$pdf->MultiCell($colWidth2, 15, "Venue", 1, 'C');
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(19, 15, "# of\nHours", 1, 'C'); 
-$pdf->SetXY($x + 19, $y); 
+$pdf->SetXY($pos2, $startTableY);
+$pdf->MultiCell($colWidth3, 15, "Inclusive Dates", 1, 'C');
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "Training\nBase", 1, 'C'); 
-$pdf->SetXY($x + 20, $y); 
+$pdf->SetXY($pos3, $startTableY);
+$pdf->MultiCell($colWidth4, 15, "Certificate Received", 1, 'C');
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(20, 15, "Category", 1, 'C'); 
-$pdf->SetXY($x + 20, $y); 
+$pdf->SetXY($pos4, $startTableY);
+$pdf->MultiCell($colWidth5, 15, "# of\nHours", 1, 'C');
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(23, 15, "Conducted By", 1, 'C'); 
-$pdf->SetXY($x + 23, $y); 
+$pdf->SetXY($pos5, $startTableY);
+$pdf->MultiCell($colWidth6, 15, "Training\nBase", 1, 'C');
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(17, 15, "Proficiency", 1, 'C');
+$pdf->SetXY($pos6, $startTableY);
+$pdf->MultiCell($colWidth7, 15, "Category", 1, 'C');
+
+$pdf->SetXY($pos7, $startTableY);
+$pdf->MultiCell($colWidth8, 15, "Conducted By", 1, 'C');
+
+$pdf->SetXY($pos8, $startTableY);
+$pdf->MultiCell($colWidth9, 15, "Proficiency", 1, 'C');
 
 
 $pdf->SetFont('Times', '', 7);
 $fixedRowHeight = 20;
 
 foreach ($training_seminar as $training) {
-    $startX = $pdf->GetX();
-    $startY = $pdf->GetY();
+    $rowStartY = $pdf->GetY();
+    $currentX = $startTableX;
 
     // Title with wrapping
-    $pdf->MultiCell(25, $fixedRowHeight, substr($training['tittle'], 0, 40), 1, 'L');
-    $pdf->SetXY($startX + 25, $startY);
+    $pdf->SetXY($currentX, $rowStartY);
+    $pdf->MultiCell($colWidth1, $fixedRowHeight, substr($training['tittle'], 0, 40), 1, 'L');
+    $currentX += $colWidth1;
     
     // Venue with wrapping
-    $pdf->MultiCell(20, $fixedRowHeight, substr($training['venue'], 0, 40), 1, 'L');
-    $pdf->SetXY($startX + 45, $startY);
+    $pdf->SetXY($currentX, $rowStartY);
+    $pdf->MultiCell($colWidth2, $fixedRowHeight, substr($training['venue'], 0, 40), 1, 'L');
+    $currentX += $colWidth2;
+    
+    // Position for remaining cells that use Cell() instead of MultiCell()
+    $pdf->SetXY($currentX, $rowStartY);
     
     // Inclusive dates as a single cell
-    $pdf->Cell(26, $fixedRowHeight, substr($training['inclusive_dates_past'], 0, 10) . '-' . substr($training['inclusive_dates_present'], 0, 10), 1, 0, 'C');
+    $pdf->Cell($colWidth3, $fixedRowHeight, substr($training['inclusive_dates_past'], 0, 10) . '-' . substr($training['inclusive_dates_present'], 0, 10), 1, 0, 'C');
     
     // Certificate received
-    $pdf->Cell(20, $fixedRowHeight, substr($training['certificate'], 0, 15), 1, 0, 'L');
+    $pdf->Cell($colWidth4, $fixedRowHeight, substr($training['certificate'], 0, 15), 1, 0, 'L');
     
     // Number of hours
-    $pdf->Cell(19, $fixedRowHeight, substr($training['no_of_hours'], 0, 10), 1, 0, 'L');
+    $pdf->Cell($colWidth5, $fixedRowHeight, substr($training['no_of_hours'], 0, 10), 1, 0, 'L');
     
     // Training base
-    $pdf->Cell(20, $fixedRowHeight, substr($training['training_base'], 0, 15), 1, 0, 'L');
+    $pdf->Cell($colWidth6, $fixedRowHeight, substr($training['training_base'], 0, 15), 1, 0, 'L');
     
     // Category
-    $pdf->Cell(20, $fixedRowHeight, substr($training['category'], 0, 15), 1, 0, 'L');
+    $pdf->Cell($colWidth7, $fixedRowHeight, substr($training['category'], 0, 15), 1, 0, 'L');
     
-    // Conducted by - with wrapping
-    $pdf->MultiCell(23, $fixedRowHeight, substr($training['conducted_by'], 0, 40), 1, 'L');
-    $pdf->SetXY($startX + 173, $startY);
+    // Conducted by position
+    $conductedByX = $pdf->GetX();
+    $pdf->MultiCell($colWidth8, $fixedRowHeight, substr($training['conducted_by'], 0, 40), 1, 'L');
     
-    // Proficiency
-    $pdf->Cell(17, $fixedRowHeight, substr($training['proficiency'], 0, 15), 1, 0, 'L');
-
-    $pdf->Ln();
+    // Proficiency - after conducted by
+    $pdf->SetXY($conductedByX + $colWidth8, $rowStartY);
+    $pdf->Cell($colWidth9, $fixedRowHeight, substr($training['proficiency'], 0, 15), 1, 1, 'L');
 }
 
-$pdf->Cell(0, 5, '(For more information, indicate on a sperate sheet)', 0, 1);
-// Alternative approach with cells of specific widths
+// Legend for training certificates
+$pdf->SetFont('Times', '', 6);
 $pdf->Cell(80, 5, '(*Certificate Received', 0, 0); 
 $pdf->Cell(35, 5, 'Training Base', 0, 0);
 $pdf->Cell(45, 5, 'Category', 0, 0);
 $pdf->Cell(20, 5, 'Proficiency)', 0, 1);  
 
-// Now add your rows below, with appropriate indentation and alignment
+// Legend rows with smaller text
 $pdf->SetX($pdf->GetX() + 5);
 $pdf->Cell(30, 5, 'A  - Certificate of Attendance', 0, 0);
 $pdf->Cell(45, 5, 'S  - Skills Training Certificate', 0, 0);
@@ -834,7 +924,6 @@ $pdf->Cell(35, 5, 'L  - Local', 0, 0);
 $pdf->Cell(45, 5, 'T  - Trade Skills Upgrading Program', 0, 0);
 $pdf->Cell(20, 5, 'B  - Beginner', 0, 1);
 
-// And so on for other rows...
 $pdf->SetX($pdf->GetX() + 5);
 $pdf->Cell(30, 5, 'C  - Certificate of Competencies', 0, 0);
 $pdf->Cell(45, 5, 'T  - Training Certificate', 0, 0);
@@ -847,8 +936,17 @@ $pdf->Cell(110, 5, 'P  - Certificate of Proficiency', 0, 0);
 $pdf->Cell(45, 5, 'M  - Training Management', 0, 0);
 $pdf->Cell(20, 5, 'A  - Advanced', 0, 1);
 
-// 6. Licenses/Examination Passed
-$pdf->Ln(5);
+// Add proper spacing before section 6
+$pdf->Ln(2);
+
+/////////////////////////////////////////////////////////////////////////////
+
+//6.  Licenses/Examination Passed
+if ($pdf->GetY() > 220) {
+    $pdf->AddPage();
+}
+
+$pdf->Ln(4); // Reduced spacing
 $pdf->SetFont('Times', 'B', 12);
 $pdf->SetFillColor(177, 176, 176);
 $pdf->SetTextColor(255, 0, 0);
@@ -857,73 +955,66 @@ $pdf->SetTextColor(0, 0, 0);
 
 $pdf->Ln(1); 
 
+$colWidth1 = 45;  // Title (reduced)
+$colWidth2 = 22;  // Year Taken (reduced)
+$colWidth3 = 45;  // Examination Venue (reduced)
+$colWidth4 = 25;  // Ratings (reduced)
+$colWidth5 = 25;  // Remarks (reduced)
+$colWidth6 = 28;  // Expiry Date (reduced)
+
 $pdf->SetFont('Times', '', 10);
 
-// Headers
-$x = $pdf->GetX();
+$startX = $pdf->GetX();
 $y = $pdf->GetY();
-$pdf->MultiCell(36, 15, "Title", 1, 'C'); // Fixed spelling of "Title"
-$pdf->SetXY($x + 36, $y); 
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(28, 15, "Year Taken", 1, 'C'); 
-$pdf->SetXY($x + 28, $y);
+$pdf->SetXY($startX, $y);
+$pdf->MultiCell($colWidth1, 10, "Title", 1, 'C');
+$pdf->SetXY($startX + $colWidth1, $y);
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(34, 15, "Examination Venue", 1, 'C'); 
-$pdf->SetXY($x + 34, $y); 
-
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(28, 15, "Ratings", 1, 'C'); 
-$pdf->SetXY($x + 28, $y); 
-
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(27, 15, "Remarks", 1, 'C'); 
-$pdf->SetXY($x + 27, $y); 
-
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(27, 15, "Expiry Date", 1, 'C');
-
-// Add proper line break after headers
+$pdf->Cell($colWidth2, 10, "Year Taken", 1, 0, 'C');
+$pdf->Cell($colWidth3, 10, "Examination Venue", 1, 0, 'C');
+$pdf->Cell($colWidth4, 10, "Ratings", 1, 0, 'C');
+$pdf->Cell($colWidth5, 10, "Remarks", 1, 0, 'C');
+$pdf->Cell($colWidth6, 10, "Expiry Date", 1, 1, 'C');
 
 $pdf->SetFont('Times', '', 7);
-$fixedRowHeight = 20;
+$fixedRowHeight = 15; // Reduced row height
 
 foreach ($license_examination as $license) {
-    $startX = $pdf->GetX();
-    $startY = $pdf->GetY();
+    // Check if we need to add a page break before this row
+    if ($pdf->GetY() + $fixedRowHeight > 270) {
+        $pdf->AddPage();
+        
+        // Redraw the header on the new page
+        $pdf->SetFont('Times', '', 10);
+        $pdf->Cell($colWidth1, 10, "Title", 1, 0, 'C');
+        $pdf->Cell($colWidth2, 10, "Year Taken", 1, 0, 'C');
+        $pdf->Cell($colWidth3, 10, "Examination Venue", 1, 0, 'C');
+        $pdf->Cell($colWidth4, 10, "Ratings", 1, 0, 'C');
+        $pdf->Cell($colWidth5, 10, "Remarks", 1, 0, 'C');
+        $pdf->Cell($colWidth6, 10, "Expiry Date", 1, 1, 'C');
+        $pdf->SetFont('Times', '', 7);
+    }
 
-    // License title with wrapping
-    $pdf->MultiCell(36, $fixedRowHeight, substr($license['license_tittle'], 0, 50), 1, 'L');
-    $pdf->SetXY($startX + 36, $startY);
+    $rowY = $pdf->GetY();
     
-    // Year taken
-    $pdf->Cell(28, $fixedRowHeight, substr($license['year_taken'], 0, 15), 1, 0, 'L');
-    
-    // Examination venue with wrapping
-    $pdf->MultiCell(38, $fixedRowHeight, substr($license['examination_venue'], 0, 50), 1, 'L');
-    $pdf->SetXY($startX + 40 + 28 + 38, $startY);
-    
-    // Ratings
-    $pdf->Cell(28, $fixedRowHeight, substr($license['ratings'], 0, 15), 1, 0, 'L');
-    
-    // Remarks
-    $pdf->Cell(27, $fixedRowHeight, substr($license['remarks'], 0, 25), 1, 0, 'L');
-    
-    // Expiry date
-    $pdf->Cell(29, $fixedRowHeight, substr($license['expiry_date'], 0, 15), 1, 0, 'L');
-    
-    $pdf->Ln();
+    // Try using a simpler approach without MultiCells for better page flow
+    $pdf->Cell($colWidth1, $fixedRowHeight, substr($license['license_tittle'], 0, 30), 1, 0, 'L');
+    $pdf->Cell($colWidth2, $fixedRowHeight, substr($license['year_taken'], 0, 10), 1, 0, 'C');
+    $pdf->Cell($colWidth3, $fixedRowHeight, substr($license['examination_venue'], 0, 30), 1, 0, 'L');
+    $pdf->Cell($colWidth4, $fixedRowHeight, substr($license['ratings'], 0, 10), 1, 0, 'R');
+    $pdf->Cell($colWidth5, $fixedRowHeight, substr($license['remarks'], 0, 15), 1, 0, 'L');
+    $pdf->Cell($colWidth6, $fixedRowHeight, substr($license['expiry_date'], 0, 15), 1, 1, 'L');
 }
 
-$pdf->Cell(0, 5, '(For more information, indicate on a sperate sheet)', 0, 1);
+$pdf->Cell(0, 5, '(For more information, indicate on a separate sheet)', 0, 1);
 
-// 8. Competency Assessment Passed
+
+
+
+
+
+// 7. Competency Assessment Passed
 $pdf->Ln(5);
 $pdf->SetFont('Times', 'B', 12);
 $pdf->SetFillColor(177, 176, 176);
@@ -933,66 +1024,73 @@ $pdf->SetTextColor(0, 0, 0);
 
 $pdf->Ln(1); 
 
+// Define column widths for consistency
+$colWidth1 = 40; // Industry Sector
+$colWidth2 = 28; // Trade Area
+$colWidth3 = 40; // Occupation 
+$colWidth4 = 28; // Classification Level
+$colWidth5 = 27; // Competency
+$colWidth6 = 27; // Specialization
+
 $pdf->SetFont('Times', '', 9);
 
+// Table headers
+$startX = $pdf->GetX();
+$startY = $pdf->GetY();
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(36, 15, "Industry Sector", 1, 'C'); 
-$pdf->SetXY($x + 36, $y + 0); 
+// Industry Sector
+$pdf->MultiCell($colWidth1, 15, "Industry Sector", 1, 'C'); 
+$pdf->SetXY($startX + $colWidth1, $startY); 
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(28, 15, "Trade Area", 1, 'C'); 
-$pdf->SetXY($x + 28, $y + 0);
+// Trade Area
+$pdf->MultiCell($colWidth2, 15, "Trade Area", 1, 'C'); 
+$pdf->SetXY($startX + $colWidth1 + $colWidth2, $startY);
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(34, 15, "Occupation", 1, 'C'); 
-$pdf->SetXY($x + 34, $y + 0); 
+// Occupation
+$pdf->MultiCell($colWidth3, 15, "Occupation", 1, 'C'); 
+$pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3, $startY); 
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(28, 15, "Classification Level", 1, 'C'); 
-$pdf->SetXY($x + 28, $y + 0); 
+// Classification Level
+$pdf->MultiCell($colWidth4, 15, "Classification Level", 1, 'C'); 
+$pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3 + $colWidth4, $startY); 
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(27, 15, "Competency", 1, 'C'); 
-$pdf->SetXY($x + 27, $y + 0); 
+// Competency
+$pdf->MultiCell($colWidth5, 15, "Competency", 1, 'C'); 
+$pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3 + $colWidth4 + $colWidth5, $startY); 
 
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->MultiCell(27, 15, "Specialization", 1, 'C'); 
-$pdf->SetXY($x + 27, $y + 0); 
-$pdf->Ln(); 
+// Specialization
+$pdf->MultiCell($colWidth6, 15, "Specialization", 1, 'C'); 
+
+$pdf->SetFont('Times', '', 7);
+$fixedRowHeight = 20;
 
 foreach ($competency_assessment as $competency) {
     $startX = $pdf->GetX();
     $startY = $pdf->GetY();
 
     // Industry sector with wrapping
-    $pdf->MultiCell(36, $fixedRowHeight, substr($competency['industry_sector'], 0, 50), 1, 'L');
-    $pdf->SetXY($startX + 36, $startY);
+    $pdf->MultiCell($colWidth1, $fixedRowHeight, substr($competency['industry_sector'], 0, 50), 1, 'L');
+    $pdf->SetXY($startX + $colWidth1, $startY);
     
-    // Regular cells (no wrapping)
-    $pdf->Cell(28, $fixedRowHeight, substr($competency['trade_area'], 0, 30), 1, 0, 'L');
-    $pdf->Cell(34, $fixedRowHeight, substr($competency['occupation'], 0, 40), 1, 0, 'L');
-    $pdf->Cell(28, $fixedRowHeight, substr($competency['classification_level'], 0, 30), 1, 0, 'L');
+    // Trade Area
+    $pdf->Cell($colWidth2, $fixedRowHeight, substr($competency['trade_area'], 0, 30), 1, 0, 'L');
+    
+    // Occupation
+    $pdf->Cell($colWidth3, $fixedRowHeight, substr($competency['occupation'], 0, 40), 1, 0, 'L');
+    
+    // Classification Level
+    $pdf->Cell($colWidth4, $fixedRowHeight, substr($competency['classification_level'], 0, 30), 1, 0, 'L');
     
     // Competency with wrapping
-    $pdf->SetXY($startX + 126, $startY);
-    $pdf->MultiCell(27, $fixedRowHeight, substr($competency['competency'], 0, 40), 1, 'L');
-    $pdf->SetXY($startX + 153, $startY);
+    $pdf->MultiCell($colWidth5, $fixedRowHeight, substr($competency['competency'], 0, 40), 1, 'L');
+    $pdf->SetXY($startX + $colWidth1 + $colWidth2 + $colWidth3 + $colWidth4 + $colWidth5, $startY);
     
-    // Last regular cell
-    $pdf->Cell(27, $fixedRowHeight, substr($competency['specialization'], 0, 30), 1, 0, 'L');
-    
-    $pdf->SetY($startY + $fixedRowHeight);
+    // Specialization
+    $pdf->Cell($colWidth6, $fixedRowHeight, substr($competency['specialization'], 0, 30), 1, 1, 'L');
 }
 $pdf->Cell(0, 5, '(For more information, indicate on a sperate sheet)', 0, 1);
 
-// 9. Family Background
+// 8. Family Background
 $pdf->Ln(5);
 $pdf->SetFont('Times', '', 12);
 $pdf->SetFillColor(177, 176, 176);
@@ -1003,7 +1101,7 @@ $pdf->SetTextColor(0, 0, 0);
 $pdf->Ln(1);
 $x = $pdf->GetX();
 $y = $pdf->GetY();
-$width = 180;  
+$width = 190;  
 $height = 20;
 $section_height = $height * 4 + 10; // Total height needed for all 4 sections + some spacing
 
@@ -1015,7 +1113,6 @@ if ($y + $section_height > $pdf->getPageHeight() - 25) {
 
 // Draw the rectangle for spouse
 $pdf->Rect($x, $y, $width, $height);
-$pdf->Ln(0);
 
 $pdf->SetFont('Times', '', 9);
 
@@ -1033,7 +1130,6 @@ $pdf->Cell(55, 5, $family['spouse_educational_attainment'], 'B', 0);
 $pdf->SetX(110); 
 $pdf->Cell(40, 5, 'Ave. Monthly Income:', 0, 0);
 $pdf->Cell(45, 5, $family['spouse_monthly_income'], 'B', 1);
-$pdf->Ln(3);
 
 // Draw the rectangle for father
 $new_y = $y + $height;
@@ -1117,12 +1213,12 @@ $x = $pdf->GetX();
 $y = $pdf->GetY();
 
 // Dependents headers
-$pdf->MultiCell(90, 15, "Dependents", 1, 'C'); 
-$pdf->SetXY($x + 90, $y); 
+$pdf->MultiCell(100, 15, "Dependents", 1, 'C'); 
+$pdf->SetXY($x + 100, $y); 
 $pdf->MultiCell(90, 15, "Age", 1, 'C'); 
 $pdf->SetXY($x, $y + 15); 
 
-$pdf->Cell(90, 7, $family['dependents'], 1);
+$pdf->Cell(100, 7, $family['dependents'], 1);
 $pdf->Cell(90, 7, $family['dependents_age'], 1);
 $pdf->Ln();
 $pdf->Cell(0, 5, '(For more information, indicate on a sperate sheet)', 0, 1);
