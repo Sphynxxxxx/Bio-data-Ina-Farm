@@ -58,13 +58,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ];
         
         
-        // Insert into users table
-        $sql = "INSERT INTO users (program_type, lastname, firstname, middlename, address_street, 
+        // Insert into users table - FIXED: Added nmis_code to column list
+        $sql = "INSERT INTO users (program_type, nmis_code, lastname, firstname, middlename, address_street, 
                 address_barangay, address_district, address_city, address_province, address_region, address_zip, address_boxNo,
                 sex, civil_status, tel_number, contact_number, email, fax_number, other_contact, 
                 employment_type, employment_type_other, employment_status, birthdate, birth_place, citizenship, religion, height, weight, 
                 blood_type, distinguish_marks, sss_no, gsis_no, tin_no) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $pdo->prepare($sql);
         
