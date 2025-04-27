@@ -432,7 +432,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
 
         <!-- 6. Training Seminar Attendee-->
         <div class="section">
-            <div class="section-title">7. Training Seminar Attended</div>
+            <div class="section-title">5. Training Seminar Attended</div>
             <table>
                 <thead>
                     <tr>
@@ -468,7 +468,7 @@ $signature = $signatureStmt->fetch(PDO::FETCH_ASSOC);
 
         <!-- 7. License/Examination-->
         <div class="section">
-            <div class="section-title">7. License/Examinations Passed</div>
+            <div class="section-title">6. License/Examinations Passed</div>
             <table>
                 <thead>
                     <tr>
